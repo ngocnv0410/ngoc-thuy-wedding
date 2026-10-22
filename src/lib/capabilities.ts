@@ -16,6 +16,11 @@ export interface DeviceHints {
   deviceMemory?: number
   hardwareConcurrency?: number
   webgl2: boolean
+  /**
+   * Điện thoại: màn hình cảm ứng, cạnh ngắn < 768px. Bản 3D (≈900 KB three.js, dựng normal map,
+   * biên dịch shader) làm đơ máy tầm trung vài giây lúc mở trang — điện thoại luôn dùng 2.5D.
+   */
+  phone?: boolean
   /** `?mocua=2d` / `?mocua=3d` để QA ép một chế độ. */
   override?: '2d' | '3d'
 }
@@ -23,7 +28,7 @@ export interface DeviceHints {
 /** Logic thuần, tách khỏi trình duyệt để test được. */
 export function decide3D(hints: DeviceHints): boolean {
   if (hints.override) return hints.override === '3d' && hints.webgl2
-  if (hints.reducedMotion || hints.saveData || !hints.webgl2) return false
+  if (hints.reducedMotion || hints.saveData || !hints.webgl2 || hints.phone) return false
   if (hints.effectiveType && /2g$/.test(hints.effectiveType)) return false
   if ((hints.deviceMemory ?? 8) < 4) return false
   if ((hints.hardwareConcurrency ?? 4) < 4) return false
@@ -61,6 +66,7 @@ export function canUse3D(): boolean {
     deviceMemory: nav.deviceMemory,
     hardwareConcurrency: nav.hardwareConcurrency,
     webgl2: hasWebGL2(),
+    phone: window.matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768,
     override: overrideParam(),
   })
 }

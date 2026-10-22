@@ -1,99 +1,37 @@
+/* Màu hoa nằm trong bouquet.ts (ảnh SVG tự chứa). */
 .bouquet {
-  /* Hàng nghìn chấm + filter: tách lớp riêng để trình duyệt không vẽ lại mỗi khung hình. */
-  will-change: transform;
   position: absolute;
   z-index: 0;
   width: clamp(230px, 62vw, 480px);
   height: auto;
   pointer-events: none;
-  overflow: visible;
 }
 
 .bouquet[data-variant='sprig'] {
   width: clamp(100px, 23vw, 210px);
 }
 
+/* Gốc phóng to khi hoa "nở" (growSprigs) là góc gắn bó hoa. */
 .bouquet[data-corner='top-left'] {
   top: 0;
   left: 0;
+  transform-origin: 0% 0%;
 }
 
 .bouquet[data-corner='top-right'] {
   top: 0;
   right: 0;
+  transform-origin: 100% 0%;
 }
 
 .bouquet[data-corner='bottom-left'] {
   bottom: 0;
   left: 0;
+  transform-origin: 0% 100%;
 }
 
 .bouquet[data-corner='bottom-right'] {
   bottom: 0;
   right: 0;
-}
-
-/* Hoa baby sấy (mẫu 3): cành nâu mảnh, bông kem ngà, xen bông khô ngả nâu. */
-.stem {
-  fill: none;
-  stroke: #ab9271;
-  stroke-width: 1;
-  stroke-linecap: round;
-}
-
-.twig {
-  fill: none;
-  stroke: #b59d7c;
-  stroke-width: 0.6;
-  stroke-linecap: round;
-}
-
-.shadow {
-  fill: rgb(110 86 60 / 0.2);
-}
-
-.back {
-  opacity: 0.82;
-}
-
-.base {
-  fill: #bf9f76;
-}
-
-.petals {
-  fill: #dcc6a6;
-}
-
-.dried {
-  fill: #a88d6d;
-}
-
-.driedPetals {
-  fill: #c9ae86;
-}
-
-.light {
-  fill: #f3e9d9;
-}
-
-.center {
-  fill: #b08f66;
-}
-
-/* Trên nền ánh nến: cành vàng nhạt, hoa kem hơi phát sáng. */
-.bouquet[data-tone='dark'] .stem,
-.bouquet[data-tone='dark'] .twig {
-  stroke: rgb(198 166 107 / 0.7);
-}
-
-.bouquet[data-tone='dark'] .shadow {
-  fill: rgb(0 0 0 / 0.35);
-}
-
-.bouquet[data-tone='dark'] .petals {
-  fill: #f3ead9;
-}
-
-.bouquet[data-tone='dark'] .center {
-  fill: #c6a66b;
+  transform-origin: 100% 100%;
 }

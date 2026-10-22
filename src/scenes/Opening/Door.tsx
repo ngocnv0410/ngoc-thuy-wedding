@@ -49,18 +49,14 @@ export function Door({ side, name }: DoorProps) {
           </linearGradient>
         </defs>
 
-        <g data-anim="relief">
-          <use href={`#${art}`} x="2.4" y="3" className={styles.reliefShadow} filter={`url(#${id}-soft)`} />
-          <use href={`#${art}`} x="-1.6" y="-1.6" className={styles.reliefLight} />
-        </g>
+        <use href={`#${art}`} x="2.4" y="3" className={styles.reliefShadow} filter={`url(#${id}-soft)`} />
+        <use href={`#${art}`} x="-1.6" y="-1.6" className={styles.reliefLight} />
         <use href={`#${art}`} className={styles.reliefFace} />
 
         {/* Ép kim: rãnh tối dưới chữ, chữ nhũ vàng, ánh sáng mảnh ở mép trên. */}
-        <g data-anim="foil">
-          {nameText(styles.foilShadow, 1.6, 2)}
-          {nameText(styles.foil)}
-          <g style={{ fill: `url(#${id}-gold)` }}>{nameText(styles.foilFill)}</g>
-        </g>
+        {nameText(styles.foilShadow, 1.6, 2)}
+        {nameText(styles.foil)}
+        <g style={{ fill: `url(#${id}-gold)` }}>{nameText(styles.foilFill)}</g>
 
         <g className={styles.ring}>
           <circle cx={x(RING.x) + 1.5} cy={RING.y + RING.r + 2} r={RING.r} className={styles.ringShadow} filter={`url(#${id}-soft)`} />

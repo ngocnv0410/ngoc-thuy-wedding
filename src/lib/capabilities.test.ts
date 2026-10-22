@@ -27,6 +27,7 @@ describe('decide3D', () => {
     ['RAM 2 GB', { deviceMemory: 2 }],
     ['2 nhân CPU', { hardwareConcurrency: 2 }],
     ['không có WebGL2', { webgl2: false }],
+    ['điện thoại', { phone: true }],
   ])('%s → 2.5D', (_, change) => {
     expect(decide3D({ ...strong, ...change })).toBe(false)
   })
@@ -34,6 +35,7 @@ describe('decide3D', () => {
   it('QA ép chế độ qua ?mocua=', () => {
     expect(decide3D({ ...strong, override: '2d' })).toBe(false)
     expect(decide3D({ ...strong, deviceMemory: 1, override: '3d' })).toBe(true)
+    expect(decide3D({ ...strong, phone: true, override: '3d' })).toBe(true)
     expect(decide3D({ ...strong, webgl2: false, override: '3d' })).toBe(false)
   })
 })

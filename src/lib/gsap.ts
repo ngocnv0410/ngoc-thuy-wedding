@@ -121,32 +121,30 @@ export function drawDivider(divider: Element) {
   })
 }
 
-/** Hoa baby khô: cành vẽ dần từ gốc, chùm hoa nở (phóng nhẹ + hiện) theo sau. */
+/**
+ * Hoa baby khô: cả bó nở ra từ góc gắn (phóng nhẹ + hiện). Bó hoa là ảnh tĩnh nên chỉ animate
+ * opacity/transform — chạy trên compositor, không bắt điện thoại vẽ lại hàng nghìn bông.
+ */
 export function growSprigs(root: Element, trigger: Element = root, delay = 0) {
-  for (const bouquet of root.querySelectorAll('[data-anim="bouquet"]')) {
-    const once = { trigger, start: 'top 85%', once: true }
-    drawIn(bouquet.querySelectorAll('[data-anim="stem"]'), trigger, { duration: DUR.xl, delay, stagger: 0.05 })
-    gsap.from(bouquet.querySelectorAll('[data-anim="bloom"]'), {
-      autoAlpha: 0,
-      scale: 0.92,
-      transformOrigin: '0% 100%',
-      duration: DUR.lg,
-      ease: 'paper',
-      delay: delay + 0.9,
-      scrollTrigger: once,
-    })
-  }
+  const bouquets = root.querySelectorAll('[data-anim="bouquet"]')
+  if (!bouquets.length) return
+  gsap.from(bouquets, {
+    autoAlpha: 0,
+    scale: 0.88,
+    duration: DUR.xl,
+    ease: 'paper',
+    delay,
+    stagger: 0.25,
+    scrollTrigger: { trigger, start: 'top 85%', once: true },
+  })
 }
 
-/** Nền loang cẩm thạch: mảng loang hiện dần, gân nhũ vàng chạy theo mép, hạt nhũ lấp lánh sau. */
+/** Nền loang cẩm thạch hiện dần (ảnh tĩnh: chỉ opacity). */
 export function washIn(root: Element, trigger: Element = root, delay = 0) {
-  const once = { trigger, start: 'top 85%', once: true }
   const washes = root.querySelectorAll('[data-anim="wash"]')
-  if (washes.length) gsap.from(washes, { autoAlpha: 0, duration: DUR.xl, ease: 'silk', delay, scrollTrigger: once })
-  const veins = root.querySelectorAll('[data-anim="vein"]')
-  if (veins.length) drawIn(veins, trigger, { duration: 2.4, delay: delay + 0.3, stagger: 0.2 })
-  const specks = root.querySelectorAll('[data-anim="specks"]')
-  if (specks.length) gsap.from(specks, { autoAlpha: 0, duration: DUR.lg, delay: delay + 1.2, scrollTrigger: once })
+  if (washes.length) {
+    gsap.from(washes, { autoAlpha: 0, duration: DUR.xl, ease: 'silk', delay, scrollTrigger: { trigger, start: 'top 85%', once: true } })
+  }
 }
 
 export { gsap, ScrollTrigger, SplitText }
