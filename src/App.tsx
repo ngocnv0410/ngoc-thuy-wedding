@@ -21,7 +21,7 @@ if (wedding.music) music.configure(wedding.music.src)
 // Bắt đầu tải chunk motion ngay, song song với lần render đầu.
 if (prefersMotion()) loadMotion().catch(() => {})
 
-/** Hiện phong bì trừ khi khách vào thẳng một mục (#dia-diem…) hoặc đã mở trong phiên này. */
+/** Hiện màn mở cửa trừ khi khách vào thẳng một mục (#dia-diem…) hoặc đã mở trong phiên này. */
 function shouldShowOpening(): boolean {
   const hash = window.location.hash
   if (hash && hash !== '#bia') return false
@@ -46,7 +46,7 @@ function App() {
     try {
       sessionStorage.setItem(OPENED_KEY, '1')
     } catch {
-      // Trình duyệt chặn storage: lần sau sẽ lại hiện phong bì, không sao.
+      // Trình duyệt chặn storage: lần sau sẽ lại hiện màn mở cửa, không sao.
     }
     requestAnimationFrame(() => document.getElementById('hero-title')?.focus({ preventScroll: true }))
   }, [])
@@ -71,7 +71,7 @@ function App() {
     <ToastProvider>
       <LightLayer />
       {opening && <Opening content={wedding} onDone={handleOpened} />}
-      {/* Khi phong bì đang hiện, phần thiệp phía sau không nhận focus/thao tác. */}
+      {/* Khi màn mở cửa đang hiện, phần thiệp phía sau không nhận focus/thao tác. */}
       <div className="app-shell" inert={opening}>
         <ChapterNav chapters={chapters} />
         {wedding.music && !opening && <AudioToggle />}

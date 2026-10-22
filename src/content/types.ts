@@ -19,7 +19,7 @@ export interface Person {
 export interface Couple {
   bride: Person
   groom: Person
-  /** Thứ tự tên trên Hero và phong bì. */
+  /** Thứ tự tên trên Hero và hai cánh cửa mở đầu. */
   order: 'groom-first' | 'bride-first'
   /** Chữ cái trên dấu sáp, ví dụ "T & N". */
   monogram: string
@@ -44,7 +44,7 @@ export interface WeddingDay {
   solar: string
   /** Ngày âm lịch; được test đối chiếu với `solar`. */
   lunar: LunarDate
-  /** Ngày hiển thị trên bìa và phong bì. Đúng một ngày được đánh dấu. */
+  /** Ngày hiển thị trên bìa. Đúng một ngày được đánh dấu. */
   primary?: boolean
 }
 

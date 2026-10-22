@@ -31,7 +31,7 @@ export type MotionConditions = { motion: boolean; reduce: boolean; desktop: bool
 
 /**
  * Lưới an toàn: nếu trình duyệt bóp khung hình (tab nền, webview tiết kiệm pin) khiến timeline
- * không chạy, đến hạn thì nhảy thẳng tới cuối — phong bì/thiệp không bao giờ kẹt ở trạng thái ẩn.
+ * không chạy, đến hạn thì nhảy thẳng tới cuối — màn mở cửa/thiệp không bao giờ kẹt ở trạng thái ẩn.
  */
 export function guard(timeline: gsap.core.Timeline, slackMs = 1500): () => void {
   const timer = window.setTimeout(() => {

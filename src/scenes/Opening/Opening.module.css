@@ -1,34 +1,18 @@
 /*
- * Phong bì 2.5D: các lớp giấy chồng theo z-index (đáy, thẻ, túi trước, nắp, dấu sáp), mỗi lớp
- * có phối cảnh riêng khi xoay — không dùng preserve-3d để tránh lỗi clip-path trên Safari.
+ * Hai cánh cửa 2.5D phủ kín màn hình, mỗi cánh xoay quanh bản lề ở mép ngoài trong phối cảnh của
+ * khung cửa. Phía sau cửa là thiệp thật: khi mở, overlay trong suốt dần để lộ bìa.
  */
 .overlay {
   --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.19 0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --seal-size: clamp(64px, 18vw, 96px);
   position: fixed;
   inset: 0;
   z-index: 300;
-  display: grid;
-  grid-template-rows: 1fr auto 1fr;
-  justify-items: center;
-  align-items: center;
-  padding: var(--space-6) var(--gutter) calc(var(--space-8) + env(safe-area-inset-bottom));
   overflow: hidden;
-  /* Mặt bàn giấy ivory, ánh sáng rạng đông xiên từ góc trên trái. */
-  background:
-    radial-gradient(ellipse 75% 60% at 18% 8%, rgb(255 250 238 / 0.95), transparent 70%),
-    radial-gradient(ellipse 90% 70% at 85% 100%, rgb(198 166 107 / 0.1), transparent 70%),
-    var(--color-ivory);
+  /* Màu giấy cửa: che bìa phía sau cả khi cửa chưa vẽ xong. Bỏ đi lúc bắt đầu mở. */
+  background: var(--color-blush);
   color: var(--color-espresso);
   transition: opacity var(--dur-sm) var(--ease-paper);
-}
-
-.overlay::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: var(--paper-noise);
-  opacity: 0.6;
 }
 
 .overlay:focus {
@@ -40,17 +24,128 @@
   pointer-events: none;
 }
 
-/* ── Sân khấu ───────────────────────────────────────────── */
-.stageWrap {
-  grid-row: 2;
+/* ── Hai cánh cửa ───────────────────────────────────────── */
+.flat {
+  position: absolute;
+  inset: 0;
   transition: opacity var(--dur-md) var(--ease-paper);
 }
 
-/* Bản 3D sẵn sàng: phong bì 2.5D lùi ra sau, canvas hiện lên đúng khung hình đó. */
-.overlay[data-mode='3d'] .stageWrap {
-  opacity: 0;
+.doors {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  perspective: 1600px;
+  perspective-origin: 50% 46%;
 }
 
+.door {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background-color: var(--color-blush);
+  background-image: var(--paper-noise);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Nắng xiên từ góc trên trái; mép khe cửa tối hơn như có chiều dày. */
+.door[data-door='left'] {
+  transform-origin: 0% 50%;
+  background-image:
+    linear-gradient(to right, transparent 82%, rgb(120 92 72 / 0.14)),
+    radial-gradient(ellipse 120% 70% at 10% 0%, rgb(255 250 244 / 0.7), transparent 70%),
+    var(--paper-noise);
+  box-shadow: inset -1px 0 0 rgb(120 92 72 / 0.35);
+}
+
+.door[data-door='right'] {
+  transform-origin: 100% 50%;
+  background-image:
+    linear-gradient(to left, transparent 82%, rgb(120 92 72 / 0.1)),
+    radial-gradient(ellipse 120% 70% at 0% 0%, rgb(255 250 244 / 0.45), transparent 70%),
+    var(--paper-noise);
+  box-shadow: inset 1px 0 0 rgb(255 250 244 / 0.6);
+}
+
+/* Khung hoạ tiết 84% × 90% giữa cánh (khớp ART_FIT trong doorArt.ts), co kiểu "contain". */
+.art {
+  position: absolute;
+  inset: 5% 8%;
+  width: 84%;
+  height: 90%;
+  overflow: visible;
+}
+
+/* Ba lớp hoa văn nổi: bóng, viền sáng, mặt. */
+.reliefShadow {
+  color: #a88b78;
+  opacity: 0.55;
+}
+
+.reliefLight {
+  color: #fffaf4;
+  opacity: 0.95;
+}
+
+.reliefFace {
+  color: #efe3d8;
+}
+
+/* Tên ép kim. */
+.foil,
+.foilShadow,
+.foilFill {
+  font-family: var(--font-script);
+}
+
+.foilShadow {
+  fill: rgb(120 92 72 / 0.35);
+}
+
+.foil {
+  fill: #fffaf4;
+  transform: translate(-0.8px, -0.8px);
+}
+
+.ringShadow {
+  fill: none;
+  stroke: rgb(96 72 56 / 0.4);
+  stroke-width: 4;
+}
+
+.ringGlint {
+  stroke: rgb(255 248 230 / 0.7);
+  stroke-width: 1;
+  stroke-dasharray: 18 90;
+}
+
+/* Cánh cửa tối dần khi quay đi (GSAP tăng opacity khi mở). */
+.doorShade {
+  position: absolute;
+  inset: 0;
+  background: rgb(60 44 34);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Khe sáng giữa hai cánh, loé lên khi cửa vừa hé. */
+.seamLight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 18vw;
+  margin-left: -9vw;
+  background: radial-gradient(ellipse 50% 60% at 50% 46%, rgb(255 248 232 / 0.95), rgb(255 240 214 / 0) 70%);
+  opacity: 0;
+  transform: scaleX(0.05);
+  pointer-events: none;
+}
+
+/* ── Lớp 3D: hiện đúng khung hình của cửa 2.5D rồi thay chỗ ─── */
 .canvas3d {
   position: absolute;
   inset: 0;
@@ -65,177 +160,21 @@
   pointer-events: auto;
 }
 
-.stage {
-  position: relative;
-  width: min(86vw, 560px, calc(58svh * 1.45));
-  aspect-ratio: 1.45;
-  container-type: inline-size;
+.overlay[data-mode='3d'] .flat {
+  opacity: 0;
+  pointer-events: none;
 }
 
-.shadow {
-  position: absolute;
-  left: 4%;
-  right: 4%;
-  bottom: -9%;
-  height: 18%;
-  background: radial-gradient(ellipse at 50% 40%, rgb(48 39 32 / 0.3), transparent 70%);
-  filter: blur(8px);
-}
-
-.back,
-.pocket,
-.flap {
-  position: absolute;
-  background-image: var(--paper-noise);
-}
-
-.back {
-  inset: 0;
-  z-index: 1;
-  border-radius: 3px;
-  background-color: #e6dbc6;
-  box-shadow:
-    0 1px 1px rgb(48 39 32 / 0.12),
-    0 18px 40px -16px rgb(48 39 32 / 0.35);
-}
-
-/* ── Thẻ thiệp bên trong (thu nhỏ của bìa) ─────────────────── */
-.card {
-  position: absolute;
-  left: 6%;
-  right: 6%;
-  top: 5%;
-  bottom: 7%;
-  z-index: 2;
-  padding: 3.4cqw;
-  background: var(--color-ivory);
-  border-radius: 2px;
-  box-shadow: 0 1px 3px rgb(48 39 32 / 0.18);
-  container-type: inline-size;
-}
-
-.cardFrame {
-  height: 100%;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 2cqw;
-  text-align: center;
-  border: 1px solid color-mix(in srgb, var(--color-gold) 70%, transparent);
-  outline: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
-  outline-offset: -1.6cqw;
-}
-
-.cardEyebrow {
-  font-size: 2.6cqw;
-  font-weight: 500;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--color-taupe-ink);
-}
-
-.cardNames {
-  display: flex;
-  align-items: baseline;
-  gap: 2.4cqw;
-  font-family: var(--font-serif);
-  font-size: 10cqw;
-  font-weight: 500;
-  line-height: 1.15;
-}
-
-.cardAmp {
-  font-family: var(--font-script);
-  font-size: 0.7em;
-  font-weight: 400;
-  color: var(--color-gold);
-}
-
-.cardDate {
-  font-family: var(--font-serif);
-  font-size: 3.6cqw;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-}
-
-/* ── Túi trước: chữ V + hai nếp gấp chéo, tên ép chìm ───────── */
-.pocket {
-  inset: 0;
-  z-index: 3;
-  border-radius: 3px;
-  background-color: #f1e9db;
-  background-image:
-    linear-gradient(175deg, rgb(255 255 255 / 0.35), transparent 60%),
-    var(--paper-noise);
-  clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 100%, 0 100%);
-}
-
-.folds,
-.flapEdge {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.folds path,
-.flapEdge path {
-  fill: none;
-  stroke: rgb(48 39 32 / 0.12);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
-.names {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 14%;
-  text-align: center;
-  font-family: var(--font-serif);
-  font-size: 6.2cqw;
-  font-style: italic;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  /* Ép chìm: chữ tối nhạt, viền sáng phía dưới, viền tối phía trên. */
-  color: rgb(48 39 32 / 0.55);
-  text-shadow:
-    0 1px 0 rgb(255 255 255 / 0.75),
-    0 -1px 0 rgb(48 39 32 / 0.12);
-}
-
-/* ── Nắp: tam giác, xoay quanh mép trên ──────────────────────── */
-.flap {
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 58%;
-  z-index: 4;
-  background-color: #f4ede1;
-  background-image:
-    linear-gradient(180deg, rgb(255 255 255 / 0.4), transparent 80%),
-    var(--paper-noise);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  transform-origin: 50% 0%;
-  filter: drop-shadow(0 2px 2px rgb(48 39 32 / 0.08));
-}
-
-/* Đã lật qua 90°: thấy mặt trong (tối hơn) và nằm sau thẻ. */
-.flap[data-open='true'] {
-  z-index: 0;
-  background-color: #ddd0b8;
-}
-
-/* ── Dấu sáp: hai nửa để "tách" khi mở ───────────────────── */
+/* ── Dấu sáp niêm trên khe cửa (giữa màn hình): hai nửa tách ra khi mở ─── */
 .seal {
-  --size: clamp(60px, 17cqw, 96px);
   position: absolute;
-  z-index: 5;
-  left: calc(50% - var(--size) / 2);
-  top: calc(58% - var(--size) / 2);
-  width: var(--size);
-  height: var(--size);
+  z-index: 2;
+  left: calc(50% - var(--seal-size) / 2);
+  top: calc(50% - var(--seal-size) / 2);
+  width: var(--seal-size);
+  height: var(--seal-size);
   cursor: pointer;
+  filter: drop-shadow(0 3px 4px rgb(60 44 34 / 0.3));
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -259,14 +198,19 @@
 
 /* ── Hành động ─────────────────────────────────────────────── */
 .actions {
-  grid-row: 3;
-  align-self: start;
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
   display: grid;
   justify-items: center;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-  position: relative;
-  z-index: 2;
+  gap: var(--space-3);
+  pointer-events: none;
+}
+
+.actions > * {
+  pointer-events: auto;
 }
 
 .musicChoice {
@@ -276,7 +220,8 @@
   min-height: 44px;
   padding: 0 var(--space-3);
   border: 0;
-  background: transparent;
+  border-radius: 999px;
+  background: rgb(248 240 232 / 0.75);
   color: var(--color-taupe-ink);
   font-size: 14px;
   cursor: pointer;
@@ -307,48 +252,12 @@
   min-height: 44px;
   padding: 0 var(--space-3);
   border: 0;
-  background: transparent;
+  border-radius: 999px;
+  background: rgb(248 240 232 / 0.6);
   color: var(--color-taupe-ink);
   font-size: 13px;
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--color-gold) 70%, transparent);
   text-underline-offset: 5px;
   cursor: pointer;
-}
-
-/* ── Bụi sáng trong tia nắng ─────────────────────────────── */
-.dust {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  /* Chỉ thấy rõ trong vùng nắng góc trên trái. */
-  mask-image: radial-gradient(ellipse 70% 60% at 22% 18%, #000 20%, transparent 75%);
-}
-
-.dust span {
-  position: absolute;
-  border-radius: 50%;
-  background: rgb(214 186 132 / 0.75);
-  box-shadow: 0 0 4px rgb(255 240 210 / 0.9);
-  animation: drift linear infinite;
-}
-
-@keyframes drift {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-
-  15% {
-    opacity: 0.8;
-  }
-
-  85% {
-    opacity: 0.6;
-  }
-
-  100% {
-    transform: translate(28px, -70px);
-    opacity: 0;
-  }
 }

@@ -1,4 +1,4 @@
-import { DUR, drawDivider, gsap, revealLines, riseIn } from '../../lib/gsap'
+import { DUR, drawDivider, growSprigs, gsap, revealLines, riseIn, washIn } from '../../lib/gsap'
 
 const one = (root: Element, name: string) => root.querySelector(`[data-anim="${name}"]`)
 
@@ -7,6 +7,8 @@ const one = (root: Element, name: string) => root.querySelector(`[data-anim="${n
  * thẻ quà nâng nhẹ (QR chỉ hiện một lần, không còn transform sau đó), dấu sáp đóng lại ở cuối.
  */
 export function giftMotion(root: HTMLElement) {
+  washIn(root, root)
+  growSprigs(root, root)
   const eyebrow = one(root, 'letter-eyebrow')
   if (eyebrow) riseIn(eyebrow, eyebrow, { y: 12 })
   const title = one(root, 'letter-title')

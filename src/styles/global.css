@@ -35,7 +35,7 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Vỏ ứng dụng chỉ để gắn inert khi phong bì đang hiện; không tạo hộp bố cục. */
+/* Vỏ ứng dụng chỉ để gắn inert khi màn mở cửa đang hiện; không tạo hộp bố cục. */
 .app-shell {
   display: contents;
 }
@@ -113,7 +113,7 @@ input {
   border: 0;
 }
 
-/* Chunk motion chưa tải xong: che phần tử bìa / phong bì sẽ được animate vào (xem index.html). */
+/* Chunk motion chưa tải xong: che phần tử bìa / màn mở cửa sẽ được animate vào (xem index.html). */
 :root[data-motion='pending'] #bia [data-anim],
 :root[data-motion='pending'] #opening [data-anim] {
   visibility: hidden;

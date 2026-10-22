@@ -1,8 +1,8 @@
 /**
- * Sinh ảnh xem trước khi chia sẻ link (public/og.jpg, 1200×630) — bìa typography giống trang:
- * khung chỉ vàng đôi, dấu sáp, tên, ngày. Chữ được chuyển thành đường vẽ (opentype.js) từ chính
- * font của trang, nên dấu tiếng Việt đúng mà không cần cài font trên máy build.
- * Khi có ảnh bìa, có thể đổi sang ảnh chụp.
+ * Sinh ảnh xem trước khi chia sẻ link (public/og.jpg, 1200×630) theo đúng phong cách tờ thiệp:
+ * nền loang cẩm thạch + gân nhũ vàng, hoa baby khô ở hai góc (cùng bộ sinh hoạ tiết với trang),
+ * dấu sáp, tên nhũ vàng, ngày. Chữ được chuyển thành đường vẽ (opentype.js) từ chính font của
+ * trang, nên dấu tiếng Việt đúng mà không cần cài font trên máy build.
  */
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -10,6 +10,8 @@ import { fileURLToPath } from 'node:url'
 // opentype.js là CommonJS: Node chỉ cho import mặc định.
 import opentype, { type Font } from 'opentype.js'
 import sharp from 'sharp'
+import { BOUQUET_COLORS, type Corner, type Layer, SHAPE, type Variant, bouquet, flip } from '../src/components/decor/bouquet.ts'
+import { FOIL_STOPS, MARBLE_COLORS, W as MARBLE_W, frame, washLayer } from '../src/components/decor/marble.ts'
 import { share } from './share.ts'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -26,6 +28,7 @@ const SERIF = [font('cormorant-garamond', 'cormorant-garamond-latin-500-normal.w
 const SERIF_ITALIC = [font('cormorant-garamond', 'cormorant-garamond-latin-500-italic.woff'), font('cormorant-garamond', 'cormorant-garamond-vietnamese-500-italic.woff')]
 const SANS = [font('be-vietnam-pro', 'be-vietnam-pro-latin-500-normal.woff'), font('be-vietnam-pro', 'be-vietnam-pro-vietnamese-500-normal.woff')]
 const SCRIPT = [font('great-vibes', 'great-vibes-latin-400-normal.woff')]
+const NAMES = [font('pinyon-script', 'pinyon-script-latin-400-normal.woff'), font('pinyon-script', 'pinyon-script-vietnamese-400-normal.woff')]
 
 interface Run {
   d: string
@@ -88,25 +91,68 @@ function centered(r: Run, baseline: number, fill: string) {
   return `<path transform="translate(${((W - r.width) / 2).toFixed(1)} ${baseline})" d="${r.d}" fill="${fill}"/>`
 }
 
-// ── Tên: [first] & [second] trên một dòng ──
-const nameSize = 128
-const firstRun = run(SERIF, share.first, nameSize)
-const secondRun = run(SERIF, share.second, nameSize)
-const ampRun = run(SCRIPT, '&', 92)
-const gap = 30
+// ── Nền: cùng bộ sinh với MarbleFrame (khung 1000 đơn vị, co lên bề ngang ảnh) ──
+const marbleScale = W / MARBLE_W
+const marble = frame(5, H / marbleScale)
+const foil = FOIL_STOPS.map(([offset, color]) => `<stop offset="${offset}" stop-color="${color}"/>`).join('')
+const background = `
+  <rect width="${W}" height="${H}" fill="${MARBLE_COLORS.base}"/>
+  <g transform="scale(${marbleScale})">
+    <rect width="${MARBLE_W}" height="${H / marbleScale}" filter="url(#clouds)" opacity="0.18"/>
+    ${washLayer(marble.washes, 5, 'light', 'ink')}
+  </g>
+  <rect width="${W}" height="${H}" fill="url(#glow)"/>
+  <g transform="scale(${marbleScale})">
+    <g fill="none" stroke="url(#foilTile)" stroke-linecap="round" stroke-linejoin="round" filter="url(#leaf)">
+      ${marble.veins.map((v) => `<path d="${v.d}" stroke-width="${v.weight ? 1.4 : 0.9}" opacity="${v.weight ? 0.9 : 0.75}"/>`).join('')}
+    </g>
+    <path d="${marble.grit}" fill="${MARBLE_COLORS.grit}" opacity="0.35"/>
+    <path d="${marble.specks}" fill="url(#foilTile)" opacity="0.95"/>
+    <path d="${marble.glitter}" fill="url(#foilTile)" opacity="0.75"/>
+  </g>`
+
+// ── Hoa baby ở góc trên phải và dưới trái, như bìa ──
+function sprig(corner: Corner, variant: Variant, seed: number, width: number, x: number, y: number) {
+  const shape = SHAPE[variant]
+  const { transform, sx, sy } = flip(corner, shape.width, shape.height)
+  const data = bouquet(seed, variant, sx, sy)
+  const c = BOUQUET_COLORS
+  const layer = (l: Layer) =>
+    `<path d="${l.base}" fill="${c.base}"/><path d="${l.dried}" fill="${c.dried}"/><path d="${l.petals}" fill="${c.petals}"/>` +
+    `<path d="${l.driedPetals}" fill="${c.driedPetals}"/><path d="${l.light}" fill="${c.light}"/><path d="${l.centers}" fill="${c.center}"/>`
+  return `<g transform="translate(${x} ${y}) scale(${width / shape.width})"><g transform="${transform}">
+    ${data.stems.map((d) => `<path d="${d}" fill="none" stroke="${c.stem}" stroke-width="1" stroke-linecap="round"/>`).join('')}
+    <path d="${data.twigs}" fill="none" stroke="${c.twig}" stroke-width="0.6" stroke-linecap="round"/>
+    <path d="${data.shadow}" fill="${c.shadow}" filter="url(#petalShadow)"/>
+    <g filter="url(#depth)" opacity="0.82">${layer(data.back)}</g>
+    ${layer(data.front)}
+  </g></g>`
+}
+const sprayW = 380
+const sprigH = 420
+const sprigW = (sprigH * SHAPE.sprig.width) / SHAPE.sprig.height
+const flowers = sprig('top-right', 'spray', 11, sprayW, W - sprayW, 0) + sprig('bottom-left', 'sprig', 23, sprigW, 0, H - sprigH)
+
+// ── Tên nhũ vàng (Pinyon Script như bìa), "&" serif nghiêng ──
+const nameSize = 116
+const firstRun = run(NAMES, share.first, nameSize)
+const secondRun = run(NAMES, share.second, nameSize)
+const ampRun = run(SERIF_ITALIC, '&', 64)
+const gap = 26
 const namesWidth = firstRun.width + ampRun.width + secondRun.width + gap * 2
 let x = (W - namesWidth) / 2
-const namesBaseline = 382
+const namesBaseline = 352
+const namesLeft = x
 const names = [
-  `<path transform="translate(${x.toFixed(1)} ${namesBaseline})" d="${firstRun.d}" fill="#302720"/>`,
-  `<path transform="translate(${(x += firstRun.width + gap).toFixed(1)} ${namesBaseline - 6})" d="${ampRun.d}" fill="#c6a66b"/>`,
-  `<path transform="translate(${(x += ampRun.width + gap).toFixed(1)} ${namesBaseline})" d="${secondRun.d}" fill="#302720"/>`,
+  `<path transform="translate(${x.toFixed(1)} ${namesBaseline})" d="${firstRun.d}" fill="url(#gold)"/>`,
+  `<path transform="translate(${(x += firstRun.width + gap).toFixed(1)} ${namesBaseline - 8})" d="${ampRun.d}" fill="#6e5a4b"/>`,
+  `<path transform="translate(${(x += ampRun.width + gap).toFixed(1)} ${namesBaseline})" d="${secondRun.d}" fill="url(#gold)"/>`,
 ].join('')
 
 // ── Dấu sáp nhỏ ──
 const [mLeft, mRight] = share.monogram.split('&').map((part) => part.trim())
 const sealCx = W / 2
-const sealCy = 150
+const sealCy = 118
 const sealLetters = run(SERIF, `${mLeft ?? ''}   ${mRight ?? ''}`, 30, 0)
 const sealAmp = run(SCRIPT, '&', 26)
 const seal = `
@@ -122,28 +168,48 @@ const tagline = run(SERIF_ITALIC, share.tagline, 30)
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
-    <radialGradient id="light" cx="18%" cy="8%" r="80%">
-      <stop offset="0" stop-color="#fffaf0"/>
-      <stop offset="0.7" stop-color="#f8f4ec" stop-opacity="0"/>
+    <filter id="clouds" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.004 0.003" numOctaves="4" seed="5"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.39  0 0 0 0 0.33  0 0 0 -1.2 0.62"/>
+    </filter>
+    <filter id="leaf" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="1" seed="8" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="4"/>
+    </filter>
+    <filter id="petalShadow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.2"/></filter>
+    <filter id="depth" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="0.9"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
+    <linearGradient id="foil" x1="0" y1="0" x2="1" y2="1">${foil}</linearGradient>
+    <pattern id="foilTile" width="160" height="160" patternUnits="userSpaceOnUse">
+      <rect width="160" height="160" fill="url(#foil)"/>
+    </pattern>
+    <radialGradient id="glow" cx="50%" cy="52%" r="42%" gradientTransform="translate(0.5 0.52) scale(1 1.25) translate(-0.5 -0.52)">
+      <stop offset="0" stop-color="${MARBLE_COLORS.glow}" stop-opacity="0.95"/>
+      <stop offset="0.6" stop-color="${MARBLE_COLORS.glow}" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="${MARBLE_COLORS.glow}" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="${namesLeft}" y1="0" x2="${namesLeft + namesWidth}" y2="0">
+      <stop offset="0" stop-color="#9a7637"/>
+      <stop offset="0.3" stop-color="#c9a462"/>
+      <stop offset="0.48" stop-color="#e2c88f"/>
+      <stop offset="0.66" stop-color="#b48d4a"/>
+      <stop offset="1" stop-color="#9a7637"/>
+    </linearGradient>
     <radialGradient id="wax" cx="38%" cy="32%" r="75%">
       <stop offset="0" stop-color="#d9bf8c"/>
       <stop offset="0.55" stop-color="#c6a66b"/>
       <stop offset="1" stop-color="#9c7e45"/>
     </radialGradient>
-    <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
   </defs>
-  <rect width="${W}" height="${H}" fill="#f8f4ec"/>
-  <rect width="${W}" height="${H}" fill="url(#light)"/>
-  <rect x="36" y="36" width="${W - 72}" height="${H - 72}" fill="none" stroke="#c6a66b" stroke-opacity="0.7" stroke-width="1.5"/>
-  <rect x="48" y="48" width="${W - 96}" height="${H - 96}" fill="none" stroke="#c6a66b" stroke-opacity="0.35" stroke-width="1.5"/>
+  ${background}
+  ${flowers}
   ${seal}
-  ${centered(eyebrow, 252, '#6b5d50')}
+  ${centered(eyebrow, 218, '#6e5a4b')}
   ${names}
-  <path d="M${W / 2 - 60} 420 H${W / 2 - 10} M${W / 2 + 10} 420 H${W / 2 + 60}" stroke="#c6a66b" stroke-width="1.2"/>
-  <path d="M${W / 2} 415 L${W / 2 + 5} 420 L${W / 2} 425 L${W / 2 - 5} 420 Z" fill="#c6a66b" fill-opacity="0.5"/>
-  ${centered(date, 478, '#302720')}
-  ${share.tagline ? centered(tagline, 530, '#6b5d50') : ''}
+  <path d="M${W / 2 - 70} 400 H${W / 2 - 12} M${W / 2 + 12} 400 H${W / 2 + 70}" stroke="#c6a66b" stroke-width="1.2"/>
+  <path d="M${W / 2} 394 L${W / 2 + 6} 400 L${W / 2} 406 L${W / 2 - 6} 400 Z" fill="#c6a66b" fill-opacity="0.6"/>
+  ${centered(date, 462, '#302720')}
+  ${share.tagline ? centered(tagline, 514, '#6e5a4b') : ''}
 </svg>`
 
 await sharp(Buffer.from(svg)).jpeg({ quality: 88, mozjpeg: true }).toFile(join(root, 'public', 'og.jpg'))

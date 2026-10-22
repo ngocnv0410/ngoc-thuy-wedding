@@ -31,7 +31,7 @@ describe('decide3D', () => {
     expect(decide3D({ ...strong, ...change })).toBe(false)
   })
 
-  it('QA ép chế độ qua ?phongbi=', () => {
+  it('QA ép chế độ qua ?mocua=', () => {
     expect(decide3D({ ...strong, override: '2d' })).toBe(false)
     expect(decide3D({ ...strong, deviceMemory: 1, override: '3d' })).toBe(true)
     expect(decide3D({ ...strong, webgl2: false, override: '3d' })).toBe(false)

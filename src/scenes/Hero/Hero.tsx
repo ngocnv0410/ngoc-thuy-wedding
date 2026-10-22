@@ -1,8 +1,7 @@
 import { useRef } from 'react'
 import { CoupleNames } from '../../components/CoupleNames'
 import { DateBlock } from '../../components/DateBlock'
-import { BabysBreath } from '../../components/decor/BabysBreath'
-import { MarbleFrame } from '../../components/decor/MarbleFrame'
+import { Stationery } from '../../components/decor/Stationery'
 import { Divider } from '../../components/Ornament'
 import { ResponsivePicture } from '../../components/ResponsivePicture'
 import { Seal } from '../../components/Seal'
@@ -75,9 +74,13 @@ export function Hero({ content, onReplay }: HeroProps) {
 
   return (
     <section ref={ref} id="bia" className={styles.stationery} aria-labelledby="hero-title" data-light="morning">
-      <MarbleFrame seed={5} />
-      <BabysBreath corner="top-right" seed={11} />
-      <BabysBreath corner="bottom-left" variant="sprig" seed={23} />
+      <Stationery
+        seed={5}
+        sprigs={[
+          { corner: 'top-right', seed: 11 },
+          { corner: 'bottom-left', variant: 'sprig', seed: 23 },
+        ]}
+      />
 
       <div className={styles.frame} data-anim="frame">
         <span data-anim="seal" className={styles.seal}>
