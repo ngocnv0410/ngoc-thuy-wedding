@@ -103,12 +103,6 @@
   color: var(--color-mocha);
 }
 
-@media (max-width: 639px) {
-  .bouquetBottom {
-    width: 132px;
-  }
-}
-
 /* ── Bìa ảnh full-bleed ─────────────────────────────────── */
 .photoHero {
   position: relative;

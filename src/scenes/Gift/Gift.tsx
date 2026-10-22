@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { Button } from '../../components/Button'
 import { Divider } from '../../components/Ornament'
+import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
 import { SceneShell } from '../../components/SceneShell'
 import { Seal } from '../../components/Seal'
@@ -20,6 +21,14 @@ export function Gift({ content }: { content: WeddingContent }) {
 
   return (
     <SceneShell ref={ref} id="mung-cuoi" light="candle" labelledBy="gift-title" className={styles.scene}>
+      <Stationery
+        seed={34}
+        tone="dark"
+        sprigs={[
+          { corner: 'top-right', seed: 95 },
+          { corner: 'bottom-left', variant: 'sprig', seed: 106 },
+        ]}
+      />
       <article className={styles.letter}>
         <p className={styles.eyebrow} data-anim="letter-eyebrow">
           Lời cảm ơn

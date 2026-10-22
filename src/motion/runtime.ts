@@ -9,22 +9,22 @@ import { galleryMotion } from '../scenes/Gallery/galleryMotion'
 import { giftMotion } from '../scenes/Gift/giftMotion'
 import { heroMotion } from '../scenes/Hero/heroMotion'
 import { locationsMotion } from '../scenes/Locations/locationsMotion'
-import { openEnvelope as openEnvelopeTimeline } from '../scenes/Opening/openingMotion'
+import { openDoors as openDoorsTimeline } from '../scenes/Opening/openingMotion'
 import { startLight } from './light'
 
-export { introEnvelope } from '../scenes/Opening/openingMotion'
+export { introDoors } from '../scenes/Opening/openingMotion'
 
 export type SceneKey = 'hero' | 'details' | 'locations' | 'gallery' | 'gift'
 
 const root = document.documentElement
 
-// ── Bìa: chờ phong bì mở xong mới phát ────────────────────────
+// ── Bìa: chờ cửa mở mới phát ─────────────────────────────────
 let heroTimeline: gsap.core.Timeline | undefined
 let heroReleased = false
 
 const isOpening = () => root.dataset.opening === 'on'
 
-/** Phát phần mở màn của bìa (gọi khi phong bì đã mở / được bỏ qua). */
+/** Phát phần mở màn của bìa (gọi khi cửa đã hé / được bỏ qua). */
 export function releaseHero() {
   heroReleased = true
   if (heroTimeline?.paused()) {
@@ -33,9 +33,9 @@ export function releaseHero() {
   }
 }
 
-/** Mở phong bì; bìa thật được phát đúng lúc thẻ bay tới khung bìa. */
-export function openEnvelope(root: HTMLElement, onDone: () => void) {
-  return openEnvelopeTimeline(root, { onReveal: releaseHero, onDone })
+/** Mở cửa; bìa thật phía sau được phát ngay khi cửa vừa hé đủ rộng. */
+export function openDoors(root: HTMLElement, onDone: () => void) {
+  return openDoorsTimeline(root, { onReveal: releaseHero, onDone })
 }
 
 const SCENES: Record<SceneKey, (conditions: MotionConditions, el: HTMLElement) => void> = {

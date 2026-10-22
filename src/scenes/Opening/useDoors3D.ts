@@ -1,21 +1,21 @@
 import { type ComponentType, type RefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { canUse3D, forced3D } from '../../lib/capabilities'
-import type { Envelope3DApi, Envelope3DProps } from './three/Envelope3D'
+import type { Doors3DApi, Doors3DProps } from './three/Doors3D'
 
 /** Chunk 3D phải sẵn sàng trong khoảng này kể từ khi overlay hiện; quá hạn thì giữ 2.5D. */
 const READY_MS = 2500
-/** Phong bì 2.5D xuất hiện xong lúc ~1.8s — chỉ đổi sang 3D khi nó đã nằm yên. */
+/** Cửa 2.5D xuất hiện xong lúc ~1.9s — chỉ đổi sang 3D khi đã yên. */
 const SETTLED_MS = 1900
 
 /**
- * Nâng cấp phong bì 2.5D lên 3D (React Three Fiber) cho máy đủ mạnh. Bản 2.5D luôn hiện trước
+ * Nâng cấp cửa 2.5D lên 3D (React Three Fiber) cho máy đủ mạnh. Bản 2.5D luôn hiện trước
  * và là fallback: không đạt ngưỡng thiết bị, tải chậm, khách đã bấm mở, hay mất WebGL context
  * đều giữ / quay về 2.5D.
  */
-export function useEnvelope3D(started: RefObject<boolean>) {
-  const [Component, setComponent] = useState<ComponentType<Envelope3DProps> | null>(null)
+export function useDoors3D(started: RefObject<boolean>) {
+  const [Component, setComponent] = useState<ComponentType<Doors3DProps> | null>(null)
   const [active, setActive] = useState(false)
-  const api = useRef<Envelope3DApi | null>(null)
+  const api = useRef<Doors3DApi | null>(null)
   const expired = useRef(false)
   const mountedAt = useRef(0)
 
@@ -29,7 +29,7 @@ export function useEnvelope3D(started: RefObject<boolean>) {
           expired.current = true
           setComponent(null)
         }, READY_MS)
-    import('./three/Envelope3D')
+    import('./three/Doors3D')
       .then((module) => {
         if (!expired.current) setComponent(() => module.default)
       })
@@ -44,7 +44,7 @@ export function useEnvelope3D(started: RefObject<boolean>) {
   }, [])
 
   const onReady = useCallback(
-    (ready: Envelope3DApi) => {
+    (ready: Doors3DApi) => {
       if (expired.current || started.current) {
         discard()
         return

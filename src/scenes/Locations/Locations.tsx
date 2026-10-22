@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../components/Button'
 import { CopyButton } from '../../components/CopyButton'
+import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
 import { SceneHeading, SceneShell } from '../../components/SceneShell'
 import type { Location, WeddingContent } from '../../content/types'
@@ -35,6 +36,13 @@ export function Locations({ content }: { content: WeddingContent }) {
 
   return (
     <SceneShell ref={ref} id="dia-diem" light="afternoon" labelledBy="locations-title">
+      <Stationery
+        seed={13}
+        sprigs={[
+          { corner: 'top-right', seed: 52 },
+          { corner: 'bottom-left', variant: 'sprig', seed: 61 },
+        ]}
+      />
       <SceneHeading id="locations-title" eyebrow="Địa điểm tổ chức">
         Đường về chung một nhà
       </SceneHeading>

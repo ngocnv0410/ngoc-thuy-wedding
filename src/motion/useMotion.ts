@@ -52,7 +52,7 @@ export function useSceneMotion(ref: RefObject<HTMLElement | null>, key: SceneKey
   }, [ref, key])
 }
 
-/** Khoá cuộn trang (trong lúc phong bì mở đầu đang hiện). */
+/** Khoá cuộn trang (trong lúc màn mở cửa đang hiện). */
 export function lockScroll(locked: boolean) {
   document.documentElement.style.overflow = locked ? 'hidden' : ''
   if (prefersMotion()) {

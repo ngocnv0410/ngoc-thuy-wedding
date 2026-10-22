@@ -1,5 +1,5 @@
 /**
- * Quyết định có dùng phong bì 3D (WebGL) hay giữ bản 2.5D. Bản 2.5D luôn hiện trước; 3D chỉ
+ * Quyết định có dùng màn mở cửa 3D (WebGL) hay giữ bản 2.5D. Bản 2.5D luôn hiện trước; 3D chỉ
  * là lớp nâng cấp cho máy đủ mạnh, mạng không tiết kiệm dữ liệu và khách không giảm chuyển động.
  */
 
@@ -16,7 +16,7 @@ export interface DeviceHints {
   deviceMemory?: number
   hardwareConcurrency?: number
   webgl2: boolean
-  /** `?phongbi=2d` / `?phongbi=3d` để QA ép một chế độ. */
+  /** `?mocua=2d` / `?mocua=3d` để QA ép một chế độ. */
   override?: '2d' | '3d'
 }
 
@@ -43,11 +43,11 @@ function hasWebGL2(): boolean {
 }
 
 function overrideParam(): '2d' | '3d' | undefined {
-  const param = new URLSearchParams(window.location.search).get('phongbi')
+  const param = new URLSearchParams(window.location.search).get('mocua')
   return param === '2d' || param === '3d' ? param : undefined
 }
 
-/** QA đang ép bản 3D (`?phongbi=3d`) — bỏ giới hạn thời gian chờ tải. */
+/** QA đang ép bản 3D (`?mocua=3d`) — bỏ giới hạn thời gian chờ tải. */
 export function forced3D(): boolean {
   return overrideParam() === '3d'
 }

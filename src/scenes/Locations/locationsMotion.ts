@@ -1,4 +1,4 @@
-import { DUR, drawIn, gsap, riseIn } from '../../lib/gsap'
+import { DUR, drawIn, growSprigs, gsap, riseIn, washIn } from '../../lib/gsap'
 import { animateSceneHeading } from '../../lib/sceneHeading'
 
 /**
@@ -8,6 +8,8 @@ import { animateSceneHeading } from '../../lib/sceneHeading'
  */
 export function locationsMotion(root: HTMLElement) {
   animateSceneHeading(root)
+  washIn(root, root)
+  growSprigs(root, root)
 
   const map = root.querySelector('[data-anim="map"]')
   if (map) {

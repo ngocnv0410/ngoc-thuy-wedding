@@ -1,0 +1,12 @@
+.stationery {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Scene ánh nến: mép trên tan dần vào nền trang để chuyển từ ngày sang tối không bị gắt. */
+.stationery[data-tone='dark'] {
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--space-9));
+}

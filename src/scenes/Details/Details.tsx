@@ -1,8 +1,7 @@
 import { useRef } from 'react'
 import { Button } from '../../components/Button'
 import { DateBlock } from '../../components/DateBlock'
-import { BabysBreath } from '../../components/decor/BabysBreath'
-import { MarbleFrame } from '../../components/decor/MarbleFrame'
+import { Stationery } from '../../components/decor/Stationery'
 import { Divider } from '../../components/Ornament'
 import { PendingNote } from '../../components/PendingNote'
 import { SceneHeading, SceneShell } from '../../components/SceneShell'
@@ -35,9 +34,13 @@ export function Details({ content }: { content: WeddingContent }) {
 
   return (
     <SceneShell ref={ref} id="thong-tin" light="noon" labelledBy="details-title" className={styles.scene}>
-      <MarbleFrame seed={8} />
-      <BabysBreath corner="top-left" seed={31} className={styles.bouquetTop} />
-      <BabysBreath corner="bottom-right" seed={44} className={styles.bouquetBottom} />
+      <Stationery
+        seed={8}
+        sprigs={[
+          { corner: 'top-left', seed: 31 },
+          { corner: 'bottom-right', variant: 'sprig', seed: 44 },
+        ]}
+      />
 
       <SceneHeading id="details-title" eyebrow="Thông tin lễ cưới">
         Trân trọng báo tin

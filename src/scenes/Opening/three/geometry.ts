@@ -1,29 +1,5 @@
-import { ExtrudeGeometry, Shape, ShapeGeometry, type Texture } from 'three'
-import { ENV_H, ENV_W, FLAP_DEPTH, POCKET_V, SEAL_R } from './dimensions'
-
-/** Túi trước: hình chữ nhật khoét chữ V ở mép trên. Gốc toạ độ ở tâm phong bì. */
-export function pocketGeometry() {
-  const w = ENV_W / 2
-  const h = ENV_H / 2
-  const shape = new Shape()
-  shape.moveTo(-w, h)
-  shape.lineTo(0, h - POCKET_V)
-  shape.lineTo(w, h)
-  shape.lineTo(w, -h)
-  shape.lineTo(-w, -h)
-  shape.closePath()
-  return new ShapeGeometry(shape)
-}
-
-/** Nắp: tam giác treo xuống từ bản lề (gốc toạ độ = trung điểm mép trên). */
-export function flapGeometry() {
-  const shape = new Shape()
-  shape.moveTo(-ENV_W / 2, 0)
-  shape.lineTo(ENV_W / 2, 0)
-  shape.lineTo(0, -FLAP_DEPTH)
-  shape.closePath()
-  return new ShapeGeometry(shape)
-}
+import { ExtrudeGeometry, Shape, type Texture } from 'three'
+import { SEAL_R } from './dimensions'
 
 /**
  * ShapeGeometry/ExtrudeGeometry lấy UV = toạ độ (x, y) thô. Đặt repeat/offset để texture phủ

@@ -1,4 +1,6 @@
 .frame {
+  /* Hàng nghìn chấm + filter: tách lớp riêng để trình duyệt không vẽ lại mỗi khung hình. */
+  will-change: transform;
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -7,49 +9,34 @@
   pointer-events: none;
 }
 
-/* Nền be-xám ấm (mẫu 3). */
+/* Giấy kem ấm (mẫu 3); màu mảng loang ở WASH_TONES trong MarbleFrame.tsx. */
 .base {
-  fill: #ddd3c7;
+  fill: #ebe3da;
 }
 
 .clouds {
-  opacity: 0.55;
+  opacity: 0.18;
 }
 
-.smudge {
-  fill: #c3b3a1;
-  opacity: 0.55;
-}
-
-.smudge[data-shade='1'] {
-  fill: #b3a18d;
-  opacity: 0.4;
-}
-
-.smudge[data-shade='2'] {
-  fill: #e9e1d6;
-  opacity: 0.6;
-}
-
-/* Quầng sáng kem ở giữa. */
+/* Dải sáng kem ở giữa. */
 .glowInner {
-  stop-color: #f5f1eb;
-  stop-opacity: 0.96;
+  stop-color: #f6f2ec;
+  stop-opacity: 0.9;
 }
 
 .glowMid {
-  stop-color: #efe8df;
-  stop-opacity: 0.7;
+  stop-color: #f1ebe3;
+  stop-opacity: 0.6;
 }
 
 .glowOuter {
-  stop-color: #e6ddd1;
+  stop-color: #ebe5dc;
   stop-opacity: 0;
 }
 
 /* Lốm đốm sáng li ti như giấy vân đá. */
 .mottle {
-  opacity: 0.35;
+  opacity: 0.3;
   mix-blend-mode: screen;
 }
 
@@ -63,22 +50,29 @@
   stroke-linejoin: round;
 }
 
-.veins path[data-weight='2'] {
-  stroke-width: 1.8;
-}
-
+/* Gân mảnh, phần lớn "độ đậm" đến từ hạt nhũ rắc dọc gân. */
 .veins path[data-weight='1'] {
-  stroke-width: 1.1;
-  opacity: 0.85;
+  stroke-width: 1.4;
+  opacity: 0.9;
 }
 
 .veins path[data-weight='0'] {
-  stroke-width: 0.7;
-  opacity: 0.7;
+  stroke-width: 0.9;
+  opacity: 0.75;
 }
 
-.flecks {
+.specks {
   opacity: 0.95;
+}
+
+.glitter {
+  opacity: 0.75;
+}
+
+/* Hạt sạn nâu nhạt quanh gân (vân giấy đá). */
+.grit {
+  fill: #9c8669;
+  opacity: 0.35;
 }
 
 /* Biến thể ánh nến: mép mocha, giữa espresso, nhũ vàng sáng. */
@@ -88,14 +82,6 @@
 
 .frame[data-tone='dark'] .clouds {
   opacity: 0.35;
-}
-
-.frame[data-tone='dark'] .smudge {
-  fill: #5e4c3e;
-}
-
-.frame[data-tone='dark'] .smudge[data-shade='2'] {
-  fill: #2a221c;
 }
 
 .frame[data-tone='dark'] .glowInner {

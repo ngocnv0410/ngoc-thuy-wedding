@@ -1,17 +1,10 @@
-import { CanvasTexture, SRGBColorSpace } from 'three'
-import { CARD_H, CARD_W, ENV_H, ENV_W, FLAP_DEPTH, POCKET_V } from './dimensions'
+import { CanvasTexture, SRGBColorSpace, type Texture } from 'three'
+import { ART_W, NAME, RELIEF, RING, artBox, mirrorX, nameSize } from '../doorArt'
 
 /*
- * Texture vẽ bằng canvas 2D với chính font của trang (đã có subset tiếng Việt) — chữ trên
- * thẻ và phong bì 3D giống hệt bản 2.5D, không cần tải font/ảnh riêng cho WebGL.
+ * Texture vẽ bằng canvas 2D với chính font của trang (đã có subset tiếng Việt) và cùng hoạ tiết
+ * với bản 2.5D (doorArt) — cửa 3D giống hệt cửa 2.5D, không cần tải font/ảnh riêng cho WebGL.
  */
-
-const INK = '#302720'
-const TAUPE_INK = '#6b5d50'
-const GOLD = '#c6a66b'
-
-/** Pixel trên mỗi đơn vị thế giới. */
-const PX = 1000
 
 function canvas(width: number, height: number) {
   const el = document.createElement('canvas')
@@ -42,149 +35,135 @@ function grain(ctx: CanvasRenderingContext2D, w: number, h: number, strength = 1
   ctx.putImageData(image, 0, 0)
 }
 
-function setLetterSpacing(ctx: CanvasRenderingContext2D, value: string) {
-  // `letterSpacing` có từ Chrome 99 / Safari 17; trình duyệt cũ hơn bỏ qua, chữ vẫn đúng.
-  ;(ctx as CanvasRenderingContext2D & { letterSpacing?: string }).letterSpacing = value
-}
-
 /** Chờ đúng các font + subset tiếng Việt cần cho texture. */
 export async function loadTextureFonts(sample: string) {
   if (!document.fonts) return
   await Promise.all([
+    document.fonts.load('400 64px "Great Vibes"', `${sample}&`),
     document.fonts.load('500 64px "Cormorant Garamond"', sample),
-    document.fonts.load('italic 500 64px "Cormorant Garamond"', sample),
-    document.fonts.load('500 32px "Be Vietnam Pro"', 'THIỆP MỜI CƯỚI'),
-    document.fonts.load('400 64px "Great Vibes"', '&'),
   ])
 }
 
-export interface CardText {
-  first: string
-  second: string
-  date: string
+export interface DoorTextures {
+  map: Texture
+  normal: Texture
 }
 
-/** Mặt thẻ thiệp: bản thu nhỏ của bìa (khung chỉ vàng đôi, nhãn, tên, ngày). */
-export function cardTexture({ first, second, date }: CardText) {
-  const { el, ctx, w, h } = canvas(CARD_W * PX, CARD_H * PX)
-  ctx.fillStyle = '#f8f4ec'
-  ctx.fillRect(0, 0, w, h)
-  grain(ctx, w, h, 6)
+const BLUSH = '#ecdccf'
+const RELIEF_FACE = '#f3e9e0'
 
-  const pad = w * 0.034
-  ctx.lineWidth = 2
-  ctx.strokeStyle = 'rgba(198, 166, 107, 0.7)'
-  ctx.strokeRect(pad, pad, w - pad * 2, h - pad * 2)
-  const inner = pad + w * 0.016
-  ctx.strokeStyle = 'rgba(198, 166, 107, 0.35)'
-  ctx.strokeRect(inner, inner, w - inner * 2, h - inner * 2)
+/** Đặt hệ toạ độ của khung hoạ tiết (doorArt) lên canvas cánh cửa; `mirror` soi gương nội dung. */
+function setArtSpace(ctx: CanvasRenderingContext2D, w: number, h: number, mirror: boolean) {
+  const box = artBox(w, h)
+  ctx.setTransform(box.scale, 0, 0, box.scale, box.x, box.y)
+  if (mirror) ctx.transform(-1, 0, 0, 1, ART_W, 0)
+  return box
+}
 
+function drawRelief(ctx: CanvasRenderingContext2D, color: string) {
+  ctx.fillStyle = color
+  ctx.strokeStyle = color
+  ctx.lineCap = 'round'
+  for (const relief of RELIEF) {
+    const path = new Path2D(relief.d)
+    if (relief.stroke) {
+      ctx.lineWidth = relief.stroke
+      ctx.stroke(path)
+    } else {
+      ctx.fill(path)
+    }
+  }
+}
+
+/** Tên + vòng nắm (không soi gương chữ: toạ độ x tự đổi theo cánh). */
+function drawMetal(ctx: CanvasRenderingContext2D, name: string, mirror: boolean, fill: string | CanvasGradient) {
+  const x = (value: number) => (mirror ? mirrorX(value) : value)
+  ctx.fillStyle = fill
+  ctx.strokeStyle = fill
   ctx.textAlign = 'center'
   ctx.textBaseline = 'alphabetic'
-  const cx = w / 2
-
-  ctx.fillStyle = TAUPE_INK
-  ctx.font = `500 ${w * 0.026}px "Be Vietnam Pro"`
-  setLetterSpacing(ctx, `${w * 0.026 * 0.28}px`)
-  ctx.fillText('THIỆP MỜI CƯỚI', cx, h * 0.36)
-
-  // Tên: [first] [&] [second], căn giữa theo tổng chiều rộng.
-  setLetterSpacing(ctx, '0px')
-  const nameFont = `500 ${w * 0.1}px "Cormorant Garamond"`
-  const ampFont = `400 ${w * 0.07}px "Great Vibes"`
-  const gap = w * 0.024
-  ctx.font = nameFont
-  const firstW = ctx.measureText(first).width
-  const secondW = ctx.measureText(second).width
-  ctx.font = ampFont
-  const ampW = ctx.measureText('&').width
-  let x = cx - (firstW + ampW + secondW + gap * 2) / 2
-  const baseline = h * 0.58
-  ctx.textAlign = 'left'
-  ctx.font = nameFont
-  ctx.fillStyle = INK
-  ctx.fillText(first, x, baseline)
-  x += firstW + gap
-  ctx.font = ampFont
-  ctx.fillStyle = GOLD
-  ctx.fillText('&', x, baseline)
-  x += ampW + gap
-  ctx.font = nameFont
-  ctx.fillStyle = INK
-  ctx.fillText(second, x, baseline)
-
-  ctx.textAlign = 'center'
-  ctx.font = `500 ${w * 0.036}px "Cormorant Garamond"`
-  setLetterSpacing(ctx, `${w * 0.036 * 0.12}px`)
-  ctx.fillText(date, cx, h * 0.72)
-
-  return toTexture(el)
-}
-
-/** Túi trước: giấy sáng dần về phía trên, nếp chữ V + hai nếp chéo, tên ép chìm. */
-export function pocketTexture(names: string) {
-  const { el, ctx, w, h } = canvas(ENV_W * PX, ENV_H * PX)
-  const gradient = ctx.createLinearGradient(0, 0, w * 0.1, h)
-  gradient.addColorStop(0, '#f8f2e8')
-  gradient.addColorStop(0.6, '#f1e9db')
-  gradient.addColorStop(1, '#ece2d1')
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, w, h)
-  grain(ctx, w, h, 9)
-
-  ctx.strokeStyle = 'rgba(48, 39, 32, 0.12)'
-  ctx.lineWidth = 2
+  ctx.font = `400 ${nameSize(name)}px "Great Vibes"`
+  ctx.fillText(name, NAME.x, NAME.y)
   ctx.beginPath()
-  ctx.moveTo(0, 0)
-  ctx.lineTo(w / 2, (POCKET_V / ENV_H) * h)
-  ctx.lineTo(w, 0)
-  ctx.moveTo(0, h)
-  ctx.lineTo(w * 0.42, h * 0.6)
-  ctx.moveTo(w, h)
-  ctx.lineTo(w * 0.58, h * 0.6)
-  ctx.stroke()
-
-  // Ép chìm: viền sáng phía dưới, viền tối phía trên, chữ tối nhạt.
-  ctx.textAlign = 'center'
-  ctx.font = `italic 500 ${w * 0.062}px "Cormorant Garamond"`
-  setLetterSpacing(ctx, `${w * 0.062 * 0.12}px`)
-  const y = h * 0.86
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'
-  ctx.fillText(names, w / 2, y + 2)
-  ctx.fillStyle = 'rgba(48, 39, 32, 0.12)'
-  ctx.fillText(names, w / 2, y - 2)
-  ctx.fillStyle = 'rgba(48, 39, 32, 0.55)'
-  ctx.fillText(names, w / 2, y)
-
-  return toTexture(el)
-}
-
-/** Mặt ngoài nắp: giấy sáng phía mép gấp, hai cạnh chéo có nét mảnh. */
-export function flapTexture() {
-  const { el, ctx, w, h } = canvas(ENV_W * PX, FLAP_DEPTH * PX)
-  const gradient = ctx.createLinearGradient(0, 0, 0, h)
-  gradient.addColorStop(0, '#fbf7f0')
-  gradient.addColorStop(1, '#efe6d6')
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, w, h)
-  grain(ctx, w, h, 9)
-  ctx.strokeStyle = 'rgba(48, 39, 32, 0.14)'
-  ctx.lineWidth = 3
+  ctx.arc(x(RING.x), RING.y - RING.r + 4, RING.plate, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.lineWidth = 4.5
   ctx.beginPath()
-  ctx.moveTo(0, 0)
-  ctx.lineTo(w / 2, h)
-  ctx.lineTo(w, 0)
+  ctx.arc(x(RING.x), RING.y + RING.r * 0.6, RING.r, 0, Math.PI * 2)
   ctx.stroke()
-  return toTexture(el)
 }
 
-/** Giấy trơn có hạt (đáy phong bì, mặt trong nắp) — màu nhân với `color` của material. */
-export function grainTexture() {
-  const { el, ctx, w, h } = canvas(512, 512)
-  ctx.fillStyle = '#ffffff'
+/** Bản đồ độ cao (trắng = nổi) → normal map tangent-space (texture lật trục y khi tải lên GPU). */
+function normalFromHeight(source: HTMLCanvasElement, strength: number) {
+  const { el, ctx, w, h } = canvas(source.width, source.height)
+  const height = source.getContext('2d')!.getImageData(0, 0, w, h).data
+  const out = ctx.createImageData(w, h)
+  const at = (x: number, y: number) => height[(Math.min(h - 1, Math.max(0, y)) * w + Math.min(w - 1, Math.max(0, x))) * 4] / 255
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const dx = (at(x + 1, y) - at(x - 1, y)) * strength
+      const dy = (at(x, y + 1) - at(x, y - 1)) * strength
+      const length = Math.hypot(dx, dy, 1)
+      const i = (y * w + x) * 4
+      out.data[i] = ((-dx / length) * 0.5 + 0.5) * 255
+      out.data[i + 1] = ((dy / length) * 0.5 + 0.5) * 255
+      out.data[i + 2] = ((1 / length) * 0.5 + 0.5) * 255
+      out.data[i + 3] = 255
+    }
+  }
+  ctx.putImageData(out, 0, 0)
+  const texture = new CanvasTexture(el)
+  texture.anisotropy = 4
+  return texture
+}
+
+/**
+ * Mặt một cánh cửa (w × h pixel): giấy hồng phấn, nắng xiên góc trên trái, mép khe tối hơn,
+ * hoa văn + tên ép kim + vòng nắm; kèm normal map để hoa văn nổi thật dưới ánh sáng 3D.
+ */
+export function doorTextures(side: 'left' | 'right', name: string, width: number, height: number): DoorTextures {
+  const mirror = side === 'right'
+  const { el, ctx, w, h } = canvas(width, height)
+
+  ctx.fillStyle = BLUSH
   ctx.fillRect(0, 0, w, h)
-  grain(ctx, w, h, 14)
-  return toTexture(el)
+  const sunX = mirror ? 0 : w * 0.1
+  const sun = ctx.createRadialGradient(sunX, 0, 0, sunX, 0, Math.max(w, h) * 0.75)
+  sun.addColorStop(0, `rgba(255, 250, 244, ${mirror ? 0.45 : 0.7})`)
+  sun.addColorStop(1, 'rgba(255, 250, 244, 0)')
+  ctx.fillStyle = sun
+  ctx.fillRect(0, 0, w, h)
+  const seam = ctx.createLinearGradient(mirror ? w : 0, 0, mirror ? 0 : w, 0)
+  seam.addColorStop(0.82, 'rgba(120, 92, 72, 0)')
+  seam.addColorStop(1, `rgba(120, 92, 72, ${mirror ? 0.1 : 0.14})`)
+  ctx.fillStyle = seam
+  ctx.fillRect(0, 0, w, h)
+  grain(ctx, w, h, 8)
+  // Mép khe cửa: chỉ tối ở cánh trái, chỉ sáng ở cánh phải (như bản 2.5D).
+  ctx.fillStyle = mirror ? 'rgba(255, 250, 244, 0.6)' : 'rgba(120, 92, 72, 0.35)'
+  ctx.fillRect(mirror ? 0 : w - 2, 0, 2, h)
+
+  const box = setArtSpace(ctx, w, h, mirror)
+  drawRelief(ctx, RELIEF_FACE)
+  ctx.setTransform(box.scale, 0, 0, box.scale, box.x, box.y)
+  const gold = ctx.createLinearGradient(NAME.x - 120, NAME.y - 80, NAME.x + 120, NAME.y + 80)
+  gold.addColorStop(0, '#a8823f')
+  gold.addColorStop(0.35, '#e8d3a2')
+  gold.addColorStop(0.6, '#b8955a')
+  gold.addColorStop(1, '#d9bd84')
+  drawMetal(ctx, name, mirror, gold)
+
+  // Độ cao: hoa văn nổi tròn cạnh (làm mờ), tên và vòng nắm nổi như nhau.
+  const relief = canvas(width, height)
+  relief.ctx.fillStyle = '#000'
+  relief.ctx.fillRect(0, 0, w, h)
+  relief.ctx.filter = `blur(${(box.scale * 1.3).toFixed(2)}px)`
+  setArtSpace(relief.ctx, w, h, mirror)
+  drawRelief(relief.ctx, '#fff')
+  relief.ctx.setTransform(box.scale, 0, 0, box.scale, box.x, box.y)
+  drawMetal(relief.ctx, name, mirror, '#fff')
+
+  return { map: toTexture(el), normal: normalFromHeight(relief.el, 3.6 * box.scale) }
 }
 
 /** Mặt dấu sáp: sáp vàng loang, hai vòng ép, monogram nổi. */
@@ -234,5 +213,17 @@ export function sealTexture(monogram: string) {
   draw('rgba(241, 226, 191, 0.5)', 3)
   draw('rgba(90, 69, 35, 0.85)', 0)
 
+  return toTexture(el)
+}
+
+/** Quầng sáng sau khe cửa: dải sáng ấm theo chiều dọc, tan dần ra hai bên. */
+export function glowTexture() {
+  const { el, ctx, w, h } = canvas(256, 512)
+  const gradient = ctx.createRadialGradient(w / 2, h * 0.46, 0, w / 2, h * 0.46, h * 0.5)
+  gradient.addColorStop(0, 'rgba(255, 248, 232, 0.95)')
+  gradient.addColorStop(1, 'rgba(255, 240, 214, 0)')
+  ctx.setTransform(0.5, 0, 0, 1, w / 4, 0)
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, w * 2, h)
   return toTexture(el)
 }
