@@ -1,0 +1,67 @@
+.names {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.names:focus {
+  outline: none;
+}
+
+.names[data-layout='stacked'] {
+  flex-direction: column;
+}
+
+.names[data-layout='inline'] {
+  flex-wrap: wrap;
+  gap: 0 0.28em;
+}
+
+/* Tên viết tay nhũ vàng; chừa khoảng trên/dưới cho nét móc của chữ script và dấu tiếng Việt. */
+.name {
+  display: block;
+  padding: 0.18em 0.22em 0.12em;
+  font-family: var(--font-names);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--color-gold-deep);
+  background: var(--gold-foil);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.amp {
+  display: block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.5em;
+  line-height: 1;
+  color: var(--color-mocha);
+}
+
+.names[data-size='hero'] {
+  font-size: clamp(64px, 15vw, 150px);
+}
+
+.names[data-size='hero'][data-layout='stacked'] .amp {
+  margin-block: -0.1em -0.05em;
+}
+
+.names[data-size='section'] {
+  font-size: clamp(44px, 8vw, 84px);
+}
+
+.names[data-size='signature'] {
+  font-size: clamp(38px, 6vw, 56px);
+}
+
+/* Nền tối (ánh nến): "&" vàng thay vì mocha. */
+[data-light='candle'] .amp {
+  color: var(--color-gold);
+}

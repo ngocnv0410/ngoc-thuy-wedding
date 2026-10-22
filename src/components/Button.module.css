@@ -1,0 +1,118 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-sm) var(--ease-paper),
+    color var(--dur-sm) var(--ease-paper),
+    border-color var(--dur-sm) var(--ease-paper),
+    transform var(--dur-xs) var(--ease-paper);
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.lg {
+  min-height: 56px;
+  padding: 0 var(--space-6);
+}
+
+.icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Primary: nền mực, gạch chân vàng chạy từ trái khi hover. */
+.primary {
+  background: var(--scene-ink);
+  color: var(--scene-bg);
+}
+
+.primary::after {
+  content: '';
+  position: absolute;
+  left: var(--space-5);
+  right: var(--space-5);
+  bottom: 10px;
+  height: 1px;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-sm) var(--ease-paper);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover {
+    background: var(--color-espresso-hover);
+  }
+
+  .primary:hover::after {
+    transform: scaleX(1);
+  }
+
+  .ghost:hover {
+    border-color: var(--scene-ink);
+  }
+
+  .link:hover {
+    text-decoration-color: var(--scene-ink);
+  }
+}
+
+/* Ở Scene 5 (nền tối) primary đảo thành nền vàng, chữ espresso. */
+[data-light='candle'] .primary {
+  background: var(--color-gold);
+  color: var(--color-espresso);
+}
+
+[data-light='candle'] .primary::after {
+  background: var(--color-espresso);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-light='candle'] .primary:hover {
+    background: #d4b886;
+  }
+}
+
+.ghost {
+  background: transparent;
+  color: var(--scene-ink);
+  border-color: color-mix(in srgb, var(--scene-ink) 30%, transparent);
+}
+
+.link {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-1);
+  background: transparent;
+  color: var(--scene-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--color-gold);
+  text-underline-offset: 6px;
+}

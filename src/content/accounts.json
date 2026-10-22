@@ -1,0 +1,18 @@
+[
+  {
+    "id": "nha-gai",
+    "side": "bride",
+    "bankName": "Techcombank",
+    "bin": "970407",
+    "accountName": "NGO THI THUY",
+    "accountNumber": "19034949101013"
+  },
+  {
+    "id": "nha-trai",
+    "side": "groom",
+    "bankName": "BIDV",
+    "bin": "970418",
+    "accountName": "NGUYEN VAN NGOC",
+    "accountNumber": "8856138148"
+  }
+]

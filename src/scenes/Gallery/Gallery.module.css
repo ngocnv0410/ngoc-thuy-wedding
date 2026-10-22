@@ -1,0 +1,213 @@
+.chapter {
+  max-width: var(--content-max);
+  margin: 0 auto var(--space-9);
+}
+
+.chapterHead {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.chapterIndex {
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-olive-ink);
+}
+
+.chapterTitle {
+  font-size: var(--text-heading);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.chapterCaption {
+  max-width: 48ch;
+  color: var(--color-taupe-ink);
+}
+
+.track {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item figure {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.item figcaption {
+  font-size: 13px;
+  color: var(--color-taupe-ink);
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--color-paper);
+}
+
+.quote blockquote {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 3vw, 40px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Mobile: mỗi chương là một hàng ảnh vuốt ngang (scroll-snap native), không pin. */
+@media (max-width: 1023px) {
+  .track {
+    display: flex;
+    gap: var(--space-4);
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .track > li {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+  }
+
+  .item .photo {
+    height: 70svh;
+    max-height: 640px;
+  }
+
+  .quote {
+    display: grid;
+    place-items: center;
+    padding: var(--space-6);
+  }
+}
+
+/* Desktop: lưới 12 cột bất đối xứng, vai trò ảnh quyết định số cột và tỉ lệ. */
+@media (min-width: 1024px) {
+  .track {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-7) var(--space-6);
+    align-items: start;
+  }
+
+  .item[data-role='hero-portrait'] {
+    grid-column: span 6;
+  }
+
+  .item[data-role='hero-portrait'] .photo {
+    aspect-ratio: 4 / 5;
+  }
+
+  .item[data-role='landscape'] {
+    grid-column: 2 / span 10;
+  }
+
+  .item[data-role='landscape'] .photo {
+    aspect-ratio: 3 / 2;
+  }
+
+  .item[data-role='detail'] {
+    grid-column: span 4;
+    margin-top: var(--space-9);
+  }
+
+  .item[data-role='detail'] .photo {
+    aspect-ratio: 1;
+  }
+
+  .item[data-role='pair'] {
+    grid-column: span 6;
+  }
+
+  .item[data-role='pair']:nth-of-type(even) {
+    margin-top: var(--space-9);
+  }
+
+  .item[data-role='pair'] .photo {
+    aspect-ratio: 4 / 5;
+  }
+
+  .quote {
+    grid-column: 3 / span 8;
+    padding-block: var(--space-8);
+    text-align: center;
+  }
+}
+
+/* Khung ảnh (là nút mở lightbox): cắt phần thừa khi ảnh parallax/scale bên trong. */
+.frame {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--color-paper);
+  cursor: zoom-in;
+}
+
+.frame:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 4px;
+}
+
+.frame picture {
+  height: 100%;
+}
+
+/*
+ * Dải phim (desktop + motion): chương thứ hai tràn viền, ảnh xếp một hàng ngang, được
+ * pin và trượt theo cuộn dọc. Không motion / mobile: hiển thị như chương thường.
+ */
+@media (min-width: 1024px) {
+  :root[data-motion='on'] .chapter[data-film='true'] {
+    max-width: none;
+    min-height: 100vh;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: var(--space-8) var(--gutter);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  :root[data-motion='on'] .chapter[data-film='true'] .track {
+    display: flex;
+    gap: var(--space-6);
+    width: max-content;
+    align-items: center;
+  }
+
+  :root[data-motion='on'] .chapter[data-film='true'] .track > li {
+    flex: none;
+    margin: 0;
+  }
+
+  :root[data-motion='on'] .chapter[data-film='true'] .frame {
+    height: 62vh;
+  }
+
+  /* Chiều rộng suy ra từ tỉ lệ theo vai trò ảnh — biết trước khi ảnh tải xong, để đo dải phim đúng. */
+  :root[data-motion='on'] .chapter[data-film='true'] .photo {
+    width: auto;
+    height: 100%;
+  }
+
+  :root[data-motion='on'] .chapter[data-film='true'] .quote {
+    width: 32vw;
+    padding: 0 var(--space-6);
+  }
+}

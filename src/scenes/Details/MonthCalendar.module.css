@@ -1,0 +1,67 @@
+.calendar {
+  width: min(100%, 360px);
+  margin: var(--space-8) auto 0;
+  text-align: center;
+}
+
+.caption {
+  margin-bottom: var(--space-4);
+  font-family: var(--font-serif);
+  font-size: var(--text-heading);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.grid th {
+  padding-bottom: var(--space-3);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--color-taupe-ink);
+}
+
+.grid td {
+  position: relative;
+  height: 44px;
+  font-size: 15px;
+  color: var(--color-taupe-ink);
+}
+
+.grid td[data-mark] {
+  color: var(--color-espresso);
+  font-weight: 500;
+}
+
+.dot {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  transform: translateX(-50%);
+}
+
+.circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  overflow: visible;
+}
+
+.circle path {
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}

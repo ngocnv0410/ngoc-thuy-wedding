@@ -1,0 +1,74 @@
+.map {
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.map svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.streets path {
+  fill: none;
+  stroke: var(--color-taupe);
+  stroke-opacity: 0.25;
+  stroke-width: 1;
+}
+
+.river {
+  fill: none;
+  stroke: var(--color-olive);
+  stroke-opacity: 0.22;
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.route {
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+}
+
+.routeMask {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.halo {
+  fill: color-mix(in srgb, var(--color-gold) 18%, transparent);
+  stroke: var(--color-gold);
+  stroke-width: 0.8;
+  transition: r var(--dur-sm) var(--ease-paper);
+}
+
+.dot {
+  fill: var(--color-espresso);
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--color-taupe-ink);
+}
+
+.pin[data-active='true'] .label {
+  fill: var(--color-espresso);
+}
+
+.pin[data-active='true'] .dot {
+  fill: var(--color-gold);
+}
+
+.caption {
+  font-size: 12px;
+  color: var(--color-taupe-ink);
+  text-align: center;
+}

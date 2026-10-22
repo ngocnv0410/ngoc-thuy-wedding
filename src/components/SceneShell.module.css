@@ -1,0 +1,58 @@
+.scene {
+  position: relative;
+  background: var(--scene-bg);
+  color: var(--scene-ink);
+  padding-block: var(--section-gap);
+  padding-inline: var(--gutter);
+  scroll-margin-top: 0;
+}
+
+/* Nội dung nằm trên hoạ tiết trang trí (hoa, nền loang: svg aria-hidden, absolute, z-index 0). */
+.scene > :not([aria-hidden='true']) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Tông nền theo "giờ trong ngày" — biên độ hẹp trong palette. */
+.scene[data-light='noon'] {
+  --scene-bg: var(--color-ivory);
+}
+
+.scene[data-light='afternoon'] {
+  --scene-bg: var(--color-paper);
+}
+
+.scene[data-light='golden'] {
+  --scene-bg: color-mix(in srgb, var(--color-ivory) 88%, var(--color-gold));
+}
+
+/* Khi motion bật, nền trang (body) chuyển màu xuyên suốt nên nền từng scene trong suốt. */
+:root[data-motion='on'] .scene:not([data-light='candle']) {
+  background-color: transparent;
+}
+
+.heading {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+  text-align: center;
+  justify-items: center;
+}
+
+.heading[data-align='start'] {
+  text-align: start;
+  justify-items: start;
+}
+
+.eyebrow {
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--scene-ink-muted);
+}
+
+.title {
+  font-size: var(--text-display-lg);
+  line-height: 1.1;
+}

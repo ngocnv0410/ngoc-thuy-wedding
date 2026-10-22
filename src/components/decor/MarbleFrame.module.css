@@ -1,0 +1,115 @@
+.frame {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Nền be-xám ấm (mẫu 3). */
+.base {
+  fill: #ddd3c7;
+}
+
+.clouds {
+  opacity: 0.55;
+}
+
+.smudge {
+  fill: #c3b3a1;
+  opacity: 0.55;
+}
+
+.smudge[data-shade='1'] {
+  fill: #b3a18d;
+  opacity: 0.4;
+}
+
+.smudge[data-shade='2'] {
+  fill: #e9e1d6;
+  opacity: 0.6;
+}
+
+/* Quầng sáng kem ở giữa. */
+.glowInner {
+  stop-color: #f5f1eb;
+  stop-opacity: 0.96;
+}
+
+.glowMid {
+  stop-color: #efe8df;
+  stop-opacity: 0.7;
+}
+
+.glowOuter {
+  stop-color: #e6ddd1;
+  stop-opacity: 0;
+}
+
+/* Lốm đốm sáng li ti như giấy vân đá. */
+.mottle {
+  opacity: 0.35;
+  mix-blend-mode: screen;
+}
+
+.veins {
+  fill: none;
+}
+
+.veins path {
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.veins path[data-weight='2'] {
+  stroke-width: 1.8;
+}
+
+.veins path[data-weight='1'] {
+  stroke-width: 1.1;
+  opacity: 0.85;
+}
+
+.veins path[data-weight='0'] {
+  stroke-width: 0.7;
+  opacity: 0.7;
+}
+
+.flecks {
+  opacity: 0.95;
+}
+
+/* Biến thể ánh nến: mép mocha, giữa espresso, nhũ vàng sáng. */
+.frame[data-tone='dark'] .base {
+  fill: #3a2f27;
+}
+
+.frame[data-tone='dark'] .clouds {
+  opacity: 0.35;
+}
+
+.frame[data-tone='dark'] .smudge {
+  fill: #5e4c3e;
+}
+
+.frame[data-tone='dark'] .smudge[data-shade='2'] {
+  fill: #2a221c;
+}
+
+.frame[data-tone='dark'] .glowInner {
+  stop-color: #2e251f;
+}
+
+.frame[data-tone='dark'] .glowMid {
+  stop-color: #332a23;
+}
+
+.frame[data-tone='dark'] .glowOuter {
+  stop-color: #3a2f27;
+}
+
+.frame[data-tone='dark'] .mottle {
+  opacity: 0.08;
+}

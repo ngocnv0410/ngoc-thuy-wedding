@@ -1,0 +1,95 @@
+.wash {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.wash[data-edge='left'],
+.wash[data-edge='right'] {
+  top: 0;
+  bottom: 0;
+  width: clamp(110px, 24vw, 340px);
+  height: 100%;
+}
+
+.wash[data-edge='left'] {
+  left: 0;
+}
+
+.wash[data-edge='right'] {
+  right: 0;
+}
+
+.wash[data-edge='top'],
+.wash[data-edge='bottom'] {
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: clamp(90px, 18vw, 260px);
+}
+
+.wash[data-edge='top'] {
+  top: 0;
+}
+
+.wash[data-edge='bottom'] {
+  bottom: 0;
+}
+
+.outer {
+  fill: var(--color-greige);
+  opacity: 0.38;
+}
+
+.inner {
+  fill: #a8998a;
+  opacity: 0.28;
+}
+
+.highlight {
+  fill: none;
+  stroke: #fbf8f2;
+  stroke-width: 14;
+  opacity: 0.55;
+}
+
+.veins path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+.veins path[data-weight='0'] {
+  stroke-width: 1.6;
+}
+
+.veins path[data-weight='1'] {
+  stroke-width: 0.9;
+  opacity: 0.8;
+}
+
+.veins path[data-weight='2'] {
+  stroke-width: 0.6;
+  opacity: 0.6;
+}
+
+.specks {
+  opacity: 0.85;
+}
+
+/* Trên nền ánh nến: loang mocha ấm, gân vàng sáng hơn. */
+.wash[data-tone='dark'] .outer {
+  fill: #5a4a3d;
+  opacity: 0.55;
+}
+
+.wash[data-tone='dark'] .inner {
+  fill: #7a6552;
+  opacity: 0.35;
+}
+
+.wash[data-tone='dark'] .highlight {
+  stroke: #c6a66b;
+  opacity: 0.12;
+}

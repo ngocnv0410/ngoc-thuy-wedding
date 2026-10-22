@@ -1,0 +1,50 @@
+{
+  "name": "ngoc-thuy-wedding",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "assets": "node scripts/generate-qr.ts && node scripts/generate-og.ts",
+    "predev": "npm run assets",
+    "dev": "vite",
+    "prebuild": "npm run assets",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "5.3.0",
+    "@fontsource/cormorant-garamond": "5.3.0",
+    "@fontsource/great-vibes": "5.3.0",
+    "@fontsource/pinyon-script": "5.3.0",
+    "@react-three/fiber": "9.8.2",
+    "gsap": "3.15.0",
+    "lenis": "1.3.27",
+    "photoswipe": "5.4.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@types/opentype.js": "1.3.10",
+    "@types/pngjs": "6.0.5",
+    "@types/qrcode": "1.5.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "jsqr": "1.4.0",
+    "opentype.js": "2.0.0",
+    "oxlint": "^1.88.0",
+    "pngjs": "7.0.0",
+    "qrcode": "1.5.4",
+    "sharp": "0.35.5",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4",
+    "vite-imagetools": "12.0.1",
+    "vitest": "5.0.5"
+  }
+}

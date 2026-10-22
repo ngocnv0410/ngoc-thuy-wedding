@@ -1,0 +1,20 @@
+/*
+ * Lớp sáng nằm giữa nền trang và nội dung (main có z-index cao hơn). Chỉ nhìn thấy khi
+ * motion bật, vì lúc đó nền các scene trong suốt để nền trang chuyển màu xuyên suốt.
+ */
+.light {
+  --lx: 12%;
+  --ly: 6%;
+  --lo: 0.5;
+  --lc: rgba(255, 244, 222, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--lo);
+  background: radial-gradient(ellipse 70% 55% at var(--lx) var(--ly), var(--lc), transparent 70%);
+}
+
+:root:not([data-motion='on']) .light {
+  display: none;
+}

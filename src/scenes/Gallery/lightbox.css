@@ -1,0 +1,43 @@
+/* Lightbox theo palette: nền espresso, nút ivory, chú thích serif nghiêng. Tải cùng PhotoSwipe. */
+.pswp {
+  --pswp-bg: #1f1915;
+  --pswp-icon-color: #f8f4ec;
+  --pswp-icon-color-secondary: #302720;
+  --pswp-icon-stroke-color: #302720;
+  --pswp-placeholder-bg: #302720;
+  --pswp-error-text-color: #f8f4ec;
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+
+.pswp__counter {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  opacity: 0.85;
+}
+
+.pswp__caption {
+  position: absolute;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  max-width: min(90vw, 640px);
+  padding: 8px 16px;
+  transform: translateX(-50%);
+  color: #f8f4ec;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-style: italic;
+  text-align: center;
+  background: rgb(31 25 21 / 0.6);
+  border-radius: 2px;
+}
+
+/* Vùng chạm nút ≥ 44px. */
+.pswp__button {
+  min-width: 50px;
+  min-height: 50px;
+}
+
+.pswp__button:focus-visible {
+  outline: 2px solid #c6a66b;
+  outline-offset: -4px;
+}

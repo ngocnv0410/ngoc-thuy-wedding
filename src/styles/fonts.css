@@ -1,0 +1,13 @@
+/*
+ * Font self-host qua @fontsource. Mỗi file CSS khai báo đủ subset (gồm `vietnamese`) bằng
+ * unicode-range, nên trình duyệt chỉ tải các khối ký tự thực sự dùng.
+ * Chỉ import đúng các weight/style có trong bảng typography của plan.
+ */
+@import '@fontsource/cormorant-garamond/300.css';
+@import '@fontsource/cormorant-garamond/500.css';
+@import '@fontsource/cormorant-garamond/500-italic.css';
+@import '@fontsource/cormorant-garamond/600-italic.css';
+@import '@fontsource/be-vietnam-pro/400.css';
+@import '@fontsource/be-vietnam-pro/500.css';
+@import '@fontsource/great-vibes/400.css';
+@import '@fontsource/pinyon-script/400.css';

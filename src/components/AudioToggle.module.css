@@ -1,0 +1,64 @@
+.toggle {
+  position: fixed;
+  top: calc(var(--space-3) + env(safe-area-inset-top));
+  right: var(--space-3);
+  z-index: 150;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid color-mix(in srgb, var(--color-espresso) 14%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-ivory) 92%, transparent);
+  color: var(--color-espresso);
+  cursor: pointer;
+  box-shadow: 0 4px 16px -8px rgb(48 39 32 / 0.3);
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+
+.bars span {
+  width: 2px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+/* Đang phát: sóng nhạc nhảy nhẹ (tắt khi reduced-motion — các thanh đứng yên ở độ cao khác nhau). */
+.bars[data-playing='true'] span {
+  animation: wave 1.1s var(--ease-silk) infinite alternate;
+}
+
+.bars[data-playing='true'] span:nth-child(1) {
+  height: 8px;
+}
+
+.bars[data-playing='true'] span:nth-child(2) {
+  height: 14px;
+  animation-delay: -0.4s;
+}
+
+.bars[data-playing='true'] span:nth-child(3) {
+  height: 10px;
+  animation-delay: -0.8s;
+}
+
+.bars[data-playing='true'] span:nth-child(4) {
+  height: 6px;
+  animation-delay: -0.2s;
+}
+
+@keyframes wave {
+  to {
+    transform: scaleY(0.35);
+  }
+}
+
+.bars span {
+  transform-origin: bottom;
+}

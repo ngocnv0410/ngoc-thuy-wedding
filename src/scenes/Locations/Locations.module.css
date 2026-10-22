@@ -1,0 +1,104 @@
+.layout {
+  display: grid;
+  gap: var(--space-7);
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.mapColumn {
+  max-width: 420px;
+  width: 100%;
+  margin-inline: auto;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 5fr 7fr;
+    align-items: start;
+  }
+
+  .mapColumn {
+    position: sticky;
+    top: 20vh;
+  }
+}
+
+.cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-6);
+}
+
+/* Thẻ bưu thiếp: giấy ivory, bóng giấy, viền trái vàng khi đang được chọn. */
+.card {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-ivory);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-paper);
+  border-left: 2px solid transparent;
+  transition: border-color var(--dur-sm) var(--ease-paper);
+}
+
+.card[data-active='true'] {
+  border-left-color: var(--color-gold);
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: var(--space-7) var(--space-7);
+  }
+}
+
+.label {
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-olive-ink);
+}
+
+.name {
+  font-size: var(--text-heading);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.address {
+  font-style: normal;
+  max-width: 48ch;
+}
+
+.times {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.time {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.note {
+  font-size: 14px;
+  color: var(--color-taupe-ink);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 639px) {
+  .actions > :first-child {
+    flex: 1 1 100%;
+  }
+}

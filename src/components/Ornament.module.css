@@ -1,0 +1,23 @@
+.divider {
+  width: 280px;
+  max-width: 80%;
+  height: 20px;
+  overflow: visible;
+}
+
+.stem {
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+}
+
+.leaf {
+  fill: color-mix(in srgb, var(--color-gold) 22%, transparent);
+  stroke: var(--color-gold);
+  stroke-width: 0.07;
+}
+
+.diamond {
+  fill: var(--color-gold);
+}

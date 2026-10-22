@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Trang chứa địa chỉ nhà riêng và số tài khoản: không cho công cụ tìm kiếm lập chỉ mục. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#f8f4ec" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Tiêu đề + thẻ chia sẻ (Zalo/Messenger/Facebook) được chèn lúc build từ wedding.ts — xem vite.config.ts. -->
+    <title>%SHARE_TITLE%</title>
+    <!-- share-meta -->
+    <script>
+      // Có motion: che tạm các phần tử sẽ được animate (bìa, phong bì) tới khi chunk motion tải
+      // xong, tránh nháy nội dung. Quá 4 giây chưa tải được thì hiện tĩnh.
+      ;(function () {
+        var root = document.documentElement
+        if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return
+        root.dataset.motion = 'pending'
+        setTimeout(function () {
+          if (root.dataset.motion === 'pending') delete root.dataset.motion
+        }, 4000)
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

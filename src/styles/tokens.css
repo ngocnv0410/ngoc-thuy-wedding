@@ -1,0 +1,107 @@
+/*
+ * Design tokens — "Eternal Vows: A Story Written in Light".
+ * Nguồn duy nhất cho màu, chữ, khoảng cách, chuyển động. Component chỉ tham chiếu token,
+ * không viết giá trị cứng.
+ */
+:root {
+  /* ── Màu gốc ─────────────────────────────────────────── */
+  --color-ivory: #f8f4ec;
+  --color-paper: #efe8da;
+  --color-gold: #c6a66b; /* chỉ trang trí trên nền sáng (2.1:1) */
+  --color-olive: #85866a; /* hoạ tiết; chữ ≥ 24px */
+  --color-olive-ink: #5f604a; /* nhãn/tag nhỏ, đạt AA */
+  --color-taupe: #8b7b6b; /* chữ phụ cỡ lớn ≥ 24px */
+  --color-taupe-ink: #6b5d50; /* chữ phụ cỡ thường, đạt AA */
+  --color-espresso: #302720;
+  --color-espresso-hover: #463a31;
+  --color-qr-surface: #ffffff;
+
+  /* Bổ sung theo mẫu tham khảo: giấy hồng nude, champagne, loang be-xám, nhũ vàng. */
+  --color-blush: #ecdccf; /* giấy hai cánh cửa (mẫu 1) */
+  --color-blush-deep: #dcc3b1; /* bóng của hoa văn nổi */
+  --color-champagne: #ece2d3;
+  --color-greige: #cbbcab; /* mảng loang cẩm thạch */
+  --color-mocha: #6e5a4b; /* chữ phụ ấm, đạt AA trên ivory (~5.6:1) */
+  --color-gold-deep: #a8823f; /* vàng đậm cho chữ cỡ lớn (≥ 3:1 trên ivory) */
+  /* Nhũ vàng cho tên viết tay — chuyển sắc như lá vàng ép. */
+  --gold-foil: linear-gradient(100deg, #9a7637 0%, #c9a462 30%, #e2c88f 48%, #b48d4a 66%, #9a7637 100%);
+
+  /* ── Màu theo ngữ cảnh scene (LightLayer nội suy các biến này) ── */
+  --scene-bg: var(--color-ivory);
+  --scene-ink: var(--color-espresso);
+  --scene-ink-muted: var(--color-taupe-ink);
+  --scene-accent: var(--color-gold);
+  --focus-ring: var(--color-gold);
+
+  /* ── Font ─────────────────────────────────────────────── */
+  --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-script: 'Great Vibes', 'Cormorant Garamond', cursive;
+  /* Tên cô dâu chú rể: script copperplate trang trọng (có subset tiếng Việt). */
+  --font-names: 'Pinyon Script', 'Great Vibes', cursive;
+
+  --text-display-xl: clamp(56px, 11vw, 168px);
+  --text-display-lg: clamp(40px, 6vw, 88px);
+  --text-heading: clamp(24px, 3vw, 36px);
+  --text-body: clamp(16px, 0.9rem + 0.25vw, 18px);
+  --text-label: clamp(12px, 0.7rem + 0.1vw, 13px);
+  --text-numeral: clamp(72px, 14vw, 200px);
+
+  --leading-display: 1.05;
+  --leading-heading: 1.2;
+  --leading-body: 1.65;
+  --tracking-label: 0.16em;
+
+  /* ── Khoảng cách (4-based) ────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 160px;
+
+  --gutter: 20px;
+  --section-gap: var(--space-9);
+  --content-max: 1440px;
+  --measure: 62ch;
+
+  /* ── Bề mặt ───────────────────────────────────────────── */
+  --radius-card: 2px;
+  --shadow-paper: 0 1px 2px rgb(48 39 32 / 0.06), 0 12px 32px -8px rgb(48 39 32 / 0.18);
+  --hairline: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+  --tap-min: 48px;
+
+  /* ── Chuyển động ──────────────────────────────────────── */
+  --ease-paper: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-silk: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-xs: 150ms;
+  --dur-sm: 300ms;
+  --dur-md: 600ms;
+  --dur-lg: 1000ms;
+  --dur-xl: 1600ms;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --gutter: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 48px;
+    --section-gap: var(--space-10);
+  }
+}
+
+/* Scene 5 — ánh nến: nền espresso, chữ vàng (6.3:1). */
+[data-light='candle'] {
+  --scene-bg: var(--color-espresso);
+  --scene-ink: var(--color-ivory);
+  --scene-ink-muted: var(--color-gold);
+  --focus-ring: var(--color-ivory);
+}

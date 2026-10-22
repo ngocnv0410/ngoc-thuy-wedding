@@ -1,0 +1,102 @@
+.video {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* Khung điện ảnh 16:9 trên điện thoại, 2.39:1 trên màn rộng. */
+.frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-espresso);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-paper);
+}
+
+@media (min-width: 1024px) {
+  .frame {
+    aspect-ratio: 2.39 / 1;
+  }
+}
+
+.frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Đang phát: hiện đủ khung hình (letterbox) thay vì cắt. */
+.video[data-state='playing'] video,
+.video[data-state='paused'] video {
+  object-fit: contain;
+}
+
+.play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: linear-gradient(to top, rgb(48 39 32 / 0.45), rgb(48 39 32 / 0.1));
+  cursor: pointer;
+}
+
+.playIcon {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border: 1px solid var(--color-gold);
+  border-radius: 50%;
+  background: rgb(48 39 32 / 0.35);
+  backdrop-filter: blur(2px);
+  color: var(--color-ivory);
+  transition:
+    transform var(--dur-sm) var(--ease-paper),
+    background-color var(--dur-sm) var(--ease-paper);
+}
+
+.playIcon svg {
+  width: 26px;
+  height: 26px;
+  margin-left: 4px;
+  fill: currentColor;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .play:hover .playIcon {
+    transform: scale(1.06);
+    background: rgb(198 166 107 / 0.35);
+  }
+}
+
+.play:focus-visible .playIcon {
+  outline: 2px solid var(--color-ivory);
+  outline-offset: 4px;
+}
+
+.error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  text-align: center;
+  color: var(--color-ivory);
+  background: rgb(48 39 32 / 0.85);
+}
+
+.error a {
+  color: var(--color-gold);
+  text-underline-offset: 4px;
+}
+
+.video figcaption {
+  font-family: var(--font-serif);
+  font-size: var(--text-heading);
+  font-style: italic;
+  text-align: center;
+}
