@@ -36,8 +36,8 @@ export function Details({ content }: { content: WeddingContent }) {
   return (
     <SceneShell ref={ref} id="thong-tin" light="noon" labelledBy="details-title" className={styles.scene}>
       <MarbleFrame seed={8} />
-      <BabysBreath corner="top-left" seed={31} className={styles.bouquetTop} />
-      <BabysBreath corner="bottom-right" seed={44} className={styles.bouquetBottom} />
+      <BabysBreath corner="top-left" seed={31} />
+      <BabysBreath corner="bottom-right" variant="sprig" seed={44} />
 
       <SceneHeading id="details-title" eyebrow="Thông tin lễ cưới">
         Trân trọng báo tin

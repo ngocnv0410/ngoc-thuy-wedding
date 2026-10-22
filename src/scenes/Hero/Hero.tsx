@@ -77,7 +77,7 @@ export function Hero({ content, onReplay }: HeroProps) {
     <section ref={ref} id="bia" className={styles.stationery} aria-labelledby="hero-title" data-light="morning">
       <MarbleFrame seed={5} />
       <BabysBreath corner="top-right" seed={11} />
-      <BabysBreath corner="bottom-left" seed={23} className={styles.bouquetBottom} />
+      <BabysBreath corner="bottom-left" variant="sprig" seed={23} />
 
       <div className={styles.frame} data-anim="frame">
         <span data-anim="seal" className={styles.seal}>

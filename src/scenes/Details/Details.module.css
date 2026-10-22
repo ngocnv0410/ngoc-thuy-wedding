@@ -3,15 +3,6 @@
   text-align: center;
 }
 
-/* Hoa baby ở góc trên trái và dưới phải (mẫu 3). */
-.bouquetTop {
-  width: clamp(120px, 26vw, 240px);
-}
-
-.bouquetBottom {
-  width: clamp(130px, 28vw, 260px);
-}
-
 /* ── Hai họ ─────────────────────────────────────────────── */
 .families {
   display: grid;
