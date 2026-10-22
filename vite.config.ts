@@ -5,7 +5,7 @@ import { escapeHtml, share, shareMetaTags } from './scripts/share.ts'
 
 /**
  * Chèn tiêu đề và thẻ chia sẻ (Open Graph) vào index.html từ wedding.ts — một nguồn dữ liệu.
- * URL tuyệt đối của ảnh OG: SITE_URL (tên miền chính thức) hoặc CF_PAGES_URL (Cloudflare Pages).
+ * URL tuyệt đối của ảnh OG: SITE_URL (tên miền chính thức / GitHub Pages) hoặc CF_PAGES_URL (Cloudflare Pages).
  */
 function shareMeta(): Plugin {
   return {
@@ -20,6 +20,8 @@ function shareMeta(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  // GitHub Pages phục vụ site dưới /<tên-repo>/: workflow deploy đặt BASE_PATH.
+  base: process.env.BASE_PATH ?? '/',
   plugins: [
     react(),
     // Ảnh gốc trong src/assets/photos được xử lý lúc build thành AVIF/WebP/JPEG + srcset.

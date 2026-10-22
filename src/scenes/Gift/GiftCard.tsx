@@ -17,6 +17,8 @@ export function GiftCard({ account }: { account: BankAccount }) {
   const numberRef = useRef<HTMLSpanElement>(null)
   const alt = `Mã QR chuyển khoản ${account.bankName} – ${account.accountName}`
   const fullText = `${account.bankName} – ${account.accountName} – ${account.accountNumber}`
+  // qrImage tính từ gốc site; thêm base path khi site chạy dưới thư mục con (GitHub Pages).
+  const qrSrc = import.meta.env.BASE_URL + account.qrImage.replace(/^\//, '')
 
   function selectNumber() {
     const node = numberRef.current
@@ -33,7 +35,7 @@ export function GiftCard({ account }: { account: BankAccount }) {
       <p className={styles.side}>{SIDE_LABEL[account.side]}</p>
 
       <button type="button" className={styles.qrButton} onClick={() => dialogRef.current?.showModal()}>
-        <img src={account.qrImage} alt={alt} width={240} height={240} className={styles.qr} />
+        <img src={qrSrc} alt={alt} width={240} height={240} className={styles.qr} />
         <span className="visually-hidden">Phóng to mã QR</span>
       </button>
 
@@ -57,7 +59,7 @@ export function GiftCard({ account }: { account: BankAccount }) {
       <div className={styles.actions}>
         <Button
           variant="primary"
-          href={account.qrImage}
+          href={qrSrc}
           download={`QR-mung-cuoi-${account.bankName}-${account.accountName.replace(/\s+/g, '-')}.png`}
           className={styles.save}
         >
@@ -90,7 +92,7 @@ export function GiftCard({ account }: { account: BankAccount }) {
           if (event.target === dialogRef.current) dialogRef.current?.close()
         }}
       >
-        <img src={account.qrImage} alt={alt} className={styles.dialogQr} />
+        <img src={qrSrc} alt={alt} className={styles.dialogQr} />
         <p className={styles.dialogInfo}>
           {account.bankName} · {account.accountName}
           <br />
