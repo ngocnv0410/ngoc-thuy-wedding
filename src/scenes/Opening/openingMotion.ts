@@ -1,3 +1,4 @@
+import { holdPaint } from '../../components/decor/paint'
 import { gsap, guard } from '../../lib/gsap'
 
 const one = (root: Element, selector: string) => root.querySelector<HTMLElement>(selector)
@@ -8,22 +9,16 @@ let intro: gsap.core.Timeline | undefined
 let breathing: gsap.core.Tween | undefined
 
 /**
- * Cửa xuất hiện: hoa văn "nổi" dần lên mặt giấy (bóng và viền sáng hiện sau mặt hoa văn), tên ép
- * kim ánh lên từ trái sang, dấu sáp đặt xuống khe cửa; CTA hiện sau cùng, dấu sáp "thở" chờ chạm.
+ * Cửa xuất hiện: hai cánh lùi nhẹ về vị trí, dấu sáp đặt xuống khe cửa; CTA hiện sau cùng, dấu sáp
+ * "thở" chờ chạm. Chỉ animate transform/opacity của các lớp riêng — không đụng vào bên trong SVG
+ * hoa văn (vẽ lại cả cánh cửa mỗi khung hình là giật trên điện thoại).
  */
 export function introDoors(root: HTMLElement): () => void {
   const seal = one(root, anim('seal'))
+  holdPaint(2200)
 
   intro = gsap.timeline({ defaults: { ease: 'paper' } })
-  intro
-    .from(all(root, '[data-door]'), { scale: 1.04, duration: 1.6, ease: 'silk' }, 0)
-    .from(all(root, anim('relief')), { autoAlpha: 0, duration: 1.4 }, 0.2)
-    .fromTo(
-      all(root, anim('foil')),
-      { autoAlpha: 0, clipPath: 'inset(0% 100% 0% 0%)' },
-      { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'silk', clearProps: 'clipPath' },
-      0.6,
-    )
+  intro.from(all(root, '[data-door]'), { scale: 1.04, duration: 1.6, ease: 'silk' }, 0)
   if (seal) {
     intro.fromTo(
       seal,
@@ -63,6 +58,7 @@ interface OpenCallbacks {
 export function openDoors(root: HTMLElement, { onReveal, onDone }: OpenCallbacks) {
   intro?.progress(1)
   breathing?.kill()
+  holdPaint(2800)
 
   const seal = one(root, anim('seal'))
   const doors = one(root, '[data-door]')?.parentElement

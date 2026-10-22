@@ -155,19 +155,6 @@ export function washLayer(washes: Frame['washes'], seed: number, tone: Tone, fil
   )
 }
 
-/**
- * Mảng loang dựng thành ảnh SVG riêng (data URL): filter nhiễu + dịch chuyển rất nặng, để trong
- * SVG sống thì mỗi lần trang vẽ lại (vd. animation nhỏ ở nút cuộn) lại phải tính lại. Ảnh thì
- * trình duyệt rasterize một lần rồi dùng lại.
- */
-export function washImage(washes: Frame['washes'], height: number, seed: number, tone: Tone): string {
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${height}" width="${W}" height="${height}" preserveAspectRatio="none">` +
-    washLayer(washes, seed, tone) +
-    `</svg>`
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`
-}
-
 /** Nhũ vàng của gân và hạt nhũ (stop của gradient chéo). */
 export const FOIL_STOPS: Array<[number, string]> = [
   [0, '#b08d55'],
@@ -177,9 +164,69 @@ export const FOIL_STOPS: Array<[number, string]> = [
   [1, '#b08d55'],
 ]
 
-/** Màu tông sáng — khớp MarbleFrame.module.css; ảnh chia sẻ (không có CSS) dùng trực tiếp. */
-export const MARBLE_COLORS = {
-  base: '#ebe3da',
-  glow: '#f6f2ec',
-  grit: '#9c8669',
-} as const
+interface MarblePalette {
+  base: string
+  clouds: number
+  glow: [string, string, string]
+  mottle: number
+  grit: string
+}
+
+/** Giấy kem ấm (mẫu 3); biến thể ánh nến: mép mocha, giữa espresso, nhũ vàng sáng. */
+export const MARBLE_TONES: Record<Tone, MarblePalette> = {
+  light: { base: '#ebe3da', clouds: 0.18, glow: ['#f6f2ec', '#f1ebe3', '#ebe5dc'], mottle: 0.3, grit: '#9c8669' },
+  dark: { base: '#3a2f27', clouds: 0.35, glow: ['#2e251f', '#332a23', '#3a2f27'], mottle: 0.08, grit: '#9c8669' },
+}
+
+export const MARBLE_COLORS = { base: MARBLE_TONES.light.base, glow: MARBLE_TONES.light.glow[0], grit: MARBLE_TONES.light.grit } as const
+
+/**
+ * Lớp mềm của nền (giấy, vân mây, mảng loang, dải sáng giữa, lốm đốm sáng) thành SVG độc lập
+ * khung W × height — vẽ vào canvas độ phân giải thấp (vốn đã mờ, không thấy khác).
+ */
+export function frameSoftSvg(data: Frame, seed: number, height: number, tone: Tone): string {
+  const c = MARBLE_TONES[tone]
+  const [inner, mid, outer] = c.glow
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${height}" width="${W}" height="${height}" preserveAspectRatio="none">` +
+    `<defs>` +
+    `<filter id="clouds" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.004 0.003" numOctaves="4" seed="${seed}"/>` +
+    `<feColorMatrix type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.39  0 0 0 0 0.33  0 0 0 -1.2 0.62"/></filter>` +
+    `<filter id="mottle" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.014 0.011" numOctaves="3" seed="${seed + 7}"/>` +
+    `<feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.98  0 0 0 0 0.95  0 0 0 1.4 -0.62"/></filter>` +
+    `<linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">` +
+    `<stop offset="0.06" stop-color="${outer}" stop-opacity="0"/><stop offset="0.26" stop-color="${mid}" stop-opacity="0.6"/>` +
+    `<stop offset="0.5" stop-color="${inner}" stop-opacity="0.9"/><stop offset="0.74" stop-color="${mid}" stop-opacity="0.6"/>` +
+    `<stop offset="0.94" stop-color="${outer}" stop-opacity="0"/></linearGradient>` +
+    `</defs>` +
+    `<rect width="${W}" height="${height}" fill="${c.base}"/>` +
+    `<rect width="${W}" height="${height}" filter="url(#clouds)" opacity="${c.clouds}"/>` +
+    washLayer(data.washes, seed, tone, 'ink') +
+    // Dải giữa sáng kem cho chữ, mờ dần ra hai mép — không có đường viền.
+    `<rect width="${W}" height="${height}" fill="url(#glow)"/>` +
+    `<rect width="${W}" height="${height}" filter="url(#mottle)" opacity="${c.mottle}" style="mix-blend-mode:screen"/>` +
+    `</svg>`
+  )
+}
+
+/**
+ * Lớp sắc nét (gân nhũ, hạt nhũ, hạt sạn) — không filter nào, nên hiển thị thẳng như ảnh SVG mà
+ * cuộn vẫn nhẹ, và giữ nét ở mọi độ phân giải.
+ */
+export function frameCrispSvg(data: Frame, height: number, tone: Tone): string {
+  const c = MARBLE_TONES[tone]
+  const foil = FOIL_STOPS.map(([offset, color]) => `<stop offset="${offset}" stop-color="${color}"/>`).join('')
+  const veins = data.veins
+    .map((v) => `<path d="${v.d}" stroke-width="${v.weight ? 1.4 : 0.9}" opacity="${v.weight ? 0.9 : 0.75}" vector-effect="non-scaling-stroke"/>`)
+    .join('')
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${height}" width="${W}" height="${height}" preserveAspectRatio="none">` +
+    `<defs><linearGradient id="foil" x1="0" y1="0" x2="1" y2="1">${foil}</linearGradient>` +
+    `<pattern id="foilTile" width="160" height="160" patternUnits="userSpaceOnUse"><rect width="160" height="160" fill="url(#foil)"/></pattern></defs>` +
+    `<g fill="none" stroke="url(#foilTile)" stroke-linecap="round" stroke-linejoin="round">${veins}</g>` +
+    `<path d="${data.grit}" fill="${c.grit}" opacity="0.35"/>` +
+    `<path d="${data.specks}" fill="url(#foilTile)" opacity="0.95"/>` +
+    `<path d="${data.glitter}" fill="url(#foilTile)" opacity="0.75"/>` +
+    `</svg>`
+  )
+}

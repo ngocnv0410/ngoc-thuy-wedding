@@ -129,6 +129,8 @@
   background: rgb(60 44 34);
   opacity: 0;
   pointer-events: none;
+  /* Lớp riêng: đổi opacity không bắt vẽ lại cả cánh cửa (SVG hoa văn + filter). */
+  will-change: opacity;
 }
 
 /* Khe sáng giữa hai cánh, loé lên khi cửa vừa hé. */
@@ -143,6 +145,7 @@
   opacity: 0;
   transform: scaleX(0.05);
   pointer-events: none;
+  will-change: transform, opacity;
 }
 
 /* ── Lớp 3D: hiện đúng khung hình của cửa 2.5D rồi thay chỗ ─── */
@@ -175,12 +178,14 @@
   height: var(--seal-size);
   cursor: pointer;
   filter: drop-shadow(0 3px 4px rgb(60 44 34 / 0.3));
+  will-change: transform;
   -webkit-tap-highlight-color: transparent;
 }
 
 .sealHalf {
   position: absolute;
   inset: 0;
+  will-change: transform, opacity;
 }
 
 .sealHalf svg {

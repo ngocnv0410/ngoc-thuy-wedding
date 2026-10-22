@@ -1,6 +1,7 @@
 import { Canvas, useThree } from '@react-three/fiber'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BoxGeometry, type Group, MathUtils, type Mesh, MeshBasicMaterial, MeshStandardMaterial, Vector2 } from 'three'
+import { holdPaint } from '../../../components/decor/paint'
 import { gsap, guard } from '../../../lib/gsap'
 import { DOOR_DEPTH, SEAL_R } from './dimensions'
 import { fitTexture, sealHalfGeometry } from './geometry'
@@ -193,6 +194,7 @@ function Scene({ text, onReady, onOpenRequest }: Doors3DProps) {
     const openTimeline = (root: HTMLElement, { onReveal, onDone }: OpenCallbacks) => {
       const m = materials
       const camera = get().camera
+      holdPaint(2800)
       sealPress.current?.scale.set(1, 1, 1)
 
       const tl = gsap.timeline({ defaults: { ease: 'paper' }, onUpdate: invalidate, onComplete: onDone })

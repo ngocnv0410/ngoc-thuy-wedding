@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
 // opentype.js là CommonJS: Node chỉ cho import mặc định.
 import opentype, { type Font } from 'opentype.js'
 import sharp from 'sharp'
-import { BOUQUET_COLORS, type Corner, type Layer, SHAPE, type Variant, bouquet, flip } from '../src/components/decor/bouquet.ts'
+import { type Corner, SHAPE, type Variant, bouquetMarkup } from '../src/components/decor/bouquet.ts'
 import { FOIL_STOPS, MARBLE_COLORS, W as MARBLE_W, frame, washLayer } from '../src/components/decor/marble.ts'
 import { share } from './share.ts'
 
@@ -113,20 +113,8 @@ const background = `
 
 // ── Hoa baby ở góc trên phải và dưới trái, như bìa ──
 function sprig(corner: Corner, variant: Variant, seed: number, width: number, x: number, y: number) {
-  const shape = SHAPE[variant]
-  const { transform, sx, sy } = flip(corner, shape.width, shape.height)
-  const data = bouquet(seed, variant, sx, sy)
-  const c = BOUQUET_COLORS
-  const layer = (l: Layer) =>
-    `<path d="${l.base}" fill="${c.base}"/><path d="${l.dried}" fill="${c.dried}"/><path d="${l.petals}" fill="${c.petals}"/>` +
-    `<path d="${l.driedPetals}" fill="${c.driedPetals}"/><path d="${l.light}" fill="${c.light}"/><path d="${l.centers}" fill="${c.center}"/>`
-  return `<g transform="translate(${x} ${y}) scale(${width / shape.width})"><g transform="${transform}">
-    ${data.stems.map((d) => `<path d="${d}" fill="none" stroke="${c.stem}" stroke-width="1" stroke-linecap="round"/>`).join('')}
-    <path d="${data.twigs}" fill="none" stroke="${c.twig}" stroke-width="0.6" stroke-linecap="round"/>
-    <path d="${data.shadow}" fill="${c.shadow}" filter="url(#petalShadow)"/>
-    <g filter="url(#depth)" opacity="0.82">${layer(data.back)}</g>
-    ${layer(data.front)}
-  </g></g>`
+  const scale = width / SHAPE[variant].width
+  return `<g transform="translate(${x} ${y}) scale(${scale})">${bouquetMarkup(seed, variant, corner, 'light', `f${seed}`)}</g>`
 }
 const sprayW = 380
 const sprigH = 420
@@ -176,8 +164,6 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" 
       <feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="1" seed="8" result="grain"/>
       <feDisplacementMap in="SourceGraphic" in2="grain" scale="4"/>
     </filter>
-    <filter id="petalShadow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.2"/></filter>
-    <filter id="depth" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="0.9"/></filter>
     <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
     <linearGradient id="foil" x1="0" y1="0" x2="1" y2="1">${foil}</linearGradient>
     <pattern id="foilTile" width="160" height="160" patternUnits="userSpaceOnUse">

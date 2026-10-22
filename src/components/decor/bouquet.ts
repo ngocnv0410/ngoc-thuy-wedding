@@ -168,15 +168,76 @@ export function flip(corner: Corner, width: number, height: number): { transform
   }
 }
 
-/** Màu tông sáng — khớp BabysBreath.module.css; ảnh chia sẻ (không có CSS) dùng trực tiếp. */
-export const BOUQUET_COLORS = {
-  stem: '#ab9271',
-  twig: '#b59d7c',
-  shadow: 'rgb(110 86 60 / 0.2)',
-  base: '#bf9f76',
-  petals: '#dcc6a6',
-  dried: '#a88d6d',
-  driedPetals: '#c9ae86',
-  light: '#f3e9d9',
-  center: '#b08f66',
-} as const
+export type Tone = 'light' | 'dark'
+
+/** [màu, độ đậm] — tách riêng độ đậm để mọi trình vẽ SVG (cả librsvg của script build) hiểu. */
+type Paint = readonly [string, number]
+
+interface Palette {
+  stem: Paint
+  twig: Paint
+  shadow: Paint
+  base: Paint
+  petals: Paint
+  dried: Paint
+  driedPetals: Paint
+  light: Paint
+  center: Paint
+}
+
+/** Hoa baby sấy: cành nâu mảnh, bông kem ngà, xen bông khô ngả nâu; nền ánh nến: cành vàng nhạt, hoa kem sáng. */
+const LIGHT: Palette = {
+  stem: ['#ab9271', 1],
+  twig: ['#b59d7c', 1],
+  shadow: ['#6e563c', 0.2],
+  base: ['#bf9f76', 1],
+  petals: ['#dcc6a6', 1],
+  dried: ['#a88d6d', 1],
+  driedPetals: ['#c9ae86', 1],
+  light: ['#f3e9d9', 1],
+  center: ['#b08f66', 1],
+}
+
+export const BOUQUET_TONES: Record<Tone, Palette> = {
+  light: LIGHT,
+  dark: { ...LIGHT, stem: ['#c6a66b', 0.7], twig: ['#c6a66b', 0.7], shadow: ['#000000', 0.35], petals: ['#f3ead9', 1], center: ['#c6a66b', 1] },
+}
+
+const fill = ([color, alpha]: Paint) => `fill="${color}"${alpha < 1 ? ` fill-opacity="${alpha}"` : ''}`
+const stroke = ([color, alpha]: Paint, width: number) =>
+  `fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"${alpha < 1 ? ` stroke-opacity="${alpha}"` : ''}`
+
+/**
+ * Bó hoa dạng chuỗi SVG (filter + các lớp, chưa có thẻ <svg> ngoài), màu ghi thẳng vào thuộc
+ * tính. `id` làm tiền tố cho filter để nhúng nhiều bó vào một SVG (ảnh chia sẻ).
+ */
+export function bouquetMarkup(seed: number, variant: Variant, corner: Corner, tone: Tone, id = 'b'): string {
+  const { width, height } = SHAPE[variant]
+  const { transform, sx, sy } = flip(corner, width, height)
+  const data = bouquet(seed, variant, sx, sy)
+  const c = BOUQUET_TONES[tone]
+  const layer = (l: Layer) =>
+    `<path d="${l.base}" ${fill(c.base)}/><path d="${l.dried}" ${fill(c.dried)}/><path d="${l.petals}" ${fill(c.petals)}/>` +
+    `<path d="${l.driedPetals}" ${fill(c.driedPetals)}/><path d="${l.light}" ${fill(c.light)}/><path d="${l.centers}" ${fill(c.center)}/>`
+  return (
+    `<filter id="${id}-soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.2"/></filter>` +
+    `<filter id="${id}-depth" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="0.9"/></filter>` +
+    `<g transform="${transform}">` +
+    data.stems.map((d) => `<path d="${d}" ${stroke(c.stem, 1)}/>`).join('') +
+    `<path d="${data.twigs}" ${stroke(c.twig, 0.6)}/>` +
+    `<path d="${data.shadow}" ${fill(c.shadow)} filter="url(#${id}-soft)"/>` +
+    `<g filter="url(#${id}-depth)" opacity="0.82">${layer(data.back)}</g>` +
+    layer(data.front) +
+    `</g>`
+  )
+}
+
+/** Bó hoa thành một tệp SVG độc lập — hiển thị như ảnh (rasterize một lần, cuộn không vẽ lại). */
+export function bouquetSvg(seed: number, variant: Variant, corner: Corner, tone: Tone): string {
+  const { width, height } = SHAPE[variant]
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" overflow="visible">` +
+    bouquetMarkup(seed, variant, corner, tone) +
+    `</svg>`
+  )
+}
