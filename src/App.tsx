@@ -70,8 +70,8 @@ function App() {
 
   const chapters: Chapter[] = [
     { id: 'bia', label: 'Bìa thiệp' },
-    { id: 'dem-nguoc', label: 'Đếm ngược ngày cưới' },
     { id: 'thong-tin', label: 'Thông tin lễ cưới' },
+    { id: 'dem-nguoc', label: 'Đếm ngược ngày cưới' },
     ...(showLocations ? [{ id: 'dia-diem', label: 'Địa điểm' }] : []),
     ...(showGallery ? [{ id: 'album', label: 'Album ảnh' }] : []),
     { id: 'mung-cuoi', label: 'Mừng cưới & lời cảm ơn' },
@@ -87,8 +87,8 @@ function App() {
         {wedding.music && !opening && <AudioToggle />}
         <main>
           <Hero content={wedding} onReplay={opening ? undefined : replayOpening} />
-          <Countdown content={wedding} />
           <Details content={wedding} />
+          <Countdown content={wedding} />
           {showLocations && <Locations content={wedding} />}
           {showGallery && <Gallery content={wedding} />}
           <Gift content={wedding} />
