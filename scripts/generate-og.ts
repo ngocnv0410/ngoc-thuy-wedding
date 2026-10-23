@@ -141,7 +141,7 @@ const names = [
 const seal = `<g transform="translate(${W / 2 - 48} 70) scale(0.96)">${sealMarkup('og', share.monogram)}</g>`
 writeFileSync(join(root, 'public', 'favicon.svg'), sealSvg('favicon', share.monogram))
 
-const eyebrow = run(SANS, `THIỆP MỜI CƯỚI · ${share.year}`, 20, 5)
+const eyebrow = run(SANS, 'LỄ THÀNH HÔN', 20, 5)
 const date = run(SERIF, share.dateLine, 38, 2)
 const tagline = run(SERIF_ITALIC, share.tagline, 30)
 

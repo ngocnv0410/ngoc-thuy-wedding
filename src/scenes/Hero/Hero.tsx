@@ -32,7 +32,7 @@ export function Hero({ content, onReplay }: HeroProps) {
 
   const masthead = (
     <p className={styles.masthead} data-anim="masthead">
-      Thiệp mời cưới · {year}
+      Lễ Thành Hôn
     </p>
   )
   const names = (
