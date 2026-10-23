@@ -272,10 +272,12 @@
 }
 
 .actions > button:first-child {
-  gap: 24px;
+  gap: 12px;
   border-radius: 999px;
   box-shadow: 0 8px 24px rgb(72 49 29 / 0.15);
 }
+.openButton { white-space: nowrap; flex-wrap: nowrap; }
+.openButton > [aria-hidden='true'] { order: 1; flex: none; }
 .greeting {
   position: absolute;
   z-index: 2;

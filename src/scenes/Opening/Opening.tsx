@@ -229,8 +229,9 @@ export function Opening({ content, onDone }: OpeningProps) {
       </div>
 
       <div className={styles.actions} data-anim="cta">
-        <Button variant="primary" size="lg" onClick={open}>
-          Mở thiệp <svg aria-hidden="true" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.2"><path d="M5 15L15 5M5 5h10v10" /></svg>
+        <Button variant="primary" size="lg" className={styles.openButton} onClick={open}
+          icon={<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.2"><path d="M5 15L15 5M5 5h10v10" /></svg>}>
+          Mở thiệp
         </Button>
         {track && (
           <button

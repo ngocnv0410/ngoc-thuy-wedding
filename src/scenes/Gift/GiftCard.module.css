@@ -1,137 +1,130 @@
 .card {
   display: grid;
-  justify-items: center;
-  gap: var(--space-5);
-  padding: var(--space-6) var(--space-5);
-  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
-  border-radius: 100px 100px 4px 4px;
-  background: rgb(255 250 243 / 0.035);
+  grid-template-columns: 50px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 132px;
+  padding: 16px 18px;
+  border: 1px solid rgb(168 130 63 / 0.35);
+  border-radius: 4px 24px 4px 4px;
+  background: rgb(255 251 244 / 0.8);
+  color: var(--color-espresso);
+  text-align: start;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -16px rgb(72 49 29 / 0.2);
+  transition: background-color 250ms, border-color 250ms, box-shadow 250ms;
+}
+
+.host { --chibi-h: 92px; justify-self: center; }
+.summary { display: grid; gap: 4px; min-width: 0; }
+.side {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-mocha);
+}
+.recipient {
+  font-family: var(--font-serif);
+  font-size: clamp(19px, 2vw, 24px);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.bank { font-size: 13px; color: var(--color-mocha); }
+.openLabel { display: grid; justify-items: center; gap: 6px; font-size: 10px; white-space: nowrap; color: var(--color-mocha); }
+.openLabel svg { width: 24px; height: 24px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover { background: #fffaf3; border-color: var(--color-gold-deep); box-shadow: 0 12px 28px -16px rgb(72 49 29 / 0.25); }
+}
+
+/* Native dialog owns focus and inert; animate its paper shell, never the QR after entry. */
+.dialog {
+  width: min(92vw, 440px);
+  max-width: none;
+  max-height: calc(100svh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgb(168 130 63 / 0.4);
+  border-radius: 24px;
+  background: var(--color-ivory);
+  color: var(--color-espresso);
+  box-shadow: 0 24px 80px rgb(72 49 29 / 0.2);
   text-align: center;
 }
-
-.side {
-  font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-gold);
-}
-
-/* QR: nền trắng thuần, quiet zone rộng, không hiệu ứng biến dạng. */
-.qrButton {
-  padding: 16px;
-  border: 0;
-  border-radius: var(--radius-card);
-  background: var(--color-qr-surface);
-  cursor: zoom-in;
-}
-
-.qr {
-  width: clamp(200px, 56vw, 240px);
-  height: auto;
-  image-rendering: pixelated;
-}
-
-.info {
-  margin: 0;
+.dialog::backdrop { background: rgb(72 49 29 / 0.3); backdrop-filter: blur(4px); }
+.panel {
+  position: relative;
   display: grid;
-  gap: var(--space-3);
+  justify-items: center;
+  gap: 10px;
+  padding: 20px 20px 24px;
+  background: radial-gradient(ellipse at 50% 0, #fffaf3, transparent 65%);
 }
-
-.info dt {
-  font-size: 11px;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-gold);
-}
-
-.info dd {
-  margin: 0;
-  font-size: 17px;
-}
-
+.dialog[open] { animation: paperIn 450ms var(--ease-paper) both; }
+.dialog[open]::backdrop { animation: veilIn 300ms ease-out both; }
+.dialog[data-closing='true'] { animation: paperOut 180ms ease-in both; pointer-events: none; }
+.dialog[data-closing='true']::backdrop { animation: veilOut 180ms ease-in both; }
+.dialogHeader { display: grid; justify-items: center; gap: 6px; width: 100%; }
+.coupleStage { position: relative; display: grid; place-items: center; }
+.dialogCouple > [data-chibi] { --chibi-h: 82px; }
+.dialog[open] .coupleStage { animation: hello 650ms var(--ease-paper) 100ms both; }
+.heart { position: absolute; top: 2px; left: calc(50% - 8px); width: 16px; opacity: 0; }
+.dialog[open] .heart { animation: heart 1.2s ease-out 450ms both; }
+.dialogTitle { font-size: clamp(23px, 5vw, 30px); line-height: 1.2; }
+.qrPaper { padding: 12px; background: #fff; border: 1px solid rgb(168 130 63 / 0.18); border-radius: 8px; }
+.qr { width: min(58vmin, 240px); height: auto; image-rendering: pixelated; }
 .number {
   font-family: var(--font-serif);
-  font-size: 30px !important;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  font-size: clamp(25px, 6vw, 32px);
+  line-height: 1.2;
   font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.04em;
   user-select: all;
+  -webkit-user-select: all;
 }
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-3);
-}
-
-/* Desktop: QR to là trọng tâm, "Phóng to" đứng đầu; mobile: "Lưu ảnh QR" đứng đầu. */
-@media (min-width: 1024px) {
-  .zoom {
-    order: -1;
-  }
-
-  .save {
-    order: 1;
-  }
-}
-
-.hint {
-  font-size: 12px;
-  color: color-mix(in srgb, var(--color-ivory) 70%, transparent);
-}
-
-@media (min-width: 1024px) {
-  .hint {
-    display: none;
-  }
-}
-
-.dialog {
-  width: min(92vw, 560px);
-  max-height: 92svh;
-  padding: var(--space-6) var(--space-5);
-  border: 0;
-  border-radius: var(--radius-card);
-  background: var(--color-qr-surface);
-  color: var(--color-espresso);
-  text-align: center;
-}
-
-.dialog::backdrop {
-  background: rgb(48 39 32 / 0.85);
-}
-
-.dialogQr {
-  width: min(80vmin, 440px);
-  height: auto;
-  margin-inline: auto;
-  image-rendering: pixelated;
-}
-
-.dialogInfo {
-  margin-top: var(--space-4);
-  font-size: 15px;
-  line-height: 1.6;
-}
-
-.dialogHint {
-  margin-top: var(--space-2);
-  font-size: 13px;
-  color: var(--color-taupe-ink);
-}
-
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
+.actions > * { min-height: 44px; padding-inline: 14px; font-size: 10px; letter-spacing: 0.05em; border-radius: 999px; }
+.hint { max-width: 30ch; font-size: 11px; line-height: 1.5; color: var(--color-mocha); }
 .close {
-  margin-top: var(--space-4);
-  min-width: 120px;
-  min-height: var(--tap-min);
-  border: 1px solid var(--color-espresso);
-  border-radius: var(--radius-card);
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 12px;
+  border: 0;
+  border-radius: 50%;
   background: transparent;
-  font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  color: var(--color-mocha);
   cursor: pointer;
+}
+.close svg { width: 20px; height: 20px; }
+.close:hover { background: rgb(168 130 63 / 0.08); }
+
+@keyframes paperIn { from { opacity: 0; transform: translateY(24px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes paperOut { to { opacity: 0; transform: translateY(12px) scale(0.98); } }
+@keyframes veilIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes veilOut { to { opacity: 0; } }
+@keyframes hello { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: none; } }
+@keyframes heart { 0% { opacity: 0; transform: translateY(8px) scale(0.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-20px) scale(1); } }
+
+@media (max-width: 359px) {
+  .card { grid-template-columns: 42px minmax(0, 1fr) auto; gap: 10px; padding-inline: 12px; }
+  .host { --chibi-h: 80px; }
+  .panel { padding: 16px 12px 20px; }
+  .actions > * { padding-inline: 10px; }
+}
+@media (max-height: 650px) {
+  .dialogCouple > [data-chibi] { --chibi-h: 64px; }
+  .panel { gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog, .dialog::backdrop, .coupleStage, .heart { animation: none !important; }
+  .heart { display: none; }
 }

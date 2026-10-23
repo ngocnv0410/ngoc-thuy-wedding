@@ -13,7 +13,7 @@ import { loadMotion, prefersMotion, useSceneMotion } from '../../motion/useMotio
 import styles from './Gift.module.css'
 import { GiftCard } from './GiftCard'
 
-/** Scene 5 — Mừng cưới & lời cảm ơn, ánh nến. Một lá thư, không phải trang thanh toán. */
+/** Mừng cưới & lời cảm ơn, giấy kem champagne cùng các phong thư mở QR. */
 export function Gift({ content }: { content: WeddingContent }) {
   const ref = useRef<HTMLElement>(null)
   const mailRef = useRef<HTMLDivElement>(null)
@@ -31,10 +31,10 @@ export function Gift({ content }: { content: WeddingContent }) {
   const day = primaryDay(content.days)
 
   return (
-    <SceneShell ref={ref} id="mung-cuoi" light="candle" labelledBy="gift-title" className={styles.scene}>
+    <SceneShell ref={ref} id="mung-cuoi" light="golden" labelledBy="gift-title" className={styles.scene}>
       <Stationery
         seed={34}
-        tone="dark"
+        tone="light"
         sprigs={[
           { corner: 'top-right', seed: 95 },
           { corner: 'bottom-left', variant: 'sprig', seed: 106 },
