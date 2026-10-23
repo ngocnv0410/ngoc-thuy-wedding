@@ -10,12 +10,14 @@ interface CopyButtonProps {
   successMessage: string
   /** Gọi khi không sao chép được, để UI chọn sẵn đoạn text cho khách tự nhấn giữ. */
   onFail?: () => void
+  /** Gọi sau khi sao chép thành công (ví dụ để chạy hoạt cảnh trang trí). */
+  onCopied?: () => void
   variant?: 'primary' | 'ghost' | 'link'
 }
 
 const RESET_MS = 2000
 
-export function CopyButton({ value, label, successMessage, onFail, variant = 'ghost' }: CopyButtonProps) {
+export function CopyButton({ value, label, successMessage, onFail, onCopied, variant = 'ghost' }: CopyButtonProps) {
   const notify = useToast()
   const [copied, setCopied] = useState(false)
   const timer = useRef<number | undefined>(undefined)
@@ -29,6 +31,7 @@ export function CopyButton({ value, label, successMessage, onFail, variant = 'gh
       notify(successMessage)
       window.clearTimeout(timer.current)
       timer.current = window.setTimeout(() => setCopied(false), RESET_MS)
+      onCopied?.()
     } else {
       notify('Không sao chép được — hãy nhấn giữ để chọn và sao chép.')
       onFail?.()

@@ -1,5 +1,6 @@
 import { holdPaint } from '../../components/decor/paint'
 import { gsap, guard } from '../../lib/gsap'
+import { blink, bow, lookAround, run, wave } from '../../motion/chibi'
 
 const one = (root: Element, selector: string) => root.querySelector<HTMLElement>(selector)
 const all = (root: Element, selector: string) => [...root.querySelectorAll<HTMLElement>(selector)]
@@ -7,6 +8,10 @@ const anim = (name: string) => `[data-anim="${name}"]`
 
 let intro: gsap.core.Timeline | undefined
 let breathing: gsap.core.Tween | undefined
+let peekLoop: gsap.core.Timeline | undefined
+
+/** Hướng nhìn về nút "Mở thiệp" (đáy giữa): chú rể ló ở mép trái, cô dâu ở mép phải. */
+const towardCta = { '--face-x': (index: number) => (index === 0 ? '4px' : '-4px'), '--face-y': '2.5px' }
 
 /**
  * Cửa xuất hiện: hai cánh lùi nhẹ về vị trí, dấu sáp đặt xuống khe cửa; CTA hiện sau cùng, dấu sáp
@@ -35,12 +40,33 @@ export function introDoors(root: HTMLElement): () => void {
       breathing = gsap.to(seal, { scale: 1.02, duration: 1.2, ease: 'sine.inOut', yoyo: true, repeat: -1 })
     })
   }
+  // Hai cái đầu chibi ló ra từ hai mép, nhìn quanh, chớp mắt rồi nhìn về nút "Mở thiệp".
+  const peeks = all(root, '[data-anim^="peek-"]')
+  if (peeks.length) {
+    intro
+      .set(peeks, { '--face-x': '0px', '--face-y': '0px' }, 0)
+      .from(peeks, { xPercent: (index: number) => (index === 0 ? -80 : 80), duration: 0.6 }, 1.6)
+      .add(lookAround(peeks), 2.3)
+      .add(blink(peeks), 3.6)
+      .to(peeks, { ...towardCta, duration: 0.4, ease: 'silk' }, 3.9)
+      // Lặp chậm (~6s một vòng) cho tới khi khách bấm mở.
+      .call(() => {
+        peekLoop = gsap
+          .timeline({ repeat: -1, repeatDelay: 2.4, delay: 1.5 })
+          .add(blink(peeks))
+          .to(peeks, { '--face-x': '0px', '--face-y': '0px', duration: 0.3, ease: 'silk' }, 0.6)
+          .add(lookAround(peeks))
+          .to(peeks, { ...towardCta, duration: 0.4, ease: 'silk' })
+          .add(blink(peeks), '+=0.8')
+      })
+  }
   const cancelGuard = guard(intro)
 
   return () => {
     cancelGuard()
     intro?.kill()
     breathing?.kill()
+    peekLoop?.kill()
   }
 }
 
@@ -91,12 +117,51 @@ export function openDoors(root: HTMLElement, { onReveal, onDone }: OpenCallbacks
   tl.to(all(root, '[data-shade]'), { opacity: 0.55, ...swing }, 0.6)
   if (doors) tl.to(doors, { scale: 1.14, duration: 2, ease: 'power2.inOut' }, 0.5)
 
-  tl.to(all(root, anim('cta')), { autoAlpha: 0, y: 12, duration: 0.4 }, 0.2)
+  tl.add(chibiOpen(root), 0)
+    .to(all(root, anim('cta')), { autoAlpha: 0, y: 12, duration: 0.4 }, 0.2)
     .call(onReveal, [], 1.05)
     .to(root, { autoAlpha: 0, duration: 0.5, ease: 'power1.out' }, 2.0)
 
   guard(tl)
 
+  return {
+    fastForward: () => void tl.timeScale(3),
+    finish: () => void tl.progress(1),
+  }
+}
+
+/**
+ * Hai bạn chibi mở cửa, khớp nhịp openDoors (dùng cho cả bản 2.5D lẫn 3D): đầu thụt vào → chạy từ
+ * hai mép vào khe cửa → đẩy hai cánh ra đúng lúc cửa bắt đầu xoay (0.6s) → quay ra cúi chào / vẫy
+ * tay. Overlay tan ở 2.0s mang theo cả hai.
+ */
+function chibiOpen(root: HTMLElement) {
+  intro?.progress(1)
+  peekLoop?.kill()
+  const tl = gsap.timeline({ defaults: { ease: 'paper' } })
+  const peeks = all(root, '[data-anim^="peek-"]')
+  if (peeks.length) tl.to(peeks, { xPercent: (index: number) => (index === 0 ? -110 : 110), duration: 0.25, ease: 'power2.in' }, 0)
+
+  const groom = one(root, anim('run-groom'))
+  const bride = one(root, anim('run-bride'))
+  if (!groom || !bride) return tl
+  const runIn = root.clientWidth * 0.6
+
+  return tl
+    .set([groom, bride], { autoAlpha: 1 }, 0.1)
+    .add(run(groom, -runIn), 0.1)
+    .add(run(bride, runIn), 0.1)
+    .to(groom, { '--arm-l': '95deg', '--arm-r': '-55deg', '--upper-r': '-10deg', duration: 0.3 }, 0.6)
+    .to(bride, { '--arm-r': '95deg', '--arm-l': '-55deg', '--upper-r': '10deg', duration: 0.3 }, 0.6)
+    .to([groom, bride], { '--arm-l': '6deg', '--arm-r': '6deg', '--upper-r': '0deg', duration: 0.3, ease: 'silk' }, 1.15)
+    .add(bow(groom), 1.4)
+    .add(wave(bride, 1), 1.35)
+}
+
+/** Bản 3D: cửa do Doors3D mở, chibi chạy timeline riêng — vẫn có lưới an toàn và tua nhanh. */
+export function openChibis(root: HTMLElement) {
+  const tl = chibiOpen(root)
+  guard(tl)
   return {
     fastForward: () => void tl.timeScale(3),
     finish: () => void tl.progress(1),

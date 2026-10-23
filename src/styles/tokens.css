@@ -83,6 +83,25 @@
   --dur-md: 600ms;
   --dur-lg: 1000ms;
   --dur-xl: 1600ms;
+
+  /* ── Chibi cô dâu chú rể (minh hoạ nét mảnh, kem–nâu–vàng) ── */
+  --chibi-ink: #3b2c22; /* nét viền */
+  --chibi-feature: #3b2c22; /* mắt, mày, miệng — giữ tối cả trên nền ánh nến */
+  --chibi-stroke: 1.4; /* đơn vị viewBox 120×200: ~1.1px ở 160px cao */
+  --chibi-skin: #f7e1cc;
+  --chibi-cheek: #eebaa0;
+  --chibi-iris: #8a5a34;
+  --chibi-hair-groom: #8c5b37;
+  --chibi-hair-bride: #b8864f;
+  --chibi-suit: var(--color-mocha);
+  --chibi-shoe: #3b2c22;
+  --chibi-cloth: #fffaf3; /* váy, sơ mi, giấy đạo cụ */
+  --chibi-veil: rgb(255 250 243 / 0.72);
+  --chibi-accent: var(--color-gold); /* vòng hoa, cúc áo, tim */
+  --chibi-shadow: rgb(48 39 32 / 0.12);
+  --chibi-h-sm: clamp(88px, 24vw, 112px);
+  --chibi-h-md: clamp(120px, 32vw, 168px);
+  --chibi-h-lg: clamp(168px, 16vw, 232px);
 }
 
 @media (min-width: 640px) {
@@ -104,4 +123,7 @@
   --scene-ink: var(--color-ivory);
   --scene-ink-muted: var(--color-gold);
   --focus-ring: var(--color-ivory);
+  /* Viền sáng tách chibi khỏi nền tối. */
+  --chibi-ink: #f3e6cf;
+  --chibi-shadow: rgb(0 0 0 / 0.25);
 }

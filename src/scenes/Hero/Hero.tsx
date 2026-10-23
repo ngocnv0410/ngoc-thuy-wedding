@@ -1,4 +1,6 @@
 import { useRef } from 'react'
+import { ChibiCouple } from '../../components/chibi/Chibi'
+import { ChibiProp } from '../../components/chibi/ChibiProp'
 import { CoupleNames } from '../../components/CoupleNames'
 import { DateBlock } from '../../components/DateBlock'
 import { Stationery } from '../../components/decor/Stationery'
@@ -90,13 +92,33 @@ export function Hero({ content, onReplay }: HeroProps) {
         {names}
         <Divider className={styles.divider} />
         <DateBlock day={day} />
-        {tagline}
+        {/*
+         * Chibi chỉ ở bìa thiệp in (bìa ảnh đã có ảnh thật làm điểm nhấn). Điện thoại: hai bạn đứng
+         * hai bên câu chào để bìa vẫn vừa một màn hình; desktop: cặp đôi đứng bên phải khung bìa.
+         */}
+        <div className={styles.welcome}>
+          {tagline}
+          <ChibiCouple size="sm" lean className={styles.couple} anim="hero-couple">
+            {FLOATS.map(([kind, left]) => (
+              <ChibiProp key={left} kind={kind} className={styles.float} style={{ left }} anim="hero-float" />
+            ))}
+          </ChibiCouple>
+        </div>
       </div>
       <ScrollCue />
       {onReplay && <ReplayButton onClick={onReplay} />}
     </section>
   )
 }
+
+/** Tim và cánh hoa bay lên từ chỗ hai bạn đứng (hai mép), không bay qua chữ trên điện thoại. */
+const FLOATS = [
+  ['heart', '4%'],
+  ['petal', '12%'],
+  ['heart', '84%'],
+  ['petal', '92%'],
+  ['heart', '8%'],
+] as const
 
 function ReplayButton({ onClick }: { onClick: () => void }) {
   return (

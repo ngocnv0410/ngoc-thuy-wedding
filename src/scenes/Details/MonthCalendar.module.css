@@ -1,6 +1,6 @@
 .calendar {
   width: min(100%, 360px);
-  margin: var(--space-8) auto 0;
+  margin: 0 auto;
   text-align: center;
 }
 

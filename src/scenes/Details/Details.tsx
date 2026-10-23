@@ -1,5 +1,7 @@
 import { useRef } from 'react'
 import { Button } from '../../components/Button'
+import { Chibi } from '../../components/chibi/Chibi'
+import { PropArt } from '../../components/chibi/ChibiProp'
 import { DateBlock } from '../../components/DateBlock'
 import { Stationery } from '../../components/decor/Stationery'
 import { Divider } from '../../components/Ornament'
@@ -7,7 +9,7 @@ import { PendingNote } from '../../components/PendingNote'
 import { SceneHeading, SceneShell } from '../../components/SceneShell'
 import type { Person, WeddingContent, WeddingDay, WeddingEvent } from '../../content/types'
 import { buildIcs, googleCalendarUrl, type CalendarEntry } from '../../lib/calendar'
-import { orderedCouple, primaryDay } from '../../lib/format'
+import { orderedCouple, primaryDay, solarParts } from '../../lib/format'
 import styles from './Details.module.css'
 import { useSceneMotion } from '../../motion/useMotion'
 import { MonthCalendar } from './MonthCalendar'
@@ -43,7 +45,7 @@ export function Details({ content }: { content: WeddingContent }) {
       />
 
       <SceneHeading id="details-title" eyebrow="Thông tin lễ cưới">
-        Trân trọng báo tin
+        Ngày vui của {first.givenName} &amp; {second.givenName}
       </SceneHeading>
 
       <div className={styles.families} data-anim="families">
@@ -79,7 +81,28 @@ export function Details({ content }: { content: WeddingContent }) {
       </ol>
       {missingTimes && <PendingNote>giờ tổ chức, bên tổ chức (nhà gái/nhà trai) và địa điểm của từng lễ.</PendingNote>}
 
-      <MonthCalendar days={days} primaryId={main.id} />
+      {/* Chú rể cầm tờ lịch ngày đầu, cô dâu cầm ngày chính; lịch khoanh xong thì nhìn nhau cười. */}
+      <div className={styles.calendarStage} data-anim="calendar-stage">
+        <Chibi
+          who="groom"
+          pose="carry"
+          look="right"
+          eyes="happy"
+          held={<PropArt kind="calendar" label={String(solarParts(days[0].solar).day)} />}
+          className={styles.calGroom}
+          anim="cal-groom"
+        />
+        <MonthCalendar days={days} primaryId={main.id} />
+        <Chibi
+          who="bride"
+          pose={days.length > 1 ? 'carry' : 'stand'}
+          look="left"
+          eyes="happy"
+          held={days.length > 1 ? <PropArt kind="calendar" label={String(solarParts(main.solar).day)} /> : undefined}
+          className={styles.calBride}
+          anim="cal-bride"
+        />
+      </div>
 
       {entries.length > 0 && (
         <div className={styles.actions} data-anim="actions">

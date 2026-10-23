@@ -103,6 +103,86 @@
   color: var(--color-mocha);
 }
 
+/*
+ * Câu chào + cặp chibi. Dưới 1024px: chú rể | câu chào | cô dâu trên một hàng (khối cặp đôi
+ * "display: contents" để hai nhân vật thành hai cột lưới) — chỉ cao hơn tagline vài chục px.
+ */
+.welcome {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: var(--space-2);
+  width: 100%;
+  position: relative;
+}
+
+.welcome .tagline {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.welcome .couple {
+  display: contents;
+}
+
+/* !important: bỏ khoảng chồng "nắm tay" của ChibiCouple khi hai bạn đứng tách hai bên. */
+.couple > [data-chibi] {
+  --chibi-h: 76px;
+  margin: 0 !important;
+}
+
+.couple > [data-chibi='groom'] {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.couple > [data-chibi='bride'] {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.float {
+  position: absolute;
+  top: 0;
+  width: 12px;
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (min-width: 1024px) {
+  .welcome {
+    display: block;
+    position: static;
+  }
+
+  .welcome .couple {
+    display: inline-flex;
+    position: absolute;
+    left: calc(100% + var(--space-5));
+    /* Ngang tên viết tay — "đứng cạnh tên", luôn trong màn hình đầu. */
+    top: 34%;
+  }
+
+  .couple > [data-chibi] {
+    --chibi-h: var(--chibi-h-lg);
+  }
+
+  .couple > [data-chibi] + [data-chibi] {
+    margin-left: calc(var(--chibi-h) * -0.19) !important;
+  }
+
+  .float {
+    width: 16px;
+  }
+}
+
+/* Màn hình thấp: giữ tên + ngày trọn trong một màn hình, bỏ chibi trong luồng. */
+@media (max-width: 1023px) and (max-height: 640px) {
+  .welcome .couple {
+    display: none;
+  }
+}
+
 /* ── Bìa ảnh full-bleed ─────────────────────────────────── */
 .photoHero {
   position: relative;

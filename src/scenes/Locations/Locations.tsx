@@ -44,7 +44,7 @@ export function Locations({ content }: { content: WeddingContent }) {
         ]}
       />
       <SceneHeading id="locations-title" eyebrow="Địa điểm tổ chức">
-        Đường về chung một nhà
+        Nơi ngày vui diễn ra
       </SceneHeading>
 
       {locations.length === 0 ? (

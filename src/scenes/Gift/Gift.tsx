@@ -1,5 +1,7 @@
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { Button } from '../../components/Button'
+import { Chibi } from '../../components/chibi/Chibi'
+import { ChibiProp } from '../../components/chibi/ChibiProp'
 import { Divider } from '../../components/Ornament'
 import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
@@ -7,14 +9,23 @@ import { SceneShell } from '../../components/SceneShell'
 import { Seal } from '../../components/Seal'
 import type { WeddingContent } from '../../content/types'
 import { dottedDate, orderedCouple, primaryDay, weekday } from '../../lib/format'
-import { useSceneMotion } from '../../motion/useMotion'
+import { loadMotion, prefersMotion, useSceneMotion } from '../../motion/useMotion'
 import styles from './Gift.module.css'
 import { GiftCard } from './GiftCard'
 
 /** Scene 5 — Mừng cưới & lời cảm ơn, ánh nến. Một lá thư, không phải trang thanh toán. */
 export function Gift({ content }: { content: WeddingContent }) {
   const ref = useRef<HTMLElement>(null)
+  const mailRef = useRef<HTMLDivElement>(null)
   useSceneMotion(ref, 'gift')
+
+  // Phong thư bật khỏi hộp thư, hiện trái tim — chỉ trang trí; Toast vẫn là phản hồi chính.
+  const celebrate = useCallback(() => {
+    if (!prefersMotion()) return
+    loadMotion()
+      .then((runtime) => mailRef.current && runtime.giftCelebrate(mailRef.current))
+      .catch(() => {})
+  }, [])
   const { couple, accounts, thankYou } = content
   const [first, second] = orderedCouple(couple)
   const day = primaryDay(content.days)
@@ -52,19 +63,24 @@ export function Gift({ content }: { content: WeddingContent }) {
 
       <section className={styles.gifts} aria-labelledby="gift-heading" data-anim="gifts">
         <h3 id="gift-heading" className={styles.subtitle}>
-          Gửi lời chúc phúc
+          Gửi quà mừng
         </h3>
         {accounts.length === 0 ? (
           <PendingNote>tài khoản mừng cưới (ngân hàng, tên chủ TK, STK, ảnh QR gốc).</PendingNote>
         ) : (
           <>
+            <div ref={mailRef} className={styles.mail} aria-hidden="true" data-anim="mail">
+              <ChibiProp kind="mailbox" className={styles.mailbox} anim="mailbox" />
+              <ChibiProp kind="envelope" className={styles.mailEnvelope} anim="mail-envelope" />
+              <ChibiProp kind="heart" className={styles.mailHeart} anim="mail-heart" />
+            </div>
             <p className={styles.giftLead}>
               Nếu bạn muốn gửi quà mừng từ xa, chúng mình xin trân trọng đón nhận tại đây.
             </p>
             <ul className={styles.cards} data-count={accounts.length}>
               {accounts.map((account) => (
                 <li key={account.id}>
-                  <GiftCard account={account} />
+                  <GiftCard account={account} onAction={celebrate} />
                 </li>
               ))}
             </ul>
@@ -73,9 +89,14 @@ export function Gift({ content }: { content: WeddingContent }) {
       </section>
 
       <footer className={styles.closing}>
-        <span className={styles.closingSeal} data-anim="closing-seal">
-          <Seal monogram={couple.monogram} size={104} />
-        </span>
+        {/* Hai bạn hai bên dấu sáp: cúi chào khách rồi giơ tay tạo hình trái tim. */}
+        <div className={styles.closingStage}>
+          <Chibi who="groom" pose="heart" anim="bye-groom" />
+          <span className={styles.closingSeal} data-anim="closing-seal">
+            <Seal monogram={couple.monogram} size={104} />
+          </span>
+          <Chibi who="bride" pose="heart" anim="bye-bride" />
+        </div>
         <div className={styles.closingText} data-anim="closing-text">
           <p className={styles.closingLine}>Hẹn gặp bạn trong ngày vui của chúng mình</p>
           <p className={styles.closingDate}>

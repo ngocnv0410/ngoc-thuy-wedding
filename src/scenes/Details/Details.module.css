@@ -203,3 +203,46 @@
     justify-self: center;
   }
 }
+
+/* ── Lịch tháng + chibi cầm tờ lịch ─────────────────────── */
+/* Mobile: hai bạn thành một hàng phía trên lịch; ≥640px: đứng hai bên, ngoài bề rộng bảng lịch. */
+.calendarStage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'groom bride'
+    'cal cal';
+  align-items: end;
+  column-gap: var(--space-6);
+  row-gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.calendarStage > figure {
+  grid-area: cal;
+}
+
+.calGroom {
+  grid-area: groom;
+  justify-self: end;
+}
+
+.calBride {
+  grid-area: bride;
+  justify-self: start;
+}
+
+.calendarStage > [data-chibi] {
+  --chibi-h: var(--chibi-h-sm);
+}
+
+@media (min-width: 640px) {
+  .calendarStage {
+    grid-template-columns: 1fr minmax(0, 360px) 1fr;
+    grid-template-areas: 'groom cal bride';
+  }
+
+  .calendarStage > [data-chibi] {
+    --chibi-h: var(--chibi-h-md);
+  }
+}

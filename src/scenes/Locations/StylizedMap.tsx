@@ -1,6 +1,21 @@
-import { useId } from 'react'
+import { type CSSProperties, useId } from 'react'
+import { ChibiFigure } from '../../components/chibi/Chibi'
+import { chibiVars } from '../../components/chibi/chibiPose'
+import { PropArt } from '../../components/chibi/ChibiProp'
 import type { Location } from '../../content/types'
 import styles from './StylizedMap.module.css'
+
+/** Hai bạn chibi đi song song phía dưới tuyến nét đứt, cách bấy nhiêu đơn vị (không đè nhãn ghim). */
+export const WALK_DY = 50
+const WALKER_H = 34
+const WALKER_W = (WALKER_H * 3) / 5
+/** Nét đậm hơn để vẫn thấy được khi chỉ cao ~34 đơn vị. */
+const TINY = { '--chibi-stroke': '4' } as CSSProperties
+const HELD_MAP = (
+  <g data-anim="held-map">
+    <PropArt kind="map" />
+  </g>
+)
 
 /** Vị trí ghim cố định theo số lượng địa điểm — bản đồ minh hoạ, không đúng tỉ lệ thật. */
 const LAYOUTS: Record<number, Array<[number, number]>> = {
@@ -26,6 +41,7 @@ export function StylizedMap({ locations, activeId }: StylizedMapProps) {
   const shown = locations.slice(0, points.length)
   const maskId = useId()
   const route = points.map(([x, y], index) => `${index === 0 ? 'M' : 'L'}${x},${y}`).join(' ')
+  const [endX, endY] = points[shown.length - 1] ?? points[0]
 
   return (
     <figure className={styles.map} data-anim="map">
@@ -57,6 +73,24 @@ export function StylizedMap({ locations, activeId }: StylizedMapProps) {
             </g>
           )
         })}
+        {/* Chibi tí hon: đi dọc tuyến tới ghim cuối, chú rể mở bản đồ, cô dâu chỉ sang thẻ địa chỉ. */}
+        {shown.length > 0 && (
+          <g data-anim="walkers" transform={`translate(${endX} ${endY + WALK_DY})`}>
+            <svg x={-WALKER_W - 1} y={-WALKER_H} width={WALKER_W} height={WALKER_H} viewBox="0 0 120 200" overflow="visible">
+              <g data-chibi="groom" style={{ ...chibiVars({ who: 'groom', pose: 'carry', hand: 'l', look: 'right' }), ...TINY }}>
+                <ChibiFigure who="groom" hand="l" held={HELD_MAP} />
+              </g>
+            </svg>
+            <svg x={1} y={-WALKER_H} width={WALKER_W} height={WALKER_H} viewBox="0 0 120 200" overflow="visible">
+              <g data-chibi="bride" style={{ ...chibiVars({ who: 'bride', pose: 'point', hand: 'r', eyes: 'happy' }), ...TINY }}>
+                <ChibiFigure who="bride" hand="r" />
+              </g>
+            </svg>
+            <g data-anim="walk-heart" opacity="0" transform={`translate(0 ${-WALKER_H - 6}) scale(0.7)`}>
+              <PropArt kind="heart" />
+            </g>
+          </g>
+        )}
       </svg>
       <figcaption className={styles.caption}>Bản đồ minh hoạ — bấm “Chỉ đường” để mở Google Maps</figcaption>
     </figure>

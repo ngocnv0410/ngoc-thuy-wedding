@@ -1,0 +1,113 @@
+.standalone {
+  display: inline-block;
+  flex: none;
+  pointer-events: none;
+}
+
+.standalone svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Kích thước mặc định; nơi dùng có thể đặt lại width. */
+.calendar {
+  width: 24px;
+  aspect-ratio: 24 / 28;
+}
+
+.map {
+  width: 32px;
+  aspect-ratio: 32 / 26;
+}
+
+.envelope {
+  width: 38px;
+  aspect-ratio: 38 / 26;
+}
+
+.mailbox {
+  width: 68px;
+  aspect-ratio: 68 / 70;
+}
+
+.heart {
+  width: 18px;
+  aspect-ratio: 18 / 15;
+}
+
+.petal {
+  width: 6px;
+  aspect-ratio: 6 / 8;
+}
+
+.prop path,
+.prop rect,
+.prop circle,
+.prop ellipse,
+.prop {
+  stroke: var(--chibi-ink);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.paper {
+  fill: var(--chibi-cloth);
+}
+
+.accent {
+  fill: var(--chibi-accent);
+  stroke: none !important;
+}
+
+.ink {
+  fill: var(--chibi-feature);
+  stroke: none !important;
+}
+
+.fold {
+  fill: none;
+  stroke-opacity: 0.4;
+}
+
+.route {
+  fill: none;
+  stroke: var(--chibi-accent) !important;
+  stroke-dasharray: 2 2;
+}
+
+.post {
+  fill: none;
+  stroke-width: 2 !important;
+}
+
+.slot {
+  fill: none;
+  stroke-width: 2.2 !important;
+}
+
+.petal {
+  fill: var(--chibi-cloth);
+  stroke: var(--chibi-accent) !important;
+  stroke-width: 0.6 !important;
+}
+
+.number {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--chibi-feature);
+  stroke: none !important;
+}
+
+.flap {
+  transform-box: view-box;
+  transform: scaleY(var(--flap, 1));
+}
+
+.flag {
+  transform-box: view-box;
+  transform: rotate(var(--flag, 0deg));
+}

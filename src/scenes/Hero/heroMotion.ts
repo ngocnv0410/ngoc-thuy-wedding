@@ -1,4 +1,5 @@
 import { DUR, gsap } from '../../lib/gsap'
+import { chibisIn, floatUp, idle } from '../../motion/chibi'
 
 const q = (root: Element, name: string) => root.querySelectorAll(`[data-anim="${name}"]`)
 
@@ -49,6 +50,18 @@ export function heroMotion(root: HTMLElement) {
 
   // Hoa baby: cả bó nở ra từ góc gắn (gốc phóng ở CSS theo góc).
   tl.from(q(root, 'bouquet'), { autoAlpha: 0, scale: 0.88, duration: DUR.xl, stagger: 0.3 }, 0.8)
+
+  // Cặp chibi nhô lên sau tagline, cô dâu nghiêng đầu tựa vai chú rể, tim và cánh hoa bay lên.
+  const couple = root.querySelector('[data-anim="hero-couple"]')
+  if (couple && getComputedStyle(couple).display !== 'none') {
+    // Animate từng nhân vật: trên điện thoại khối cặp đôi là "display: contents" (không có hộp).
+    const [groom, bride] = chibisIn(couple)
+    tl.from([groom, bride], { autoAlpha: 0, y: 24, duration: DUR.md, stagger: 0.1 }, 2.5)
+      .from(groom, { '--face-x': '0px', duration: DUR.md, ease: 'silk' }, 2.8)
+      .from(bride, { '--head-r': '0deg', '--lean-x': '0px', '--face-x': '0px', duration: DUR.md, ease: 'silk' }, 2.8)
+      .add(floatUp(q(root, 'hero-float'), { stagger: 0.18 }), 3.0)
+    idle([groom, bride], root)
+  }
 
   // Cuộn ra: khung bìa / lớp ảnh trôi chậm hơn nội dung, tạo chiều sâu nhẹ.
   const scrollOut = { trigger: root, start: 'top top', end: 'bottom top', scrub: true }

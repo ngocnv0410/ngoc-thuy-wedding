@@ -7,12 +7,14 @@ import { MEDIA, type MotionConditions, ScrollTrigger, gsap, guard } from '../lib
 import { detailsMotion } from '../scenes/Details/detailsMotion'
 import { galleryMotion } from '../scenes/Gallery/galleryMotion'
 import { giftMotion } from '../scenes/Gift/giftMotion'
+
+export { giftCelebrate } from '../scenes/Gift/giftMotion'
 import { heroMotion } from '../scenes/Hero/heroMotion'
 import { locationsMotion } from '../scenes/Locations/locationsMotion'
 import { openDoors as openDoorsTimeline } from '../scenes/Opening/openingMotion'
 import { startLight } from './light'
 
-export { introDoors } from '../scenes/Opening/openingMotion'
+export { introDoors, openChibis } from '../scenes/Opening/openingMotion'
 
 export type SceneKey = 'hero' | 'details' | 'locations' | 'gallery' | 'gift'
 

@@ -1,0 +1,236 @@
+/*
+ * Chibi: mọi bộ phận chỉ đọc biến CSS đặt trên phần tử gốc (xem chibiVars). Pivot đặt inline
+ * bằng transform-origin theo toạ độ viewBox (transform-box: view-box).
+ */
+.chibi {
+  display: inline-block;
+  flex: none;
+  height: var(--chibi-h);
+  aspect-ratio: 3 / 5;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sm {
+  --chibi-h: var(--chibi-h-sm);
+}
+
+.md {
+  --chibi-h: var(--chibi-h-md);
+}
+
+.lg {
+  --chibi-h: var(--chibi-h-lg);
+}
+
+.headOnly {
+  height: auto;
+  aspect-ratio: 104 / 112;
+}
+
+.chibi svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.headOnly svg {
+  overflow: hidden;
+}
+
+/* ── Cặp đôi: cô dâu chồng sang trái để hai bàn tay gặp nhau ─── */
+.couple {
+  display: inline-flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.couple > .chibi + .chibi {
+  margin-left: calc(var(--chibi-h) * -0.19);
+}
+
+/* Không nắm tay: đứng sát nhau nhưng không chồng hình. */
+.couple:not([data-pose='hold']) > .chibi + .chibi {
+  margin-left: calc(var(--chibi-h) * -0.06);
+}
+
+/* ── Nét & màu ─────────────────────────────────────────────── */
+.figure path,
+.figure ellipse,
+.figure circle {
+  stroke: var(--chibi-ink);
+  stroke-width: var(--chibi-stroke);
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.shadow {
+  fill: var(--chibi-shadow);
+  stroke: none !important;
+}
+
+.skin {
+  fill: var(--chibi-skin);
+}
+
+.cheek {
+  fill: var(--chibi-cheek);
+  stroke: none !important;
+  opacity: 0.8;
+}
+
+.suit {
+  fill: var(--chibi-suit);
+}
+
+.shoe {
+  fill: var(--chibi-shoe);
+}
+
+.cloth,
+.flower {
+  fill: var(--chibi-cloth);
+}
+
+.flower {
+  stroke: var(--chibi-accent) !important;
+  stroke-width: 1 !important;
+}
+
+.accent,
+.chestHeart {
+  fill: var(--chibi-accent);
+  stroke: none !important;
+}
+
+.hairGroom {
+  fill: var(--chibi-hair-groom);
+}
+
+.hairBride {
+  fill: var(--chibi-hair-bride);
+}
+
+.veilFill {
+  fill: var(--chibi-veil);
+  stroke-opacity: 0.4;
+}
+
+.line,
+.strand,
+.fold {
+  fill: none;
+}
+
+.strand {
+  stroke-opacity: 0.45;
+  stroke-width: 1 !important;
+}
+
+.fold {
+  stroke-opacity: 0.3;
+  stroke-width: 1 !important;
+}
+
+.feature,
+.lash {
+  fill: none;
+  stroke: var(--chibi-feature) !important;
+}
+
+.lash {
+  stroke-width: 2 !important;
+}
+
+.iris {
+  fill: var(--chibi-iris);
+  stroke: var(--chibi-feature) !important;
+  stroke-width: 1 !important;
+}
+
+.pupil {
+  fill: var(--chibi-feature);
+  stroke: none !important;
+}
+
+.shine {
+  fill: #fff;
+  stroke: none !important;
+}
+
+/* ── Rig ──────────────────────────────────────────────────── */
+.figure g {
+  transform-box: view-box;
+}
+
+.body {
+  transform: translate(var(--lean-x), var(--body-y));
+}
+
+.upper {
+  transform: translateY(var(--upper-y)) rotate(var(--upper-r)) scaleY(var(--upper-sy));
+}
+
+.head {
+  transform: translateY(var(--head-y)) rotate(var(--head-r));
+}
+
+.face {
+  transform: translate(var(--face-x), var(--face-y));
+}
+
+/* Góc tay dương = giơ ra ngoài cho cả hai tay (tay phải xoay ngược chiều). */
+.armL {
+  transform: rotate(var(--arm-l));
+}
+
+.armR {
+  transform: rotate(calc(var(--arm-r) * -1));
+}
+
+/* Đạo cụ xoay bù để luôn đứng thẳng. */
+.heldL {
+  transform: rotate(calc(var(--arm-l) * -1));
+}
+
+.heldR {
+  transform: rotate(var(--arm-r));
+}
+
+.legL {
+  transform: rotate(var(--leg-l));
+}
+
+.legR {
+  transform: rotate(var(--leg-r));
+}
+
+.skirt {
+  transform: skewX(var(--skirt));
+}
+
+.veil {
+  transform: rotate(var(--veil));
+}
+
+.tuft {
+  transform: rotate(var(--tuft));
+}
+
+.eyesOpen {
+  opacity: var(--eo);
+}
+
+.eyesClosed {
+  opacity: var(--ec);
+}
+
+.eyesHappy {
+  opacity: var(--eh);
+}
+
+.chestHeart {
+  opacity: var(--heart);
+}

@@ -30,8 +30,8 @@ export const wedding: WeddingContent = {
     order: 'groom-first',
     // ĐỀ XUẤT: chữ cái đầu tên gọi, theo thứ tự chú rể trước.
     monogram: 'N & T',
-    // ĐỀ XUẤT
-    tagline: 'Một câu chuyện được viết bằng ánh sáng',
+    // ĐỀ XUẤT — duyệt 23/10/2026
+    tagline: 'Rất mong được đón bạn đến chung vui',
   },
 
   days: [

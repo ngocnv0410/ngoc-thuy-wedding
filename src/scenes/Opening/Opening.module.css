@@ -201,6 +201,61 @@
   clip-path: inset(-10% -10% -10% 50%);
 }
 
+/* ── Chibi: chung cho bản 2.5D và 3D (nằm trên canvas, dưới CTA) ─── */
+.chibiLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Đầu ló ra ~60% từ mép màn hình, ngang 1/3 trên: xa dấu sáp (giữa), "Bỏ qua" (góc trên) và CTA (đáy). */
+.peek {
+  position: absolute;
+  top: 34%;
+  width: clamp(64px, 18vw, 104px);
+  /* Cổ tan dần thay vì bị cắt ngang. */
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 96%);
+}
+
+.peek > * {
+  width: 100%;
+}
+
+.peek[data-side='left'] {
+  left: 0;
+  transform: translateX(-30%) rotate(12deg);
+}
+
+.peek[data-side='right'] {
+  right: 0;
+  transform: translateX(30%) rotate(-12deg);
+}
+
+/* Hai bạn đứng sát khe cửa ở dải CTA — chỉ hiện trong lúc mở (GSAP bật lên). */
+.runners {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.runners > [data-chibi] {
+  --chibi-h: min(var(--chibi-h-md), 30svh);
+  visibility: hidden;
+  will-change: transform;
+}
+
+@media (max-height: 500px) {
+  .peek {
+    width: clamp(48px, 14vh, 72px);
+  }
+}
+
 /* ── Hành động ─────────────────────────────────────────────── */
 .actions {
   position: absolute;

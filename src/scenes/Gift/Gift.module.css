@@ -110,6 +110,52 @@
   display: block;
 }
 
+.closingStage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.closingStage > [data-chibi] {
+  --chibi-h: clamp(96px, 28vw, 150px);
+}
+
+/* ── Hộp thư + phong thư (trang trí, không chạm thẻ quà / QR) ─── */
+.mail {
+  position: relative;
+  width: 180px;
+  height: 72px;
+  pointer-events: none;
+}
+
+.mailbox {
+  position: absolute;
+  right: 24px;
+  bottom: 0;
+  width: 64px;
+}
+
+/* Vị trí khe thư; phong thư ở trạng thái cuối là đã nằm trong hộp (ẩn). */
+.mailEnvelope,
+.mailHeart {
+  position: absolute;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.mailEnvelope {
+  left: 95px;
+  top: 12px;
+  width: 34px;
+}
+
+.mailHeart {
+  left: 103px;
+  top: -6px;
+  width: 18px;
+}
+
 .closingText {
   display: grid;
   justify-items: center;

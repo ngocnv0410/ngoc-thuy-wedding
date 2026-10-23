@@ -12,7 +12,13 @@ const SIDE_LABEL = { bride: 'Nhà gái', groom: 'Nhà trai', both: 'Cô dâu & c
  * Trên điện thoại, "Lưu ảnh QR" và "Sao chép STK" được ưu tiên vì khách không thể tự quét
  * QR trên chính màn hình của mình.
  */
-export function GiftCard({ account }: { account: BankAccount }) {
+interface GiftCardProps {
+  account: BankAccount
+  /** Khách vừa lưu ảnh QR hoặc sao chép thông tin chuyển khoản. */
+  onAction?: () => void
+}
+
+export function GiftCard({ account, onAction }: GiftCardProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const numberRef = useRef<HTMLSpanElement>(null)
   const alt = `Mã QR chuyển khoản ${account.bankName} – ${account.accountName}`
@@ -62,6 +68,7 @@ export function GiftCard({ account }: { account: BankAccount }) {
           href={qrSrc}
           download={`QR-mung-cuoi-${account.bankName}-${account.accountName.replace(/\s+/g, '-')}.png`}
           className={styles.save}
+          onClick={onAction}
         >
           Lưu ảnh QR
         </Button>
@@ -71,6 +78,7 @@ export function GiftCard({ account }: { account: BankAccount }) {
           label="Sao chép STK"
           successMessage="Đã sao chép số tài khoản"
           onFail={selectNumber}
+          onCopied={onAction}
         />
         <Button variant="ghost" onClick={() => dialogRef.current?.showModal()} className={styles.zoom}>
           Phóng to QR
@@ -80,6 +88,7 @@ export function GiftCard({ account }: { account: BankAccount }) {
           value={fullText}
           label="Sao chép toàn bộ"
           successMessage="Đã sao chép thông tin chuyển khoản"
+          onCopied={onAction}
         />
       </div>
       <p className={styles.hint}>Trên iPhone: nhấn giữ ảnh QR để lưu vào Ảnh.</p>

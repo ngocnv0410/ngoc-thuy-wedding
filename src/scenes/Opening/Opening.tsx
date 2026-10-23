@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '../../components/Button'
+import { Chibi } from '../../components/chibi/Chibi'
 import { Seal } from '../../components/Seal'
 import type { WeddingContent } from '../../content/types'
 import { orderedCouple } from '../../lib/format'
@@ -102,9 +103,23 @@ export function Opening({ content, onDone }: OpeningProps) {
       const runtime = await loadMotionWithin(1500)
       if (!ref.current) return
       const api3d = doors3D.active ? doors3D.api.current : null
-      control.current = api3d
-        ? api3d.open(ref.current, { onReveal: runtime.releaseHero, onDone: finish })
-        : runtime.openDoors(ref.current, finish)
+      if (api3d) {
+        // Bản 3D tự mở cửa; hai bạn chibi (lớp DOM phía trên canvas) chạy theo cùng nhịp.
+        const chibis = runtime.openChibis(ref.current)
+        const doors = api3d.open(ref.current, { onReveal: runtime.releaseHero, onDone: finish })
+        control.current = {
+          fastForward: () => {
+            doors.fastForward()
+            chibis.fastForward()
+          },
+          finish: () => {
+            chibis.finish()
+            doors.finish()
+          },
+        }
+      } else {
+        control.current = runtime.openDoors(ref.current, finish)
+      }
     } catch {
       fadeOut()
     }
@@ -168,6 +183,20 @@ export function Opening({ content, onDone }: OpeningProps) {
           />
         </div>
       )}
+
+      {/* Chibi: hai cái đầu ló ra từ hai mép màn hình; bấm mở thì hai bạn chạy vào đẩy cửa. */}
+      <div className={styles.chibiLayer} aria-hidden="true">
+        <span className={styles.peek} data-side="left">
+          <Chibi who="groom" headOnly look="down-right" anim="peek-groom" />
+        </span>
+        <span className={styles.peek} data-side="right">
+          <Chibi who="bride" headOnly look="down-left" anim="peek-bride" />
+        </span>
+        <span className={styles.runners}>
+          <Chibi who="groom" anim="run-groom" />
+          <Chibi who="bride" anim="run-bride" />
+        </span>
+      </div>
 
       <div className={styles.actions} data-anim="cta">
         <Button variant="primary" size="lg" onClick={open}>
