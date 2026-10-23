@@ -1,10 +1,11 @@
+import { sealMarkup, sealSvg } from '../src/components/sealArt.ts'
 /**
  * Sinh ảnh xem trước khi chia sẻ link (public/og.jpg, 1200×630) theo đúng phong cách tờ thiệp:
  * nền loang cẩm thạch + gân nhũ vàng, hoa baby khô ở hai góc (cùng bộ sinh hoạ tiết với trang),
  * dấu sáp, tên nhũ vàng, ngày. Chữ được chuyển thành đường vẽ (opentype.js) từ chính font của
  * trang, nên dấu tiếng Việt đúng mà không cần cài font trên máy build.
  */
-import { readFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 // opentype.js là CommonJS: Node chỉ cho import mặc định.
@@ -27,7 +28,6 @@ function font(pkg: string, file: string): Font {
 const SERIF = [font('cormorant-garamond', 'cormorant-garamond-latin-500-normal.woff'), font('cormorant-garamond', 'cormorant-garamond-vietnamese-500-normal.woff')]
 const SERIF_ITALIC = [font('cormorant-garamond', 'cormorant-garamond-latin-500-italic.woff'), font('cormorant-garamond', 'cormorant-garamond-vietnamese-500-italic.woff')]
 const SANS = [font('be-vietnam-pro', 'be-vietnam-pro-latin-500-normal.woff'), font('be-vietnam-pro', 'be-vietnam-pro-vietnamese-500-normal.woff')]
-const SCRIPT = [font('great-vibes', 'great-vibes-latin-400-normal.woff')]
 const NAMES = [font('pinyon-script', 'pinyon-script-latin-400-normal.woff'), font('pinyon-script', 'pinyon-script-vietnamese-400-normal.woff')]
 
 interface Run {
@@ -137,18 +137,9 @@ const names = [
   `<path transform="translate(${(x += ampRun.width + gap).toFixed(1)} ${namesBaseline})" d="${secondRun.d}" fill="url(#gold)"/>`,
 ].join('')
 
-// ── Dấu sáp nhỏ ──
-const [mLeft, mRight] = share.monogram.split('&').map((part) => part.trim())
-const sealCx = W / 2
-const sealCy = 118
-const sealLetters = run(SERIF, `${mLeft ?? ''}   ${mRight ?? ''}`, 30, 0)
-const sealAmp = run(SCRIPT, '&', 26)
-const seal = `
-  <circle cx="${sealCx}" cy="${sealCy + 4}" r="47" fill="rgba(48,39,32,0.18)" filter="url(#soft)"/>
-  <circle cx="${sealCx}" cy="${sealCy}" r="46" fill="url(#wax)"/>
-  <circle cx="${sealCx}" cy="${sealCy}" r="33" fill="none" stroke="rgba(243,230,200,0.6)" stroke-width="1.2"/>
-  <path transform="translate(${(sealCx - sealLetters.width / 2).toFixed(1)} ${sealCy + 10})" d="${sealLetters.d}" fill="#5a4523" fill-opacity="0.85"/>
-  <path transform="translate(${(sealCx - sealAmp.width / 2).toFixed(1)} ${sealCy + 9})" d="${sealAmp.d}" fill="#5a4523" fill-opacity="0.85"/>`
+// Shared vector monogram, also exported as the browser icon.
+const seal = `<g transform="translate(${W / 2 - 48} 70) scale(0.96)">${sealMarkup('og', share.monogram)}</g>`
+writeFileSync(join(root, 'public', 'favicon.svg'), sealSvg('favicon', share.monogram))
 
 const eyebrow = run(SANS, `THIỆP MỜI CƯỚI · ${share.year}`, 20, 5)
 const date = run(SERIF, share.dateLine, 38, 2)

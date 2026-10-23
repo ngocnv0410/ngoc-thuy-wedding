@@ -236,6 +236,7 @@ function Scene({ text, onReady, onOpenRequest }: Doors3DProps) {
 
       // Phần DOM: nút mờ đi, bìa thật phát, overlay tan.
       tl.to(root.querySelectorAll('[data-anim="cta"]'), { autoAlpha: 0, y: 12, duration: 0.4 }, 0.2)
+        .to(root.querySelectorAll('[data-anim="greeting"]'), { autoAlpha: 0, y: -12, duration: 0.4 }, 0.1)
         .call(onReveal, [], 1.05)
         .to(root, { autoAlpha: 0, duration: 0.5, ease: 'power1.out' }, 2.0)
 

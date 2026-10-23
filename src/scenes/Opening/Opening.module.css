@@ -196,12 +196,12 @@
   justify-content: center;
   align-items: flex-end;
   /* Khoảng giữa đủ rộng cho nút "Mở thiệp": chibi không bao giờ chồng lên nút. */
-  gap: clamp(168px, 50vw, 400px);
+  gap: clamp(128px, 42vw, 320px);
   pointer-events: none;
 }
 
 .hosts > [data-chibi] {
-  --chibi-h: min(clamp(100px, 34vw, 210px), 30svh);
+  --chibi-h: min(clamp(100px, 30vw, 190px), 28svh);
   will-change: transform;
 }
 
@@ -269,4 +269,39 @@
   text-decoration-color: color-mix(in srgb, var(--color-gold) 70%, transparent);
   text-underline-offset: 5px;
   cursor: pointer;
+}
+
+.actions > button:first-child {
+  gap: 24px;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgb(72 49 29 / 0.15);
+}
+.greeting {
+  position: absolute;
+  z-index: 2;
+  top: max(76px, 12svh);
+  left: 16px;
+  right: 16px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+  pointer-events: none;
+}
+.openingNames[data-size='section'] {
+  font-size: clamp(52px, 11vw, 100px);
+  flex-wrap: nowrap;
+  gap: 0;
+  white-space: nowrap;
+}
+.openingDate {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--color-mocha);
+}
+.openingDate span { margin-inline: 8px; color: var(--color-gold-deep); }
+@media (max-height: 600px) {
+  .greeting { top: 56px; gap: 0; }
+  .openingNames[data-size='section'] { font-size: 48px; }
+  .openingDate { font-size: 10px; }
 }

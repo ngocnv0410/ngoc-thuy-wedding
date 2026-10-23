@@ -25,6 +25,8 @@
   justify-items: center;
   gap: var(--space-5);
   max-width: 640px;
+  padding-block: var(--space-7);
+  border-block: 1px solid rgb(198 166 107 / 0.3);
 }
 
 .eyebrow {

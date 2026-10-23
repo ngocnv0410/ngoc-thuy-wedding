@@ -12,8 +12,8 @@ export function fitTexture(texture: Texture, minX: number, minY: number, width: 
 }
 
 /** Bán kính viền lượn của dấu sáp (cùng công thức với Seal.tsx). */
-function sealRadius(t: number) {
-  return (SEAL_R / 50) * (47 + 2.2 * Math.sin(9 * t) + 1.1 * Math.sin(17 * t + 1.3) + 0.6 * Math.sin(29 * t + 0.4))
+function sealRadius() {
+  return (SEAL_R / 50) * 48
 }
 
 /** Nửa dấu sáp (trái/phải) có độ dày và cạnh vát — hai nửa tách ra khi mở thiệp. */
@@ -23,7 +23,7 @@ export function sealHalfGeometry(side: 'left' | 'right') {
   const steps = 48
   for (let i = 0; i <= steps; i++) {
     const t = from + (i / steps) * Math.PI
-    const r = sealRadius(t)
+    const r = sealRadius()
     const x = r * Math.cos(t)
     const y = r * Math.sin(t)
     if (i === 0) shape.moveTo(0, y)

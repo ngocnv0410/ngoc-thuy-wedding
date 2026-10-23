@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '../../components/Button'
 import { Chibi } from '../../components/chibi/Chibi'
+import { CoupleNames } from '../../components/CoupleNames'
 import { Seal } from '../../components/Seal'
 import type { WeddingContent } from '../../content/types'
-import { orderedCouple } from '../../lib/format'
+import { orderedCouple, primaryDay, solarParts } from '../../lib/format'
 import { music } from '../../lib/music'
 import { loadMotion, loadMotionWithin, lockScroll, prefersMotion } from '../../motion/useMotion'
 import styles from './Opening.module.css'
@@ -44,6 +45,7 @@ export function Opening({ content, onDone }: OpeningProps) {
   const { couple, music: track } = content
   const leftWho = couple.order === 'bride-first' ? 'bride' : 'groom'
   const [first, second] = orderedCouple(couple)
+  const date = solarParts(primaryDay(content.days).solar)
   const text3D = useMemo(
     () => ({ first: first.givenName, second: second.givenName, monogram: couple.monogram }),
     [first.givenName, second.givenName, couple.monogram],
@@ -61,6 +63,33 @@ export function Opening({ content, onDone }: OpeningProps) {
     ref.current?.focus({ preventScroll: true })
     return () => lockScroll(false)
   }, [])
+
+  // Keep keyboard navigation inside the invitation until the opening is dismissed.
+  useEffect(() => {
+    const dialog = ref.current
+    if (!dialog) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        if (control.current) control.current.finish()
+        else fadeOut()
+        return
+      }
+      if (event.key !== 'Tab') return
+      const buttons = [...dialog.querySelectorAll<HTMLButtonElement>('button')].filter((button) => !button.disabled && getComputedStyle(button).visibility !== 'hidden')
+      const firstButton = buttons[0]
+      const lastButton = buttons.at(-1)
+      if (event.shiftKey && (document.activeElement === firstButton || document.activeElement === dialog)) {
+        event.preventDefault()
+        lastButton?.focus()
+      } else if (!event.shiftKey && document.activeElement === lastButton) {
+        event.preventDefault()
+        firstButton?.focus()
+      }
+    }
+    dialog.addEventListener('keydown', onKey)
+    return () => dialog.removeEventListener('keydown', onKey)
+  })
 
   // Cửa hiện hoa văn, dấu sáp đặt lên khe (chỉ khi có motion).
   useEffect(() => {
@@ -185,6 +214,11 @@ export function Opening({ content, onDone }: OpeningProps) {
         </div>
       )}
 
+      <div className={styles.greeting} data-anim="greeting">
+        <CoupleNames first={first.givenName} second={second.givenName} layout="inline" size="section" className={styles.openingNames} />
+        <p className={styles.openingDate}>{date.day} <span>·</span> {date.month} <span>·</span> {date.year}</p>
+      </div>
+
       {/*
        * Hai bạn chibi đứng trước cửa, hai bên nút "Mở thiệp" (chung cho bản 2.5D và 3D, nằm trên
        * canvas). Bấm mở: đi tới đẩy cửa rồi đứng sang hai bên mời khách vào.
@@ -196,7 +230,7 @@ export function Opening({ content, onDone }: OpeningProps) {
 
       <div className={styles.actions} data-anim="cta">
         <Button variant="primary" size="lg" onClick={open}>
-          Mở thiệp
+          Mở thiệp <svg aria-hidden="true" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.2"><path d="M5 15L15 5M5 5h10v10" /></svg>
         </Button>
         {track && (
           <button

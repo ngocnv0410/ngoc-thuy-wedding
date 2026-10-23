@@ -1,3 +1,4 @@
+import { SEAL_AMP, SEAL_BRANCH, SEAL_INK, SEAL_LEAF, SEAL_N, SEAL_RINGS, SEAL_SPARK, SEAL_T } from '../../../components/sealArt'
 import { CanvasTexture, SRGBColorSpace, type Texture } from 'three'
 import { ART_W, RELIEF, RING, artBox, mirrorX } from '../doorArt'
 
@@ -162,53 +163,55 @@ export function doorTextures(side: 'left' | 'right', width: number, height: numb
   return { map: toTexture(el), normal: normalFromHeight(relief.el, 3.6 * box.scale) }
 }
 
-/** Mặt dấu sáp: sáp vàng loang, hai vòng ép, monogram nổi. */
+/** Same medallion artwork as the SVG, drawn into a crisp WebGL texture. */
 export function sealTexture(monogram: string) {
-  const { el, ctx, w, h } = canvas(512, 512)
-  const c = w / 2
-  const wax = ctx.createRadialGradient(c * 0.76, c * 0.64, 0, c, c, c)
-  wax.addColorStop(0, '#dcc28f')
-  wax.addColorStop(0.55, '#c6a66b')
-  wax.addColorStop(1, '#9c7e45')
-  ctx.fillStyle = wax
-  ctx.fillRect(0, 0, w, h)
-  grain(ctx, w, h, 12)
-
-  const press = ctx.createRadialGradient(c, c, c * 0.5, c, c, c * 0.68)
-  press.addColorStop(0, 'rgba(0,0,0,0)')
-  press.addColorStop(1, 'rgba(90, 69, 35, 0.35)')
-  ctx.fillStyle = press
-  ctx.beginPath()
-  ctx.arc(c, c, c * 0.68, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.lineWidth = 4
-  ctx.strokeStyle = 'rgba(243, 230, 200, 0.55)'
-  ctx.stroke()
-  ctx.lineWidth = 2
-  ctx.strokeStyle = 'rgba(125, 98, 50, 0.35)'
-  ctx.beginPath()
-  ctx.arc(c, c, c * 0.61, 0, Math.PI * 2)
-  ctx.stroke()
-
-  const [left, right] = monogram.split('&').map((part) => part.trim())
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  const draw = (fill: string, dy: number) => {
-    ctx.fillStyle = fill
-    if (right === undefined) {
-      ctx.font = `500 ${w * 0.2}px "Cormorant Garamond"`
-      ctx.fillText(monogram, c, c + dy)
-      return
-    }
-    ctx.font = `500 ${w * 0.2}px "Cormorant Garamond"`
-    ctx.fillText(left, c - w * 0.15, c + dy)
-    ctx.fillText(right, c + w * 0.15, c + dy)
-    ctx.font = `400 ${w * 0.17}px "Great Vibes"`
-    ctx.fillText('&', c, c + dy + w * 0.01)
+  const { el, ctx, w } = canvas(512, 512)
+  ctx.scale(w / 100, w / 100)
+  const paper = ctx.createLinearGradient(0, 0, 100, 100)
+  paper.addColorStop(0, '#fffaf0')
+  paper.addColorStop(0.55, '#f4e8d4')
+  paper.addColorStop(1, '#e1cba8')
+  ctx.fillStyle = paper
+  ctx.fillRect(0, 0, 100, 100)
+  for (const { r, stroke, width } of SEAL_RINGS) {
+    ctx.beginPath()
+    ctx.arc(50, 50, r, 0, Math.PI * 2)
+    ctx.strokeStyle = stroke
+    ctx.lineWidth = width
+    ctx.stroke()
   }
-  draw('rgba(241, 226, 191, 0.5)', 3)
-  draw('rgba(90, 69, 35, 0.85)', 0)
-
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  ctx.strokeStyle = SEAL_LEAF
+  ctx.lineWidth = 0.65
+  const branch = new Path2D(SEAL_BRANCH)
+  ctx.stroke(branch)
+  ctx.save()
+  ctx.translate(100, 0)
+  ctx.scale(-1, 1)
+  ctx.stroke(branch)
+  ctx.restore()
+  ctx.fillStyle = SEAL_LEAF
+  ctx.fill(new Path2D(SEAL_SPARK))
+  ctx.strokeStyle = SEAL_INK
+  if (monogram.replace(/\s/g, '').toUpperCase() === 'N&T') {
+    for (const [path, width] of [[SEAL_N, 1.35], [SEAL_T, 1.5], [SEAL_AMP, 0.85]] as const) {
+      ctx.lineWidth = width
+      ctx.stroke(new Path2D(path))
+    }
+  } else {
+    ctx.fillStyle = SEAL_INK
+    ctx.font = '19px Georgia, serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(monogram, 50, 56)
+  }
+  ctx.strokeStyle = SEAL_LEAF
+  ctx.lineWidth = 0.7
+  ctx.stroke(new Path2D('M42 78H58'))
+  ctx.beginPath()
+  ctx.arc(50, 82, 1, 0, Math.PI * 2)
+  ctx.fillStyle = SEAL_LEAF
+  ctx.fill()
   return toTexture(el)
 }
 

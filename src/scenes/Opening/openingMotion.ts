@@ -30,6 +30,7 @@ export function introDoors(root: HTMLElement): () => void {
 
   intro = gsap.timeline({ defaults: { ease: 'paper' } })
   intro.from(all(root, '[data-door]'), { scale: 1.04, duration: 1.6, ease: 'silk' }, 0)
+  intro.from(all(root, anim('greeting')), { autoAlpha: 0, y: 12, duration: 0.9 }, 0.2)
   if (seal) {
     intro.fromTo(
       seal,
@@ -38,7 +39,7 @@ export function introDoors(root: HTMLElement): () => void {
       1.0,
     )
   }
-  intro.from(all(root, anim('cta')), { autoAlpha: 0, y: 12, duration: 0.6 }, 1.3)
+  intro.from(all(root, anim('cta')), { autoAlpha: 0, y: 12, duration: 0.6 }, 0.7)
 
   // "Thở" chỉ bắt đầu khi dấu sáp đã đặt xong — hai tween cùng scale không chồng nhau.
   if (seal) {
@@ -136,6 +137,7 @@ export function openDoors(root: HTMLElement, { onReveal, onDone }: OpenCallbacks
   if (doors) tl.to(doors, { scale: 1.14, duration: 2, ease: 'power2.inOut' }, 0.5)
 
   tl.add(hostsOpen(root), 0)
+    .to(all(root, anim('greeting')), { autoAlpha: 0, y: -12, duration: 0.4 }, 0.1)
     .to(all(root, anim('cta')), { autoAlpha: 0, y: 12, duration: 0.4 }, 0.2)
     .call(onReveal, [], 1.05)
     // Chờ hai bạn mời khách vào xong rồi mới tan overlay.

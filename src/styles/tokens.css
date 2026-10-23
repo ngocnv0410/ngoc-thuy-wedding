@@ -24,7 +24,7 @@
   --color-mocha: #6e5a4b; /* chữ phụ ấm, đạt AA trên ivory (~5.6:1) */
   --color-gold-deep: #a8823f; /* vàng đậm cho chữ cỡ lớn (≥ 3:1 trên ivory) */
   /* Nhũ vàng cho tên viết tay — chuyển sắc như lá vàng ép. */
-  --gold-foil: linear-gradient(100deg, #9a7637 0%, #c9a462 30%, #e2c88f 48%, #b48d4a 66%, #9a7637 100%);
+  --gold-foil: linear-gradient(110deg, #795929 0%, #ac8245 32%, #bd975d 48%, #96703b 68%, #795929 100%);
 
   /* ── Màu theo ngữ cảnh scene (LightLayer nội suy các biến này) ── */
   --scene-bg: var(--color-ivory);
@@ -87,12 +87,12 @@
   /* ── Chibi cô dâu chú rể (minh hoạ nét mảnh, kem–nâu–vàng) ── */
   --chibi-ink: #3b2c22; /* nét viền */
   --chibi-feature: #3b2c22; /* mắt, mày, miệng — giữ tối cả trên nền ánh nến */
-  --chibi-stroke: 1.4; /* đơn vị viewBox 120×200: ~1.1px ở 160px cao */
+  --chibi-stroke: 1.2; /* đơn vị viewBox 120×200: ~1.1px ở 160px cao */
   --chibi-skin: #f7e1cc;
-  --chibi-cheek: #eebaa0;
+  --chibi-cheek: #e9b4a6;
   --chibi-iris: #8a5a34;
-  --chibi-hair-groom: #8c5b37;
-  --chibi-hair-bride: #b8864f;
+  --chibi-hair-groom: #3e3029;
+  --chibi-hair-bride: #48352c;
   --chibi-suit: var(--color-mocha);
   --chibi-shoe: #3b2c22;
   --chibi-cloth: #fffaf3; /* váy, sơ mi, giấy đạo cụ */

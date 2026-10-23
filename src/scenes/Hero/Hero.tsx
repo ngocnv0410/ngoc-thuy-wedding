@@ -1,12 +1,10 @@
 import { useRef } from 'react'
-import { ChibiCouple } from '../../components/chibi/Chibi'
-import { ChibiProp } from '../../components/chibi/ChibiProp'
 import { CoupleNames } from '../../components/CoupleNames'
 import { DateBlock } from '../../components/DateBlock'
 import { Stationery } from '../../components/decor/Stationery'
 import { Divider } from '../../components/Ornament'
 import { ResponsivePicture } from '../../components/ResponsivePicture'
-import { Seal } from '../../components/Seal'
+import { Petals } from '../../components/Petals'
 import type { WeddingContent } from '../../content/types'
 import { orderedCouple, primaryDay, solarParts } from '../../lib/format'
 import { useSceneMotion } from '../../motion/useMotion'
@@ -30,7 +28,7 @@ export function Hero({ content, onReplay }: HeroProps) {
   const { couple, cover } = content
   const [first, second] = orderedCouple(couple)
   const day = primaryDay(content.days)
-  const { year } = solarParts(day.solar)
+  const { day: date, month, year } = solarParts(day.solar)
 
   const masthead = (
     <p className={styles.masthead} data-anim="masthead">
@@ -38,7 +36,7 @@ export function Hero({ content, onReplay }: HeroProps) {
     </p>
   )
   const names = (
-    <CoupleNames as="h1" id="hero-title" tabIndex={-1} first={first.givenName} second={second.givenName} size="hero" />
+    <CoupleNames as="h1" id="hero-title" tabIndex={-1} first={first.givenName} second={second.givenName} size="hero" layout={cover ? 'stacked' : 'inline'} className={styles.names} />
   )
   const tagline = couple.tagline && (
     <p className={styles.tagline} data-anim="meta">
@@ -84,25 +82,19 @@ export function Hero({ content, onReplay }: HeroProps) {
         ]}
       />
 
-      <div className={styles.frame} data-anim="frame">
-        <span data-anim="seal" className={styles.seal}>
-          <Seal monogram={couple.monogram} size={76} />
-        </span>
-        {masthead}
-        {names}
-        <Divider className={styles.divider} />
-        <DateBlock day={day} />
-        {/*
-         * Chibi chỉ ở bìa thiệp in (bìa ảnh đã có ảnh thật làm điểm nhấn). Điện thoại: hai bạn đứng
-         * hai bên câu chào để bìa vẫn vừa một màn hình; desktop: cặp đôi đứng bên phải khung bìa.
-         */}
-        <div className={styles.welcome}>
+      <Petals />
+      <div className={styles.composition}>
+        <div className={styles.portrait} data-anim="portrait" aria-hidden="true">
+          <span className={styles.arch} />
+          <img className={styles.illustration} src={`${import.meta.env.BASE_URL}images/wedding-couple.webp`} alt="" width="768" height="1152" fetchPriority="high" decoding="async" />
+          <span className={styles.portraitDate}>{year} <span>✦</span> {date}.{month}</span>
+        </div>
+        <div className={styles.frame} data-anim="frame">
+          {masthead}
+          {names}
+          <Divider className={styles.divider} />
+          <DateBlock day={day} size="md" />
           {tagline}
-          <ChibiCouple size="sm" lean className={styles.couple} anim="hero-couple">
-            {FLOATS.map(([kind, left]) => (
-              <ChibiProp key={left} kind={kind} className={styles.float} style={{ left }} anim="hero-float" />
-            ))}
-          </ChibiCouple>
         </div>
       </div>
       <ScrollCue />
@@ -110,15 +102,6 @@ export function Hero({ content, onReplay }: HeroProps) {
     </section>
   )
 }
-
-/** Tim và cánh hoa bay lên từ chỗ hai bạn đứng (hai mép), không bay qua chữ trên điện thoại. */
-const FLOATS = [
-  ['heart', '4%'],
-  ['petal', '12%'],
-  ['heart', '84%'],
-  ['petal', '92%'],
-  ['heart', '8%'],
-] as const
 
 function ReplayButton({ onClick }: { onClick: () => void }) {
   return (

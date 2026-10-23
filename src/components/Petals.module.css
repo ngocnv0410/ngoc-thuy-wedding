@@ -1,0 +1,30 @@
+.petals {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.petals span {
+  position: absolute;
+  top: -24px;
+  left: var(--x);
+  width: 7px;
+  height: 12px;
+  border-radius: 80% 0 80% 20%;
+  background: linear-gradient(135deg, #e5c7b0, #fff4e7);
+  opacity: 0;
+  animation: drift calc(12s + var(--i) * 1.3s) linear infinite;
+  animation-delay: calc(var(--i) * -2.7s);
+  animation-play-state: paused;
+}
+
+.petals[data-active='true'] span { animation-play-state: running; }
+
+@keyframes drift {
+  0% { transform: translate3d(0, -20px, 0) rotate(0deg); opacity: 0; }
+  15%, 75% { opacity: 0.65; }
+  100% { transform: translate3d(var(--drift), 100svh, 0) rotate(280deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { .petals { display: none; } }

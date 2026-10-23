@@ -79,6 +79,8 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
               {GROOM.buttons.map(([cx, cy]) => (
                 <circle key={cy} cx={cx} cy={cy} r={1.3} className={styles.accent} />
               ))}
+              <path d="M71 124Q66 121 69 118Q73 119 71 124" fill="#778568" stroke="none" />
+              <circle cx="72" cy="120" r="2.5" className={styles.flower} />
             </>
           ) : (
             <>
@@ -130,7 +132,9 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
                 <path d={BRIDE.lock} className={styles.hairBride} transform={MIRROR} />
                 {BRIDE.flowers.map(([cx, cy]) => (
                   <g key={cx}>
-                    <circle cx={cx} cy={cy} r={4.2} className={styles.flower} />
+                    {[0, 72, 144, 216, 288].map((angle) => (
+                      <ellipse key={angle} cx={cx} cy={cy - 2.6} rx="1.6" ry="2.6" transform={`rotate(${angle} ${cx} ${cy})`} className={styles.flower} />
+                    ))}
                     <circle cx={cx} cy={cy} r={1.4} className={styles.accent} />
                   </g>
                 ))}

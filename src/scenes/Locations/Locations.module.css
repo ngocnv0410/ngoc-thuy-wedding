@@ -39,7 +39,9 @@
   background: var(--color-ivory);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-paper);
-  border-left: 2px solid transparent;
+  border: 1px solid rgb(198 166 107 / 0.4);
+  border-left: 2px solid rgb(198 166 107 / 0.4);
+  border-radius: 4px 28px 4px 4px;
   transition: border-color var(--dur-sm) var(--ease-paper);
 }
 

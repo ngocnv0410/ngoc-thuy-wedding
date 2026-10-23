@@ -4,7 +4,8 @@
   gap: var(--space-5);
   padding: var(--space-6) var(--space-5);
   border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
-  border-radius: var(--radius-card);
+  border-radius: 100px 100px 4px 4px;
+  background: rgb(255 250 243 / 0.035);
   text-align: center;
 }
 

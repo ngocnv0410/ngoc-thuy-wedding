@@ -6,6 +6,9 @@
   pointer-events: none;
 }
 
+.stationery[data-tone='light'] > canvas { opacity: 0.38; }
+.stationery[data-tone='light'] > :not(canvas) { opacity: 0.78; }
+
 /* Scene ánh nến: mép trên tan dần vào nền trang để chuyển từ ngày sang tối không bị gắt. */
 .stationery[data-tone='dark'] {
   mask-image: linear-gradient(to bottom, transparent, #000 var(--space-9));

@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { AudioToggle } from './components/AudioToggle'
 import { ChapterNav, type Chapter } from './components/ChapterNav'
 import { LightLayer } from './components/LightLayer'
@@ -34,21 +34,29 @@ function shouldShowOpening(): boolean {
 
 function App() {
   const [opening, setOpening] = useState(shouldShowOpening)
+  const focusHero = useRef(false)
 
   useLayoutEffect(() => {
     const root = document.documentElement
     if (opening) root.dataset.opening = 'on'
-    else delete root.dataset.opening
+    else {
+      delete root.dataset.opening
+      // Focus only after React has removed inert from the invitation.
+      if (focusHero.current) {
+        document.getElementById('hero-title')?.focus({ preventScroll: true })
+        focusHero.current = false
+      }
+    }
   }, [opening])
 
   const handleOpened = useCallback(() => {
+    focusHero.current = true
     setOpening(false)
     try {
       sessionStorage.setItem(OPENED_KEY, '1')
     } catch {
       // Trình duyệt chặn storage: lần sau sẽ lại hiện màn mở cửa, không sao.
     }
-    requestAnimationFrame(() => document.getElementById('hero-title')?.focus({ preventScroll: true }))
   }, [])
 
   const replayOpening = useCallback(() => {
