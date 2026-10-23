@@ -16,7 +16,14 @@
   transition: background-color 250ms, border-color 250ms, box-shadow 250ms;
 }
 
-.host { --chibi-h: 92px; justify-self: center; }
+.host {
+  --chibi-h: 92px;
+  justify-self: center;
+  transform-origin: 50% 96%;
+  animation: chibiSway 2.8s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.card[data-ambient-active='true'] .host { animation-play-state: running; }
 .summary { display: grid; gap: 4px; min-width: 0; }
 .side {
   font-size: 10px;
@@ -71,9 +78,17 @@
 .dialogHeader { display: grid; justify-items: center; gap: 6px; width: 100%; }
 .coupleStage { position: relative; display: grid; place-items: center; }
 .dialogCouple > [data-chibi] { --chibi-h: 82px; }
+.dialog[open] .dialogCouple > [data-chibi] {
+  transform-origin: 50% 96%;
+  animation: chibiSway 2.8s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.dialog[open][data-ambient-active='true'] .dialogCouple > [data-chibi] { animation-play-state: running; }
+.dialogCouple > [data-chibi='bride'] { animation-delay: -1.4s; }
 .dialog[open] .coupleStage { animation: hello 650ms var(--ease-paper) 100ms both; }
 .heart { position: absolute; top: 2px; left: calc(50% - 8px); width: 16px; opacity: 0; }
-.dialog[open] .heart { animation: heart 1.2s ease-out 450ms both; }
+.dialog[open] .heart { animation: heart 3s ease-out 450ms infinite both; animation-play-state: paused; }
+.dialog[open][data-ambient-active='true'] .heart { animation-play-state: running; }
 .dialogTitle { font-size: clamp(23px, 5vw, 30px); line-height: 1.2; }
 .qrPaper { padding: 12px; background: #fff; border: 1px solid rgb(168 130 63 / 0.18); border-radius: 8px; }
 .qr { width: min(58vmin, 240px); height: auto; image-rendering: pixelated; }
@@ -113,6 +128,7 @@
 @keyframes veilOut { to { opacity: 0; } }
 @keyframes hello { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: none; } }
 @keyframes heart { 0% { opacity: 0; transform: translateY(8px) scale(0.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-20px) scale(1); } }
+@keyframes chibiSway { from { transform: rotate(-1.5deg) translateY(0); } to { transform: rotate(1.5deg) translateY(-2px); } }
 
 @media (max-width: 359px) {
   .card { grid-template-columns: 42px minmax(0, 1fr) auto; gap: 10px; padding-inline: 12px; }
@@ -125,6 +141,6 @@
   .panel { gap: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .dialog, .dialog::backdrop, .coupleStage, .heart { animation: none !important; }
+  .dialog, .dialog::backdrop, .coupleStage, .heart, .host, .dialogCouple > [data-chibi] { animation: none !important; }
   .heart { display: none; }
 }

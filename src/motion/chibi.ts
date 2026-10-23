@@ -129,11 +129,29 @@ export function idle(chibis: Element[], trigger: Element, { bob = true } = {}) {
   }
   chibis.forEach((el, index) => {
     loops.push(gsap.timeline({ repeat: -1, repeatDelay: 3.2 + index * 0.9, delay: 1 + index, paused: true }).add(blink(el)))
+    const head = Number.parseFloat(poseOf(el, '--head-r')) || 0
+    loops.push(
+      gsap.timeline({ repeat: -1, repeatDelay: 3.2 + index * 0.4, delay: 4 + index, paused: true })
+        .to(el, { '--head-r': `${head + (index % 2 ? -5 : 5)}deg`, duration: 0.8, ease: 'sine.inOut' })
+        .to(el, { '--head-r': `${head}deg`, duration: 0.8, ease: 'sine.inOut' }),
+    )
   })
-  ScrollTrigger.create({
+  const sync = (self: ScrollTrigger) => {
+    const playing = self.isActive && !document.hidden
+    loops.forEach((loop) => playing ? loop.play() : loop.pause())
+  }
+  const watcher = ScrollTrigger.create({
     trigger,
     start: 'top bottom',
     end: 'bottom top',
-    onToggle: (self) => loops.forEach((loop) => (self.isActive ? loop.play() : loop.pause())),
+    onToggle: sync,
+    onRefresh: sync,
+  })
+  // A character can already be visible when this is mounted; do not wait for a scroll toggle.
+  sync(watcher)
+  gsap.context(() => {
+    const onVisibility = () => sync(watcher)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => document.removeEventListener('visibilitychange', onVisibility)
   })
 }

@@ -8,6 +8,7 @@ import { Petals } from '../../components/Petals'
 import type { WeddingContent } from '../../content/types'
 import { orderedCouple, primaryDay, solarParts } from '../../lib/format'
 import { useSceneMotion } from '../../motion/useMotion'
+import { useVisibleMotion } from '../../motion/useVisibleMotion'
 import styles from './Hero.module.css'
 
 interface HeroProps {
@@ -23,6 +24,7 @@ interface HeroProps {
  */
 export function Hero({ content, onReplay }: HeroProps) {
   const ref = useRef<HTMLElement>(null)
+  const portraitMotion = useVisibleMotion<HTMLDivElement>()
   useSceneMotion(ref, 'hero')
 
   const { couple, cover } = content
@@ -84,7 +86,7 @@ export function Hero({ content, onReplay }: HeroProps) {
 
       <Petals />
       <div className={styles.composition}>
-        <div className={styles.portrait} data-anim="portrait" aria-hidden="true">
+        <div ref={portraitMotion.ref} className={styles.portrait} data-anim="portrait" data-ambient-active={portraitMotion.active} aria-hidden="true">
           <span className={styles.arch} />
           <img className={styles.illustration} src={`${import.meta.env.BASE_URL}images/wedding-couple.webp`} alt="" width="768" height="1152" fetchPriority="high" decoding="async" />
           <span className={styles.portraitDate}>{year} <span>✦</span> {date}.{month}</span>

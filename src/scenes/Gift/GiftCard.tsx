@@ -6,6 +6,7 @@ import { CopyButton } from '../../components/CopyButton'
 import type { BankAccount } from '../../content/types'
 import { groupDigits } from '../../lib/clipboard'
 import { lockScroll, prefersMotion } from '../../motion/useMotion'
+import { useVisibleMotion } from '../../motion/useVisibleMotion'
 import styles from './GiftCard.module.css'
 
 const SIDE_LABEL = { bride: 'Nhà gái', groom: 'Nhà trai', both: 'Cô dâu & chú rể' } as const
@@ -20,6 +21,8 @@ export function GiftCard({ account, onAction }: GiftCardProps) {
   const id = useId()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const cardMotion = useVisibleMotion(triggerRef)
+  const dialogMotion = useVisibleMotion(dialogRef)
   const numberRef = useRef<HTMLSpanElement>(null)
   const closeTimer = useRef<number | undefined>(undefined)
   const opened = useRef(false)
@@ -85,6 +88,7 @@ export function GiftCard({ account, onAction }: GiftCardProps) {
   return (
     <>
       <button ref={triggerRef} type="button" className={styles.card} onClick={open}
+        data-ambient-active={cardMotion.active}
         aria-haspopup="dialog" aria-controls={id} aria-label={`Mở QR mừng cưới ${label}`}>
         <Chibi who={who} size="sm" pose="carry" eyes="happy" held={<PropArt kind="envelope" />} className={styles.host} />
         <span className={styles.summary}>
@@ -99,6 +103,7 @@ export function GiftCard({ account, onAction }: GiftCardProps) {
       </button>
 
       <dialog id={id} ref={dialogRef} className={styles.dialog} data-closing={closing}
+        data-ambient-active={dialogMotion.active}
         aria-labelledby={`${id}-title`} data-lenis-prevent="true"
         onCancel={(event) => { event.preventDefault(); close() }}
         onClose={onClosed}
