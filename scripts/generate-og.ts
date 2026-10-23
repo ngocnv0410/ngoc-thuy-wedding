@@ -11,7 +11,6 @@ import { fileURLToPath } from 'node:url'
 // opentype.js là CommonJS: Node chỉ cho import mặc định.
 import opentype, { type Font } from 'opentype.js'
 import sharp from 'sharp'
-import { type Corner, SHAPE, type Variant, bouquetMarkup } from '../src/components/decor/bouquet.ts'
 import { FOIL_STOPS, MARBLE_COLORS, W as MARBLE_W, frame, washLayer } from '../src/components/decor/marble.ts'
 import { share } from './share.ts'
 
@@ -111,15 +110,11 @@ const background = `
     <path d="${marble.glitter}" fill="url(#foilTile)" opacity="0.75"/>
   </g>`
 
-// ── Hoa baby ở góc trên phải và dưới trái, như bìa ──
-function sprig(corner: Corner, variant: Variant, seed: number, width: number, x: number, y: number) {
-  const scale = width / SHAPE[variant].width
-  return `<g transform="translate(${x} ${y}) scale(${scale})">${bouquetMarkup(seed, variant, corner, 'light', `f${seed}`)}</g>`
-}
-const sprayW = 380
-const sprigH = 420
-const sprigW = (sprigH * SHAPE.sprig.width) / SHAPE.sprig.height
-const flowers = sprig('top-right', 'spray', 11, sprayW, W - sprayW, 0) + sprig('bottom-left', 'sprig', 23, sprigW, 0, H - sprigH)
+// The share card uses the same photographic corner flowers as the invitation.
+const spray = await sharp(join(root, 'public/images/decor/baby-spray.webp')).resize({ width: 340 }).png().toBuffer({ resolveWithObject: true })
+const sprig = await sharp(join(root, 'public/images/decor/baby-sprig.webp')).resize({ height: 330 }).png().toBuffer({ resolveWithObject: true })
+const flowers = `<image x="${W - spray.info.width}" y="-6" width="${spray.info.width}" height="${spray.info.height}" href="data:image/png;base64,${spray.data.toString('base64')}"/>
+  <image x="-4" y="${H - sprig.info.height + 4}" width="${sprig.info.width}" height="${sprig.info.height}" href="data:image/png;base64,${sprig.data.toString('base64')}"/>`
 
 // ── Tên nhũ vàng (Pinyon Script như bìa), "&" serif nghiêng ──
 const nameSize = 116

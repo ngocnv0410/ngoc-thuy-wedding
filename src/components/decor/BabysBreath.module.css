@@ -1,37 +1,35 @@
-/* Màu hoa nằm trong bouquet.ts (ảnh SVG tự chứa). */
 .bouquet {
   position: absolute;
   z-index: 0;
-  width: clamp(230px, 62vw, 480px);
-  height: auto;
+  display: block;
+  width: clamp(164px, 44vw, 380px);
   pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.bouquet[data-variant='sprig'] { width: clamp(84px, 23vw, 180px); }
+.photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(1px 3px 3px rgb(72 49 29 / 0.16));
 }
 
-.bouquet[data-variant='sprig'] {
-  width: clamp(100px, 23vw, 210px);
-}
+/* Flip the inner photo so GSAP can animate the wrapper without changing the composition. */
+.bouquet[data-corner='top-left'] { top: -4px; left: -4px; transform-origin: 0% 0%; }
+.bouquet[data-corner='top-right'] { top: -4px; right: -4px; transform-origin: 100% 0%; }
+.bouquet[data-corner='bottom-left'] { bottom: -4px; left: -4px; transform-origin: 0% 100%; }
+.bouquet[data-corner='bottom-right'] { bottom: -4px; right: -4px; transform-origin: 100% 100%; }
 
-/* Gốc phóng to khi hoa "nở" (growSprigs) là góc gắn bó hoa. */
-.bouquet[data-corner='top-left'] {
-  top: 0;
-  left: 0;
-  transform-origin: 0% 0%;
-}
+/* The spray grows from the upper-right corner; the tall sprig grows from the lower-left. */
+.bouquet[data-variant='spray'][data-corner='top-left'] .photo { transform: scaleX(-1); }
+.bouquet[data-variant='spray'][data-corner='bottom-left'] .photo { transform: scale(-1, -1); }
+.bouquet[data-variant='spray'][data-corner='bottom-right'] .photo { transform: scaleY(-1); }
+.bouquet[data-variant='sprig'][data-corner='top-left'] .photo { transform: scaleY(-1); }
+.bouquet[data-variant='sprig'][data-corner='top-right'] .photo { transform: scale(-1, -1); }
+.bouquet[data-variant='sprig'][data-corner='bottom-right'] .photo { transform: scaleX(-1); }
 
-.bouquet[data-corner='top-right'] {
-  top: 0;
-  right: 0;
-  transform-origin: 100% 0%;
-}
-
-.bouquet[data-corner='bottom-left'] {
-  bottom: 0;
-  left: 0;
-  transform-origin: 0% 100%;
-}
-
-.bouquet[data-corner='bottom-right'] {
-  bottom: 0;
-  right: 0;
-  transform-origin: 100% 100%;
+@media (max-width: 359px) {
+  .bouquet { width: 46vw; }
+  .bouquet[data-variant='sprig'] { width: 24vw; }
 }
