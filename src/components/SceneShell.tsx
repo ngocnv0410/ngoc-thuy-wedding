@@ -1,4 +1,5 @@
 import type { ReactNode, Ref } from 'react'
+import { Petals } from './Petals'
 import styles from './SceneShell.module.css'
 
 export type Light = 'morning' | 'noon' | 'afternoon' | 'golden' | 'candle'
@@ -24,6 +25,7 @@ export function SceneShell({ id, light, labelledBy, className, ref, children }: 
       className={[styles.scene, className].filter(Boolean).join(' ')}
     >
       {children}
+      <Petals />
     </section>
   )
 }

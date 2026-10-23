@@ -1,30 +1,72 @@
 .petals {
   position: absolute;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
+  contain: paint;
   pointer-events: none;
 }
 
-.petals span {
+.petals > span {
   position: absolute;
-  top: -24px;
+  top: -28px;
   left: var(--x);
-  width: 7px;
-  height: 12px;
-  border-radius: 80% 0 80% 20%;
-  background: linear-gradient(135deg, #e5c7b0, #fff4e7);
+  width: 14px;
+  height: 22px;
   opacity: 0;
-  animation: drift calc(12s + var(--i) * 1.3s) linear infinite;
-  animation-delay: calc(var(--i) * -2.7s);
+  animation: fall calc(var(--fall-time, 24s) + var(--i) * 1.3s) linear infinite;
+  animation-delay: calc((var(--fall-time, 24s) + var(--i) * 1.3s) * var(--phase) * -1);
   animation-play-state: paused;
 }
 
-.petals[data-active='true'] span { animation-play-state: running; }
-
-@keyframes drift {
-  0% { transform: translate3d(0, -20px, 0) rotate(0deg); opacity: 0; }
-  15%, 75% { opacity: 0.65; }
-  100% { transform: translate3d(var(--drift), 100svh, 0) rotate(280deg); opacity: 0; }
+.petals i {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 85% 0 80% 15%;
+  background: linear-gradient(135deg, #c1bd92, #e2d5ae 65%, #a6a17b);
+  animation: sway calc(4s + var(--i) * 0.25s) ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -0.7s);
+  animation-play-state: paused;
 }
 
+.petals i::after {
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 78%;
+  top: 14%;
+  left: 48%;
+  background: rgb(111 109 76 / 0.25);
+  transform: rotate(28deg);
+}
+
+.petals i[data-kind='petal'] {
+  width: 10px;
+  height: 15px;
+  border-radius: 80% 35% 70% 30%;
+  background: linear-gradient(135deg, #debba4, #f2e0cf);
+}
+.petals i[data-kind='petal']::after { display: none; }
+.petals > span:nth-child(even) { width: 10px; height: 17px; }
+.petals[data-active='true'] > span,
+.petals[data-active='true'] i { animation-play-state: running; }
+
+:root[data-opening='on'] .petals > span,
+:root[data-opening='on'] .petals i { animation-play-state: paused; }
+
+@keyframes fall {
+  0% { transform: translate3d(0, -20px, 0); opacity: 0; }
+  12%, 80% { opacity: 0.48; }
+  100% { transform: translate3d(var(--drift), var(--fall-height, 100svh), 0); opacity: 0; }
+}
+@keyframes sway {
+  from { transform: translateX(-12px) rotate(-35deg) rotateY(0deg); }
+  to { transform: translateX(12px) rotate(50deg) rotateY(50deg); }
+}
+
+@media (max-width: 639px) {
+  .petals > span:nth-child(n+8) { display: none; }
+}
 @media (prefers-reduced-motion: reduce) { .petals { display: none; } }
