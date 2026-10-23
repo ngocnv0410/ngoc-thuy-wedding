@@ -23,7 +23,7 @@ export interface Doors3DApi {
   refit: () => void
   /** Dấu sáp "thở" chờ được chạm. */
   startIdle: () => void
-  open: (root: HTMLElement, callbacks: OpenCallbacks) => { fastForward: () => void; finish: () => void }
+  open: (root: HTMLElement, callbacks: OpenCallbacks) => { fastForward: () => void; finish: () => void; dispose: () => void }
 }
 
 export interface Doors3DProps {
@@ -240,8 +240,15 @@ function Scene({ text, onReady, onOpenRequest }: Doors3DProps) {
         .call(onReveal, [], 1.05)
         .to(root, { autoAlpha: 0, duration: 0.5, ease: 'power1.out' }, 2.0)
 
-      guard(tl)
-      return { fastForward: () => void tl.timeScale(3), finish: () => void tl.progress(1) }
+      const cancelGuard = guard(tl)
+      return {
+        fastForward: () => void tl.timeScale(3),
+        finish: () => void tl.progress(1),
+        dispose: () => {
+          cancelGuard()
+          tl.kill()
+        },
+      }
     }
 
     const api: Doors3DApi = {

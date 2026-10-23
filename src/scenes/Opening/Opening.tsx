@@ -20,6 +20,7 @@ interface OpeningProps {
 interface OpenControl {
   fastForward: () => void
   finish: () => void
+  dispose: () => void
 }
 
 /** Fallback khi không có motion: overlay mờ dần bằng CSS trong 400ms. */
@@ -37,6 +38,8 @@ export function Opening({ content, onDone }: OpeningProps) {
   const [withMusic, setWithMusic] = useState(false)
   const started = useRef(false)
   const finished = useRef(false)
+  const dismissing = useRef(false)
+  const fadeTimer = useRef<number | undefined>(undefined)
   const control = useRef<OpenControl | null>(null)
   // Callback ref (state) để lớp 3D render lại khi cửa 2.5D đã có trong DOM.
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
@@ -61,7 +64,11 @@ export function Opening({ content, onDone }: OpeningProps) {
   useLayoutEffect(() => {
     lockScroll(true)
     ref.current?.focus({ preventScroll: true })
-    return () => lockScroll(false)
+    return () => {
+      lockScroll(false)
+      window.clearTimeout(fadeTimer.current)
+      control.current?.dispose()
+    }
   }, [])
 
   // Keep keyboard navigation inside the invitation until the opening is dismissed.
@@ -108,13 +115,16 @@ export function Opening({ content, onDone }: OpeningProps) {
   }, [])
 
   const fadeOut = useCallback(() => {
+    if (dismissing.current || finished.current) return
+    dismissing.current = true
     setClosing(true)
-    if (prefersMotion()) {
+    const opening = ref.current
+    if (prefersMotion() && opening) {
       loadMotion()
-        .then((runtime) => runtime.releaseHero())
+        .then((runtime) => runtime.releaseHero(opening))
         .catch(() => {})
     }
-    window.setTimeout(finish, FADE_MS)
+    fadeTimer.current = window.setTimeout(finish, FADE_MS)
   }, [finish])
 
   async function open() {
@@ -131,12 +141,13 @@ export function Opening({ content, onDone }: OpeningProps) {
     }
     try {
       const runtime = await loadMotionWithin(1500)
-      if (!ref.current) return
+      if (!ref.current || dismissing.current || finished.current) return
+      const opening = ref.current
       const api3d = doors3D.active ? doors3D.api.current : null
       if (api3d) {
         // Bản 3D tự mở cửa; hai bạn chibi (lớp DOM trên canvas) đi theo cùng nhịp.
         const hosts = runtime.openHosts(ref.current)
-        const doors = api3d.open(ref.current, { onReveal: runtime.releaseHero, onDone: finish })
+        const doors = api3d.open(opening, { onReveal: () => runtime.releaseHero(opening), onDone: finish })
         control.current = {
           fastForward: () => {
             doors.fastForward()
@@ -145,6 +156,10 @@ export function Opening({ content, onDone }: OpeningProps) {
           finish: () => {
             hosts.finish()
             doors.finish()
+          },
+          dispose: () => {
+            hosts.dispose()
+            doors.dispose()
           },
         }
       } else {

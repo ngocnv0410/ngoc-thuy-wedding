@@ -22,30 +22,47 @@ export type SceneKey = 'hero' | 'countdown' | 'details' | 'locations' | 'gallery
 const root = document.documentElement
 
 // ── Bìa: chờ cửa mở mới phát ─────────────────────────────────
-let heroTimeline: gsap.core.Timeline | undefined
-let heroReleased = false
-
-const isOpening = () => root.dataset.opening === 'on'
+interface HeroPlayback {
+  timeline: gsap.core.Timeline
+  opening: HTMLElement | null
+  cancelGuard?: () => void
+}
+let heroPlayback: HeroPlayback | undefined
+// Each mounted opening is a separate viewing, including after skipping or replaying.
+const revealedOpenings = new WeakSet<HTMLElement>()
 
 /** Phát phần mở màn của bìa (gọi khi cửa đã hé / được bỏ qua). */
-export function releaseHero() {
-  heroReleased = true
-  if (heroTimeline?.paused()) {
-    heroTimeline.play()
-    guard(heroTimeline)
+export function releaseHero(opening: HTMLElement) {
+  revealedOpenings.add(opening)
+  const current = heroPlayback
+  // An old opening's async callback must never release a later viewing.
+  if (current?.opening === opening && current.timeline.paused()) {
+    current.timeline.play()
+    current.cancelGuard = guard(current.timeline)
   }
 }
 
 /** Mở cửa; bìa thật phía sau được phát ngay khi cửa vừa hé đủ rộng. */
 export function openDoors(root: HTMLElement, onDone: () => void) {
-  return openDoorsTimeline(root, { onReveal: releaseHero, onDone })
+  return openDoorsTimeline(root, { onReveal: () => releaseHero(root), onDone })
 }
 
-const SCENES: Record<SceneKey, (conditions: MotionConditions, el: HTMLElement) => void> = {
+const SCENES: Record<SceneKey, (conditions: MotionConditions, el: HTMLElement) => void | (() => void)> = {
   hero: (_, el) => {
-    heroTimeline = heroMotion(el)
-    if (!heroReleased && isOpening()) heroTimeline.pause(0)
-    else guard(heroTimeline)
+    // Global lighting follows the current scene elements after a full replay remount.
+    const stopLight = startLight()
+    const current: HeroPlayback = {
+      timeline: heroMotion(el),
+      opening: document.getElementById('opening'),
+    }
+    heroPlayback = current
+    if (current.opening && !revealedOpenings.has(current.opening)) current.timeline.pause(0)
+    else current.cancelGuard = guard(current.timeline)
+    return () => {
+      stopLight()
+      current.cancelGuard?.()
+      if (heroPlayback === current) heroPlayback = undefined
+    }
   },
   details: (_, el) => detailsMotion(el),
   countdown: (_, el) => countdownMotion(el),
@@ -139,9 +156,7 @@ function ensureGlobal() {
   mm.add(MEDIA.motion, () => {
     // 'pending' (đặt bởi script nội tuyến trong index.html) → 'on': hết che phần tử chờ animate.
     root.dataset.motion = 'on'
-    const stopLight = startLight()
     return () => {
-      stopLight()
       delete root.dataset.motion
     }
   })
@@ -163,7 +178,7 @@ export function mountScene(key: SceneKey, el: HTMLElement): () => void {
   const mm = gsap.matchMedia()
   mm.add(MEDIA, (context) => {
     const conditions = context.conditions as MotionConditions
-    if (conditions.motion) SCENES[key](conditions, el)
+    if (conditions.motion) return SCENES[key](conditions, el)
   })
   return () => mm.revert()
 }

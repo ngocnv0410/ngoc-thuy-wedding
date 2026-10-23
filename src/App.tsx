@@ -35,6 +35,7 @@ function shouldShowOpening(): boolean {
 
 function App() {
   const [opening, setOpening] = useState(shouldShowOpening)
+  const [invitationVersion, setInvitationVersion] = useState(0)
   const focusHero = useRef(false)
 
   useLayoutEffect(() => {
@@ -61,7 +62,9 @@ function App() {
   }, [])
 
   const replayOpening = useCallback(() => {
-    window.scrollTo(0, 0)
+    window.scrollTo({ top: 0, behavior: 'instant' })
+    // A new viewing resets every scene's reveal, chibi rig and ScrollTrigger.
+    setInvitationVersion((version) => version + 1)
     setOpening(true)
   }, [])
 
@@ -85,7 +88,7 @@ function App() {
       <div className="app-shell" inert={opening}>
         <ChapterNav chapters={chapters} />
         {wedding.music && !opening && <AudioToggle />}
-        <main>
+        <main key={invitationVersion}>
           <Hero content={wedding} onReplay={opening ? undefined : replayOpening} />
           <Details content={wedding} />
           <Countdown content={wedding} />

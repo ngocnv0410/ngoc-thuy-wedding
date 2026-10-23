@@ -6,17 +6,20 @@ const one = (root: Element, selector: string) => root.querySelector<HTMLElement>
 const all = (root: Element, selector: string) => [...root.querySelectorAll<HTMLElement>(selector)]
 const anim = (name: string) => `[data-anim="${name}"]`
 
-let intro: gsap.core.Timeline | undefined
-let breathing: gsap.core.Tween | undefined
-let hostLoops: gsap.core.Animation[] = []
+interface OpeningMotion {
+  intro?: gsap.core.Timeline
+  breathing?: gsap.core.Tween
+  hostLoops: gsap.core.Animation[]
+}
+const openings = new WeakMap<HTMLElement, OpeningMotion>()
 
 /** Hai bạn chibi đứng trước cửa, theo thứ tự DOM: bên trái rồi bên phải. */
 const hostsOf = (root: Element) => all(root, '[data-anim^="host-"]')
 /** +1 với người đứng bên trái (khe cửa / giữa màn hình ở bên phải), −1 với người bên phải. */
 const inward = (index: number) => (index === 0 ? 1 : -1)
-const stopHosts = () => {
-  hostLoops.forEach((loop) => loop.kill())
-  hostLoops = []
+const stopHosts = (state: OpeningMotion | undefined) => {
+  state?.hostLoops.forEach((loop) => loop.kill())
+  if (state) state.hostLoops = []
 }
 
 /**
@@ -25,10 +28,12 @@ const stopHosts = () => {
  * hoa văn (vẽ lại cả cánh cửa mỗi khung hình là giật trên điện thoại).
  */
 export function introDoors(root: HTMLElement): () => void {
+  const state: OpeningMotion = { hostLoops: [] }
+  openings.set(root, state)
   const seal = one(root, anim('seal'))
   holdPaint(2200)
 
-  intro = gsap.timeline({ defaults: { ease: 'paper' } })
+  const intro = state.intro = gsap.timeline({ defaults: { ease: 'paper' } })
   intro.from(all(root, '[data-door]'), { scale: 1.04, duration: 1.6, ease: 'silk' }, 0)
   intro.from(all(root, anim('greeting')), { autoAlpha: 0, y: 12, duration: 0.9 }, 0.2)
   if (seal) {
@@ -44,7 +49,8 @@ export function introDoors(root: HTMLElement): () => void {
   // "Thở" chỉ bắt đầu khi dấu sáp đã đặt xong — hai tween cùng scale không chồng nhau.
   if (seal) {
     intro.call(() => {
-      breathing = gsap.to(seal, { scale: 1.02, duration: 1.2, ease: 'sine.inOut', yoyo: true, repeat: -1 })
+      state.breathing?.kill()
+      state.breathing = gsap.to(seal, { scale: 1.02, duration: 1.2, ease: 'sine.inOut', yoyo: true, repeat: -1 })
     })
   }
   // Hai bạn chibi đứng trước cửa: bước ra, nhìn quanh, chớp mắt rồi nhìn khách (tư thế cuối).
@@ -57,9 +63,9 @@ export function introDoors(root: HTMLElement): () => void {
       .add(blink(hosts), 3.1)
       // Trong lúc đứng chờ: thở nhẹ liên tục + một chuỗi cử chỉ lặp ~7s cho tới khi khách bấm mở.
       .call(() => {
-        stopHosts()
+        stopHosts(state)
         const [left, right] = hosts
-        hostLoops = [
+        state.hostLoops = [
           gsap.to(hosts, { '--body-y': '-3px', duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: 0.45 }),
           gsap
             .timeline({ repeat: -1, repeatDelay: 1.8, delay: 0.8 })
@@ -83,9 +89,10 @@ export function introDoors(root: HTMLElement): () => void {
 
   return () => {
     cancelGuard()
-    intro?.kill()
-    breathing?.kill()
-    stopHosts()
+    intro.kill()
+    state.breathing?.kill()
+    stopHosts(state)
+    if (openings.get(root) === state) openings.delete(root)
   }
 }
 
@@ -101,8 +108,9 @@ interface OpenCallbacks {
  * Chạm lần nữa để tua nhanh (×3).
  */
 export function openDoors(root: HTMLElement, { onReveal, onDone }: OpenCallbacks) {
-  intro?.progress(1)
-  breathing?.kill()
+  const state = openings.get(root)
+  state?.intro?.progress(1)
+  state?.breathing?.kill()
   holdPaint(2800)
 
   const seal = one(root, anim('seal'))
@@ -143,11 +151,15 @@ export function openDoors(root: HTMLElement, { onReveal, onDone }: OpenCallbacks
     // Chờ hai bạn mời khách vào xong rồi mới tan overlay.
     .to(root, { autoAlpha: 0, duration: 0.5, ease: 'power1.out' }, HOSTS_DONE)
 
-  guard(tl)
+  const cancelGuard = guard(tl)
 
   return {
     fastForward: () => void tl.timeScale(3),
     finish: () => void tl.progress(1),
+    dispose: () => {
+      cancelGuard()
+      tl.kill()
+    },
   }
 }
 
@@ -159,8 +171,9 @@ const HOSTS_DONE = 2.4
  * (cửa bắt đầu xoay lúc 0.6s) → lùi ra hai bên → đưa tay về phía cửa đã mở, cúi chào mời khách vào.
  */
 function hostsOpen(root: HTMLElement) {
-  intro?.progress(1)
-  stopHosts()
+  const state = openings.get(root)
+  state?.intro?.progress(1)
+  stopHosts(state)
   const tl = gsap.timeline({ defaults: { ease: 'paper' } })
   const hosts = hostsOf(root)
   if (!hosts.length) return tl
@@ -224,9 +237,13 @@ function hostsOpen(root: HTMLElement) {
 /** Bản 3D: cửa do Doors3D mở, hai bạn chibi chạy timeline riêng — có lưới an toàn và tua nhanh. */
 export function openHosts(root: HTMLElement) {
   const tl = hostsOpen(root)
-  guard(tl)
+  const cancelGuard = guard(tl)
   return {
     fastForward: () => void tl.timeScale(3),
     finish: () => void tl.progress(1),
+    dispose: () => {
+      cancelGuard()
+      tl.kill()
+    },
   }
 }
