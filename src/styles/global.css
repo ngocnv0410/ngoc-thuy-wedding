@@ -113,6 +113,11 @@ input {
   border: 0;
 }
 
+/* Chương nhận focus sau khi chuyển từ mục lục (để bàn phím đi tiếp) — không viền khung cả chương. */
+main section[tabindex='-1']:focus {
+  outline: none;
+}
+
 /* Chunk motion chưa tải xong: che phần tử bìa / màn mở cửa sẽ được animate vào (xem index.html). */
 :root[data-motion='pending'] #bia [data-anim],
 :root[data-motion='pending'] #opening [data-anim] {

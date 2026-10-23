@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { type CSSProperties, type MouseEvent, useEffect, useId, useRef, useState } from 'react'
+import { goToSection } from '../motion/useMotion'
 import styles from './ChapterNav.module.css'
 
 export interface Chapter {
@@ -45,6 +46,15 @@ export function ChapterNav({ chapters }: { chapters: Chapter[] }) {
     }
   }, [open])
 
+  // Đóng mục lục trước rồi mới cuộn mượt tới chương (không để trình duyệt nhảy giật theo #hash).
+  function jump(event: MouseEvent<HTMLAnchorElement>, id: string) {
+    event.preventDefault()
+    // Không để Lenis (desktop) bắt thêm lần nữa cú bấm anchor này.
+    event.stopPropagation()
+    setOpen(false)
+    goToSection(id)
+  }
+
   return (
     <nav ref={rootRef} className={styles.nav} data-hidden={hidden && !open} aria-label="Mục lục thiệp">
       <button
@@ -58,10 +68,11 @@ export function ChapterNav({ chapters }: { chapters: Chapter[] }) {
         <span className={styles.bars} aria-hidden="true" data-open={open} />
         <span>Mục lục</span>
       </button>
-      <ol id={panelId} className={styles.panel} hidden={!open}>
+      {/* Luôn trong DOM để mở/đóng có chuyển động; khi đóng thì `inert` (không focus, không đọc). */}
+      <ol id={panelId} className={styles.panel} data-open={open} inert={!open}>
         {chapters.map((chapter, index) => (
-          <li key={chapter.id}>
-            <a href={`#${chapter.id}`} onClick={() => setOpen(false)}>
+          <li key={chapter.id} style={{ '--i': index } as CSSProperties}>
+            <a href={`#${chapter.id}`} onClick={(event) => jump(event, chapter.id)}>
               <span className={styles.index}>{String(index + 1).padStart(2, '0')}</span>
               {chapter.label}
             </a>

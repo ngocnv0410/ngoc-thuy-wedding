@@ -14,7 +14,7 @@ import { locationsMotion } from '../scenes/Locations/locationsMotion'
 import { openDoors as openDoorsTimeline } from '../scenes/Opening/openingMotion'
 import { startLight } from './light'
 
-export { introDoors, openChibis } from '../scenes/Opening/openingMotion'
+export { introDoors, openHosts } from '../scenes/Opening/openingMotion'
 
 export type SceneKey = 'hero' | 'details' | 'locations' | 'gallery' | 'gift'
 
@@ -82,6 +82,48 @@ function startSmoothScroll(): () => void {
     lenis?.destroy()
     lenis = undefined
   }
+}
+
+// ── Chuyển chương (mục lục) ────────────────────────────────────
+let jump: gsap.core.Tween | undefined
+
+/**
+ * Cuộn mượt tới một chương: nhanh dần rồi chậm dần (thay cho smooth-scroll native, vốn gắt và
+ * khác nhau giữa Safari/Zalo). Thời lượng theo quãng đường, 0.7–1.6s. Desktop dùng Lenis; điện
+ * thoại tween vị trí cuộn trực tiếp. Khách chạm/lăn chuột giữa chừng thì dừng ngay.
+ */
+export function scrollToSection(target: HTMLElement, onDone: () => void) {
+  jump?.kill()
+  const top = target.getBoundingClientRect().top + window.scrollY
+  const distance = Math.abs(top - window.scrollY)
+  const duration = gsap.utils.clamp(0.7, 1.6, 0.4 + distance / 2800)
+
+  if (lenis) {
+    lenis.scrollTo(target, { duration, easing: gsap.parseEase('power3.inOut'), onComplete: onDone })
+    return
+  }
+
+  const position = { y: window.scrollY }
+  const stop = () => jump?.kill()
+  const listen = (add: boolean) => {
+    for (const type of ['wheel', 'touchstart', 'keydown'] as const) {
+      if (add) window.addEventListener(type, stop, { passive: true, once: true })
+      else window.removeEventListener(type, stop)
+    }
+  }
+  listen(true)
+  jump = gsap.to(position, {
+    y: top,
+    duration,
+    ease: 'power3.inOut',
+    // 'instant': bỏ qua `scroll-behavior: smooth` của trang, nếu không mỗi khung hình lại tự cuộn mượt.
+    onUpdate: () => window.scrollTo({ top: position.y, behavior: 'instant' }),
+    onComplete: () => {
+      listen(false)
+      onDone()
+    },
+    onInterrupt: () => listen(false),
+  })
 }
 
 // ── Toàn cục: bật một lần khi scene đầu tiên được gắn ──────────

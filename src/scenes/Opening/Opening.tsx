@@ -42,6 +42,7 @@ export function Opening({ content, onDone }: OpeningProps) {
   const doors3D = useDoors3D(started)
 
   const { couple, music: track } = content
+  const leftWho = couple.order === 'bride-first' ? 'bride' : 'groom'
   const [first, second] = orderedCouple(couple)
   const text3D = useMemo(
     () => ({ first: first.givenName, second: second.givenName, monogram: couple.monogram }),
@@ -104,16 +105,16 @@ export function Opening({ content, onDone }: OpeningProps) {
       if (!ref.current) return
       const api3d = doors3D.active ? doors3D.api.current : null
       if (api3d) {
-        // Bản 3D tự mở cửa; hai bạn chibi (lớp DOM phía trên canvas) chạy theo cùng nhịp.
-        const chibis = runtime.openChibis(ref.current)
+        // Bản 3D tự mở cửa; hai bạn chibi (lớp DOM trên canvas) đi theo cùng nhịp.
+        const hosts = runtime.openHosts(ref.current)
         const doors = api3d.open(ref.current, { onReveal: runtime.releaseHero, onDone: finish })
         control.current = {
           fastForward: () => {
             doors.fastForward()
-            chibis.fastForward()
+            hosts.fastForward()
           },
           finish: () => {
-            chibis.finish()
+            hosts.finish()
             doors.finish()
           },
         }
@@ -156,8 +157,8 @@ export function Opening({ content, onDone }: OpeningProps) {
       {/* Bản 2.5D: lùi ra sau (bọc ngoài, không bị style inline của GSAP đè) khi bản 3D thay chỗ. */}
       <div className={styles.flat}>
         <div ref={setStage} className={styles.doors}>
-          <Door side="left" name={first.givenName} />
-          <Door side="right" name={second.givenName} />
+          <Door side="left" />
+          <Door side="right" />
           <span className={styles.seamLight} data-seam aria-hidden="true" />
         </div>
 
@@ -184,18 +185,13 @@ export function Opening({ content, onDone }: OpeningProps) {
         </div>
       )}
 
-      {/* Chibi: hai cái đầu ló ra từ hai mép màn hình; bấm mở thì hai bạn chạy vào đẩy cửa. */}
-      <div className={styles.chibiLayer} aria-hidden="true">
-        <span className={styles.peek} data-side="left">
-          <Chibi who="groom" headOnly look="down-right" anim="peek-groom" />
-        </span>
-        <span className={styles.peek} data-side="right">
-          <Chibi who="bride" headOnly look="down-left" anim="peek-bride" />
-        </span>
-        <span className={styles.runners}>
-          <Chibi who="groom" anim="run-groom" />
-          <Chibi who="bride" anim="run-bride" />
-        </span>
+      {/*
+       * Hai bạn chibi đứng trước cửa, hai bên nút "Mở thiệp" (chung cho bản 2.5D và 3D, nằm trên
+       * canvas). Bấm mở: đi tới đẩy cửa rồi đứng sang hai bên mời khách vào.
+       */}
+      <div className={styles.hosts} aria-hidden="true">
+        <Chibi who={leftWho} hand="r" look="front" anim="host-left" />
+        <Chibi who={leftWho === 'groom' ? 'bride' : 'groom'} hand="l" look="front" anim="host-right" />
       </div>
 
       <div className={styles.actions} data-anim="cta">

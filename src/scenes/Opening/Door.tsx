@@ -1,29 +1,21 @@
 import { useId } from 'react'
-import { ART_H, ART_W, NAME, RELIEF, RING, mirrorX, nameSize } from './doorArt'
+import { ART_H, ART_W, RELIEF, RING, mirrorX } from './doorArt'
 import styles from './Opening.module.css'
 
 interface DoorProps {
   side: 'left' | 'right'
-  name: string
 }
 
 /**
  * Một cánh cửa 2.5D. Hoa văn nổi = ba lớp của cùng một hình: bóng đổ (lệch xuống phải, mờ),
  * viền sáng (lệch lên trái) và mặt hoa văn — ánh sáng luôn từ góc trên trái cho cả hai cánh.
- * Tên ép kim và vòng nắm mạ vàng vẽ riêng (không soi gương chữ).
+ * Vòng nắm mạ vàng vẽ riêng (không soi gương). Hai bạn chibi đứng phía trước cửa (Opening.tsx).
  */
-export function Door({ side, name }: DoorProps) {
+export function Door({ side }: DoorProps) {
   const id = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const art = `${id}-art`
   const flip = side === 'right'
   const x = (value: number) => (flip ? mirrorX(value) : value)
-  const size = nameSize(name)
-
-  const nameText = (className: string, dx = 0, dy = 0) => (
-    <text x={NAME.x + dx} y={NAME.y + dy} fontSize={size} className={className} textAnchor="middle">
-      {name}
-    </text>
-  )
 
   return (
     <div className={styles.door} data-door={side}>
@@ -53,11 +45,6 @@ export function Door({ side, name }: DoorProps) {
         <use href={`#${art}`} x="-1.6" y="-1.6" className={styles.reliefLight} />
         <use href={`#${art}`} className={styles.reliefFace} />
 
-        {/* Ép kim: rãnh tối dưới chữ, chữ nhũ vàng, ánh sáng mảnh ở mép trên. */}
-        {nameText(styles.foilShadow, 1.6, 2)}
-        {nameText(styles.foil)}
-        <g style={{ fill: `url(#${id}-gold)` }}>{nameText(styles.foilFill)}</g>
-
         <g className={styles.ring}>
           <circle cx={x(RING.x) + 1.5} cy={RING.y + RING.r + 2} r={RING.r} className={styles.ringShadow} filter={`url(#${id}-soft)`} />
           <circle cx={x(RING.x)} cy={RING.y - RING.r + 4} r={RING.plate} fill={`url(#${id}-gold)`} />
@@ -65,6 +52,7 @@ export function Door({ side, name }: DoorProps) {
           <circle cx={x(RING.x) - 0.8} cy={RING.y + RING.r * 0.6 - 0.8} r={RING.r} fill="none" className={styles.ringGlint} />
         </g>
       </svg>
+
       <span className={styles.doorShade} data-shade={side} />
     </div>
   )

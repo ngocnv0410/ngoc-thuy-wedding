@@ -24,9 +24,35 @@ export interface FigureProps {
 /** Tay buông hơi rời thân. Góc tay dương = giơ ra ngoài, âm = khép vào trong. */
 const REST = 6
 
+/** Các biến của rig. CSS đọc `var(--x, var(--pose-x))`. */
+export const RIG_KEYS = [
+  'body-y',
+  'lean-x',
+  'upper-r',
+  'upper-y',
+  'upper-sy',
+  'head-r',
+  'head-y',
+  'face-x',
+  'face-y',
+  'arm-l',
+  'arm-r',
+  'leg-l',
+  'leg-r',
+  'skirt',
+  'veil',
+  'tuft',
+  'eo',
+  'ec',
+  'eh',
+  'heart',
+] as const
+
 /**
- * Toàn bộ trạng thái của rig là biến CSS trên phần tử gốc — GSAP chỉ cần tween các biến này trên
- * một phần tử (xem src/motion/chibi.ts). Đơn vị luôn ghi rõ để GSAP nội suy được.
+ * Tư thế cuối của nhân vật, đặt thành biến `--pose-*` trên phần tử gốc. GSAP chỉ tween các biến
+ * không tiền tố (`--arm-r`…) đè lên trên; khi GSAP dọn animation (StrictMode, đổi matchMedia) nó
+ * xoá biến của nó và CSS rơi về đúng tư thế này — React không bao giờ bị mất giá trị.
+ * Đơn vị luôn ghi rõ để GSAP nội suy được.
  */
 export function chibiVars({ who, pose = 'stand', look = 'front', eyes, lean = false, hand }: FigureProps) {
   const side = hand ?? (who === 'groom' ? 'r' : 'l')
@@ -35,7 +61,7 @@ export function chibiVars({ who, pose = 'stand', look = 'front', eyes, lean = fa
   let mood: ChibiEyes = 'open'
   if (pose === 'hold') {
     // Hai bàn tay gặp nhau ở giữa cặp đôi (khớp khoảng chồng trong .couple).
-    if (who === 'groom') armR = 50
+    if (side === 'r') armR = 50
     else armL = 50
   } else if (pose === 'carry') {
     if (side === 'r') armR = 70
@@ -57,25 +83,25 @@ export function chibiVars({ who, pose = 'stand', look = 'front', eyes, lean = fa
   const faceY = look.startsWith('down') ? 2.5 : 0
 
   return {
-    '--body-y': '0px',
-    '--lean-x': lean ? '-3px' : '0px',
-    '--upper-r': '0deg',
-    '--upper-y': '0px',
-    '--upper-sy': '1',
-    '--head-r': lean ? '-8deg' : '0deg',
-    '--head-y': '0px',
-    '--face-x': `${faceX}px`,
-    '--face-y': `${faceY}px`,
-    '--arm-l': `${armL}deg`,
-    '--arm-r': `${armR}deg`,
-    '--leg-l': '0deg',
-    '--leg-r': '0deg',
-    '--skirt': '0deg',
-    '--veil': '0deg',
-    '--tuft': '0deg',
-    '--eo': shown === 'open' ? '1' : '0',
-    '--ec': shown === 'closed' ? '1' : '0',
-    '--eh': shown === 'happy' ? '1' : '0',
-    '--heart': pose === 'heart' ? '1' : '0',
+    '--pose-body-y': '0px',
+    '--pose-lean-x': lean ? '-3px' : '0px',
+    '--pose-upper-r': '0deg',
+    '--pose-upper-y': '0px',
+    '--pose-upper-sy': '1',
+    '--pose-head-r': lean ? '-8deg' : '0deg',
+    '--pose-head-y': '0px',
+    '--pose-face-x': `${faceX}px`,
+    '--pose-face-y': `${faceY}px`,
+    '--pose-arm-l': `${armL}deg`,
+    '--pose-arm-r': `${armR}deg`,
+    '--pose-leg-l': '0deg',
+    '--pose-leg-r': '0deg',
+    '--pose-skirt': '0deg',
+    '--pose-veil': '0deg',
+    '--pose-tuft': '0deg',
+    '--pose-eo': shown === 'open' ? '1' : '0',
+    '--pose-ec': shown === 'closed' ? '1' : '0',
+    '--pose-eh': shown === 'happy' ? '1' : '0',
+    '--pose-heart': pose === 'heart' ? '1' : '0',
   } as CSSProperties
 }

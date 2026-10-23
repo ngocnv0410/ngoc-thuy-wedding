@@ -114,13 +114,6 @@ export const RELIEF: Relief[] = (() => {
   return out
 })()
 
-/** Tên ép kim trong ô dưới (giữa ô, phía trên hoa nhỏ). */
-export const NAME = { x: 200, y: 660 } as const
-
-export function nameSize(name: string) {
-  return Math.min(70, 560 / Math.max(4, [...name].length))
-}
-
 /** Vòng nắm cửa mạ vàng sát khe (giữa gờ khung và ô dưới). */
 export const RING = { x: 352, y: 540, r: 17, plate: 9 } as const
 

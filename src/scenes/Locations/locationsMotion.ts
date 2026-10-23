@@ -1,6 +1,6 @@
 import { DUR, drawIn, growSprigs, gsap, riseIn, washIn } from '../../lib/gsap'
 import { animateSceneHeading } from '../../lib/sceneHeading'
-import { chibisIn, idle } from '../../motion/chibi'
+import { chibisIn, idle, rig, toPose } from '../../motion/chibi'
 import { WALK_DY } from './StylizedMap'
 
 /**
@@ -13,6 +13,7 @@ function walkAlongRoute(map: Element) {
   const route = map.querySelector<SVGPathElement>('[data-anim="route"]')
   if (!walkers || !route) return
   const [groom, bride] = chibisIn(walkers)
+  rig([groom, bride])
   const heart = walkers.querySelector('[data-anim="walk-heart"]')
   const length = route.getTotalLength()
   const end = route.getPointAtLength(length)
@@ -44,9 +45,9 @@ function walkAlongRoute(map: Element) {
     .to([groom, bride], { '--body-y': '-10px', duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 1 })
     .fromTo(heart, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, '<')
     .to(heart, { autoAlpha: 0, duration: 0.4 }, '+=0.9')
-    .from(groom, { '--arm-l': '6deg', duration: 0.4, ease: 'back.out(1.4)' }, DUR.xl + 0.3)
+    .add(toPose(groom, { '--arm-l': '6deg' }, { ease: 'back.out(1.4)' }), DUR.xl + 0.3)
     .from(walkers.querySelector('[data-anim="held-map"]') ?? [], { scaleX: 0, transformOrigin: '50% 50%', duration: 0.4 }, DUR.xl + 0.4)
-    .from(bride, { '--arm-r': '6deg', '--eo': '1', '--eh': '0', duration: 0.4, ease: 'back.out(1.4)' }, DUR.xl + 0.5)
+    .add(toPose(bride, { '--arm-r': '6deg', '--eo': '1', '--eh': '0' }, { ease: 'back.out(1.4)' }), DUR.xl + 0.5)
   idle([groom, bride], map, { bob: false })
 }
 

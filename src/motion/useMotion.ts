@@ -52,6 +52,31 @@ export function useSceneMotion(ref: RefObject<HTMLElement | null>, key: SceneKey
   }, [ref, key])
 }
 
+/**
+ * Chuyển tới một chương: cuộn mượt (chunk motion) rồi đưa focus vào chương để bàn phím và trình
+ * đọc màn hình đi tiếp từ đó. Reduced-motion hoặc chưa tải được motion: nhảy thẳng.
+ */
+export function goToSection(id: string) {
+  const target = document.getElementById(id)
+  if (!target) return
+  const arrive = () => {
+    history.replaceState(null, '', `#${id}`)
+    if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1')
+    target.focus({ preventScroll: true })
+  }
+  const jumpNow = () => {
+    target.scrollIntoView({ behavior: 'instant', block: 'start' })
+    arrive()
+  }
+  if (!prefersMotion()) {
+    jumpNow()
+    return
+  }
+  loadMotionWithin(1000)
+    .then((runtime) => runtime.scrollToSection(target, arrive))
+    .catch(jumpNow)
+}
+
 /** Khoá cuộn trang (trong lúc màn mở cửa đang hiện). */
 export function lockScroll(locked: boolean) {
   document.documentElement.style.overflow = locked ? 'hidden' : ''

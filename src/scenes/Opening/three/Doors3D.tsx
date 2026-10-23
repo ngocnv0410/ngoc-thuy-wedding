@@ -109,7 +109,7 @@ function Scene({ text, onReady, onOpenRequest }: Doors3DProps) {
   const [fontsReady, setFontsReady] = useState(false)
   useEffect(() => {
     let cancelled = false
-    loadTextureFonts(`${text.first} ${text.second} ${text.monogram}`).then(() => !cancelled && setFontsReady(true))
+    loadTextureFonts(text.monogram).then(() => !cancelled && setFontsReady(true))
     return () => {
       cancelled = true
     }
@@ -124,7 +124,7 @@ function Scene({ text, onReady, onOpenRequest }: Doors3DProps) {
         const scale = Math.min(window.devicePixelRatio || 1, 1.5, 2048 / size.height)
         const w = Math.round((size.width / 2) * scale)
         const h = Math.round(size.height * scale)
-        const next = { left: doorTextures('left', text.first, w, h), right: doorTextures('right', text.second, w, h) }
+        const next = { left: doorTextures('left', w, h), right: doorTextures('right', w, h) }
         disposeTextures(built.current)
         built.current = next
         setTextures(next)

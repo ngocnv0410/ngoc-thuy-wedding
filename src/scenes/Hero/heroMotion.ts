@@ -1,5 +1,5 @@
 import { DUR, gsap } from '../../lib/gsap'
-import { chibisIn, floatUp, idle } from '../../motion/chibi'
+import { chibisIn, floatUp, idle, rig, toPose } from '../../motion/chibi'
 
 const q = (root: Element, name: string) => root.querySelectorAll(`[data-anim="${name}"]`)
 
@@ -56,9 +56,10 @@ export function heroMotion(root: HTMLElement) {
   if (couple && getComputedStyle(couple).display !== 'none') {
     // Animate từng nhân vật: trên điện thoại khối cặp đôi là "display: contents" (không có hộp).
     const [groom, bride] = chibisIn(couple)
+    rig([groom, bride])
     tl.from([groom, bride], { autoAlpha: 0, y: 24, duration: DUR.md, stagger: 0.1 }, 2.5)
-      .from(groom, { '--face-x': '0px', duration: DUR.md, ease: 'silk' }, 2.8)
-      .from(bride, { '--head-r': '0deg', '--lean-x': '0px', '--face-x': '0px', duration: DUR.md, ease: 'silk' }, 2.8)
+      .add(toPose(groom, { '--face-x': '0px' }, { duration: DUR.md, ease: 'silk' }), 2.8)
+      .add(toPose(bride, { '--head-r': '0deg', '--lean-x': '0px', '--face-x': '0px' }, { duration: DUR.md, ease: 'silk' }), 2.8)
       .add(floatUp(q(root, 'hero-float'), { stagger: 0.18 }), 3.0)
     idle([groom, bride], root)
   }

@@ -1,5 +1,5 @@
 import { CanvasTexture, SRGBColorSpace, type Texture } from 'three'
-import { ART_W, NAME, RELIEF, RING, artBox, mirrorX, nameSize } from '../doorArt'
+import { ART_W, RELIEF, RING, artBox, mirrorX } from '../doorArt'
 
 /*
  * Texture vẽ bằng canvas 2D với chính font của trang (đã có subset tiếng Việt) và cùng hoạ tiết
@@ -75,15 +75,11 @@ function drawRelief(ctx: CanvasRenderingContext2D, color: string) {
   }
 }
 
-/** Tên + vòng nắm (không soi gương chữ: toạ độ x tự đổi theo cánh). */
-function drawMetal(ctx: CanvasRenderingContext2D, name: string, mirror: boolean, fill: string | CanvasGradient) {
+/** Vòng nắm mạ vàng (không soi gương: toạ độ x tự đổi theo cánh). */
+function drawMetal(ctx: CanvasRenderingContext2D, mirror: boolean, fill: string | CanvasGradient) {
   const x = (value: number) => (mirror ? mirrorX(value) : value)
   ctx.fillStyle = fill
   ctx.strokeStyle = fill
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'alphabetic'
-  ctx.font = `400 ${nameSize(name)}px "Great Vibes"`
-  ctx.fillText(name, NAME.x, NAME.y)
   ctx.beginPath()
   ctx.arc(x(RING.x), RING.y - RING.r + 4, RING.plate, 0, Math.PI * 2)
   ctx.fill()
@@ -119,9 +115,9 @@ function normalFromHeight(source: HTMLCanvasElement, strength: number) {
 
 /**
  * Mặt một cánh cửa (w × h pixel): giấy hồng phấn, nắng xiên góc trên trái, mép khe tối hơn,
- * hoa văn + tên ép kim + vòng nắm; kèm normal map để hoa văn nổi thật dưới ánh sáng 3D.
+ * hoa văn + vòng nắm; kèm normal map để hoa văn nổi thật dưới ánh sáng 3D.
  */
-export function doorTextures(side: 'left' | 'right', name: string, width: number, height: number): DoorTextures {
+export function doorTextures(side: 'left' | 'right', width: number, height: number): DoorTextures {
   const mirror = side === 'right'
   const { el, ctx, w, h } = canvas(width, height)
 
@@ -146,14 +142,14 @@ export function doorTextures(side: 'left' | 'right', name: string, width: number
   const box = setArtSpace(ctx, w, h, mirror)
   drawRelief(ctx, RELIEF_FACE)
   ctx.setTransform(box.scale, 0, 0, box.scale, box.x, box.y)
-  const gold = ctx.createLinearGradient(NAME.x - 120, NAME.y - 80, NAME.x + 120, NAME.y + 80)
+  const gold = ctx.createLinearGradient(RING.x - 40, RING.y - 40, RING.x + 40, RING.y + 40)
   gold.addColorStop(0, '#a8823f')
   gold.addColorStop(0.35, '#e8d3a2')
   gold.addColorStop(0.6, '#b8955a')
   gold.addColorStop(1, '#d9bd84')
-  drawMetal(ctx, name, mirror, gold)
+  drawMetal(ctx, mirror, gold)
 
-  // Độ cao: hoa văn nổi tròn cạnh (làm mờ), tên và vòng nắm nổi như nhau.
+  // Độ cao: hoa văn nổi tròn cạnh (làm mờ), vòng nắm nổi.
   const relief = canvas(width, height)
   relief.ctx.fillStyle = '#000'
   relief.ctx.fillRect(0, 0, w, h)
@@ -161,7 +157,7 @@ export function doorTextures(side: 'left' | 'right', name: string, width: number
   setArtSpace(relief.ctx, w, h, mirror)
   drawRelief(relief.ctx, '#fff')
   relief.ctx.setTransform(box.scale, 0, 0, box.scale, box.x, box.y)
-  drawMetal(relief.ctx, name, mirror, '#fff')
+  drawMetal(relief.ctx, mirror, '#fff')
 
   return { map: toTexture(el), normal: normalFromHeight(relief.el, 3.6 * box.scale) }
 }

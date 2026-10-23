@@ -6,11 +6,39 @@
  * Markup luôn ở tư thế CUỐI của cảnh; các hàm ở đây đi từ trạng thái hiện tại tới đích rồi trả về
  * (bow, blink, wave), hoặc được dùng với `from` trong timeline của scene.
  */
+import { RIG_KEYS } from '../components/chibi/chibiPose'
 import { ScrollTrigger, gsap } from '../lib/gsap'
 
 type Target = Element | Element[]
 
 export const chibisIn = (root: Element) => [...root.querySelectorAll<HTMLElement | SVGGElement>('[data-chibi]')]
+
+type RigVars = Record<`--${string}`, string>
+
+const asList = (targets: Element | Element[]) => (Array.isArray(targets) ? targets : [targets])
+/** Giá trị tư thế cuối (`--pose-*`, do React đặt) của một biến rig. */
+const poseOf = (el: Element, key: string) => (el as HTMLElement | SVGElement).style.getPropertyValue(key.replace(/^--/, '--pose-'))
+
+/**
+ * Bật lớp animation của rig: chép tư thế cuối sang các biến GSAP sẽ tween. Gọi trước mọi tween
+ * trên nhân vật, trong matchMedia của scene — khi scene gỡ, GSAP xoá lớp này và CSS rơi về
+ * `--pose-*`. (Không có lớp này, tween đầu tiên sẽ bắt đầu từ giá trị rỗng = 0.)
+ */
+export function rig(targets: Element | Element[]) {
+  for (const el of asList(targets)) {
+    gsap.set(el, Object.fromEntries(RIG_KEYS.map((key) => [`--${key}`, poseOf(el, `--${key}`)])))
+  }
+}
+
+/** Đi từ `from` về đúng tư thế cuối của từng nhân vật (thay cho `gsap.from` trên biến rig). */
+export function toPose(targets: Element | Element[], from: RigVars, vars: gsap.TweenVars = {}) {
+  const tl = gsap.timeline()
+  for (const el of asList(targets)) {
+    const end = Object.fromEntries(Object.keys(from).map((key) => [key, poseOf(el, key)]))
+    tl.fromTo(el, { ...from }, { ...end, duration: 0.4, ...vars }, 0)
+  }
+  return tl
+}
 
 /** Chớp mắt — chỉ những ai đang mở mắt lúc chớp (mắt cười / đang nhắm thì giữ nguyên). */
 export function blink(target: Target) {

@@ -1,6 +1,6 @@
 import { DUR, drawDivider, drawIn, gsap, growSprigs, riseIn, washIn } from '../../lib/gsap'
 import { animateSceneHeading } from '../../lib/sceneHeading'
-import { idle } from '../../motion/chibi'
+import { idle, rig, toPose } from '../../motion/chibi'
 
 const all = (root: Element, name: string) => root.querySelectorAll(`[data-anim="${name}"]`)
 const one = (root: Element, name: string) => root.querySelector(`[data-anim="${name}"]`)
@@ -56,14 +56,15 @@ export function detailsMotion(root: HTMLElement) {
   const bride = one(root, 'cal-bride')
   if (stage && groom && bride) {
     const pair = [groom, bride]
+    rig(pair)
     gsap
       // Cùng trigger với vòng khoanh trên lịch để hai nhịp khớp nhau.
       .timeline({ defaults: { ease: 'paper' }, scrollTrigger: { trigger: calendar ?? stage, start: 'top 75%', once: true } })
       .from(pair, { autoAlpha: 0, y: 20, duration: DUR.md, stagger: 0.1 }, 0)
-      .from(groom, { '--arm-r': '6deg', duration: 0.4, ease: 'back.out(1.4)' }, 0.6)
-      .from(bride, { '--arm-l': '6deg', duration: 0.4, ease: 'back.out(1.4)' }, 0.7)
+      .add(toPose(groom, { '--arm-r': '6deg' }, { ease: 'back.out(1.4)' }), 0.6)
+      .add(toPose(bride, { '--arm-l': '6deg' }, { ease: 'back.out(1.4)' }), 0.7)
       // Vòng khoanh tay: drawIn delay 0.5 + 1.2s (xem trên).
-      .from(pair, { '--face-x': '0px', '--eo': '1', '--eh': '0', duration: 0.4, ease: 'silk' }, 1.8)
+      .add(toPose(pair, { '--face-x': '0px', '--eo': '1', '--eh': '0' }, { ease: 'silk' }), 1.8)
     idle(pair, stage)
   }
 

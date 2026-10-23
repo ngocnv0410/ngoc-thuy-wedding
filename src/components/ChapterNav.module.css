@@ -71,6 +71,9 @@
 }
 
 .panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: var(--space-2);
   padding: var(--space-3) 0;
   min-width: 240px;
@@ -79,6 +82,41 @@
   border: var(--hairline);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-paper);
+  /* Mở như tờ giấy hạ xuống từ nút; đóng thì thu lên và mờ đi. */
+  transform-origin: 0 0;
+  transition:
+    opacity var(--dur-sm) var(--ease-paper),
+    transform var(--dur-md) var(--ease-paper),
+    visibility 0s linear var(--dur-md);
+}
+
+.panel[data-open='false'] {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+  visibility: hidden;
+}
+
+.panel[data-open='true'] {
+  transition:
+    opacity var(--dur-sm) var(--ease-paper),
+    transform var(--dur-md) var(--ease-paper),
+    visibility 0s;
+}
+
+/* Từng mục hiện nối nhau. */
+.panel li {
+  transition:
+    opacity var(--dur-sm) var(--ease-paper),
+    transform var(--dur-md) var(--ease-paper);
+}
+
+.panel[data-open='true'] li {
+  transition-delay: calc(var(--i) * 40ms + 60ms);
+}
+
+.panel[data-open='false'] li {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 
 .panel a {
@@ -92,6 +130,10 @@
   font-size: 22px;
   font-weight: 500;
   text-decoration: none;
+}
+
+.panel a {
+  transition: background-color var(--dur-xs) var(--ease-paper);
 }
 
 .panel a:hover {

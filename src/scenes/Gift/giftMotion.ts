@@ -1,5 +1,5 @@
 import { DUR, drawDivider, growSprigs, gsap, revealLines, riseIn, washIn } from '../../lib/gsap'
-import { bow, floatUp, idle, wave } from '../../motion/chibi'
+import { bow, floatUp, idle, rig, wave } from '../../motion/chibi'
 
 const one = (root: Element, name: string) => root.querySelector(`[data-anim="${name}"]`)
 
@@ -99,6 +99,7 @@ export function giftMotion(root: HTMLElement) {
   const groom = one(root, 'bye-groom')
   const bride = one(root, 'bye-bride')
   if (seal && groom && bride) {
+    rig([groom, bride])
     gsap.set([groom, bride], STANDING)
     gsap
       .timeline({ delay: 0.5, scrollTrigger: { trigger: seal, start: 'top 85%', once: true } })

@@ -166,71 +166,71 @@
 }
 
 .body {
-  transform: translate(var(--lean-x), var(--body-y));
+  transform: translate(var(--lean-x, var(--pose-lean-x)), var(--body-y, var(--pose-body-y)));
 }
 
 .upper {
-  transform: translateY(var(--upper-y)) rotate(var(--upper-r)) scaleY(var(--upper-sy));
+  transform: translateY(var(--upper-y, var(--pose-upper-y))) rotate(var(--upper-r, var(--pose-upper-r))) scaleY(var(--upper-sy, var(--pose-upper-sy)));
 }
 
 .head {
-  transform: translateY(var(--head-y)) rotate(var(--head-r));
+  transform: translateY(var(--head-y, var(--pose-head-y))) rotate(var(--head-r, var(--pose-head-r)));
 }
 
 .face {
-  transform: translate(var(--face-x), var(--face-y));
+  transform: translate(var(--face-x, var(--pose-face-x)), var(--face-y, var(--pose-face-y)));
 }
 
 /* Góc tay dương = giơ ra ngoài cho cả hai tay (tay phải xoay ngược chiều). */
 .armL {
-  transform: rotate(var(--arm-l));
+  transform: rotate(var(--arm-l, var(--pose-arm-l)));
 }
 
 .armR {
-  transform: rotate(calc(var(--arm-r) * -1));
+  transform: rotate(calc(var(--arm-r, var(--pose-arm-r)) * -1));
 }
 
 /* Đạo cụ xoay bù để luôn đứng thẳng. */
 .heldL {
-  transform: rotate(calc(var(--arm-l) * -1));
+  transform: rotate(calc(var(--arm-l, var(--pose-arm-l)) * -1));
 }
 
 .heldR {
-  transform: rotate(var(--arm-r));
+  transform: rotate(var(--arm-r, var(--pose-arm-r)));
 }
 
 .legL {
-  transform: rotate(var(--leg-l));
+  transform: rotate(var(--leg-l, var(--pose-leg-l)));
 }
 
 .legR {
-  transform: rotate(var(--leg-r));
+  transform: rotate(var(--leg-r, var(--pose-leg-r)));
 }
 
 .skirt {
-  transform: skewX(var(--skirt));
+  transform: skewX(var(--skirt, var(--pose-skirt)));
 }
 
 .veil {
-  transform: rotate(var(--veil));
+  transform: rotate(var(--veil, var(--pose-veil)));
 }
 
 .tuft {
-  transform: rotate(var(--tuft));
+  transform: rotate(var(--tuft, var(--pose-tuft)));
 }
 
 .eyesOpen {
-  opacity: var(--eo);
+  opacity: var(--eo, var(--pose-eo));
 }
 
 .eyesClosed {
-  opacity: var(--ec);
+  opacity: var(--ec, var(--pose-ec));
 }
 
 .eyesHappy {
-  opacity: var(--eh);
+  opacity: var(--eh, var(--pose-eh));
 }
 
 .chestHeart {
-  opacity: var(--heart);
+  opacity: var(--heart, var(--pose-heart));
 }

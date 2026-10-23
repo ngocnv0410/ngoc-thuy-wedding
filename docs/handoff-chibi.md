@@ -69,6 +69,8 @@ Mỗi nhân vật là một `<svg viewBox="0 0 120 200">`, mặt đất ở y=19
 | `veil` (cô dâu) | đỉnh đầu | Bay theo quán tính |
 | `tuft` (chú rể) | chân tóc | Nảy |
 
+**Hai lớp biến (sửa lỗi mất mắt, 23/10/2026):** React đặt tư thế cuối thành `--pose-*`; CSS đọc `var(--x, var(--pose-x))`; GSAP chỉ tween `--x` (khởi tạo bằng `rig()`, đi về tư thế cuối bằng `toPose()` — không dùng `gsap.from` cho biến rig). Khi GSAP dọn animation (StrictMode, đổi matchMedia) nó xoá `--x` và nhân vật rơi về đúng tư thế, thay vì về 0.
+
 **Quy tắc tư thế mặc định:** markup render sẵn **tư thế cuối** của mỗi cảnh qua prop `pose`, animation dùng `from`. Nhờ vậy khi giảm chuyển động, khi không tải được JS hoặc khi chunk motion lỗi, khách vẫn thấy hình đúng. Cách này giống các scene hiện có.
 
 ### 2.4 Components (`src/components/chibi/`)
@@ -108,26 +110,26 @@ Mỗi hàm nhận phần tử và trả về một `gsap.core.Timeline` để gh
 
 Thời gian tính bằng giây, cùng thang với `DUR` (`gsap.ts:20`). Easing dùng tên đã đăng ký `paper` và `silk`.
 
-### 3.1 Màn mở đầu: ló đầu (`Opening`)
-- **Bố cục:** thêm lớp `.chibiLayer` vào `#opening`, đặt `z-index: 2` (trên `.canvas3d` để dùng chung cho cả bản 2.5D và 3D), `pointer-events:none`.
-  - Đầu chú rể ló ra từ mép trái màn hình, đầu cô dâu từ mép phải. Mỗi đầu chỉ hiện khoảng 60%, nghiêng ±10°, đặt ở `top: 34%`. Đầu rộng `clamp(64px, 18vw, 104px)`.
-  - Vị trí này không chạm dấu sáp (ở giữa), nút “Bỏ qua” (góc trên phải, cao hơn 34%) hay khối CTA (dưới đáy).
-- **Intro** (thêm vào `introDoors`, `openingMotion.ts:16`): ở mốc 1.6s, hai đầu trượt ra (x từ −100% về −40%) trong 0.6s với `paper`. Mốc 2.2s chạy `lookAround`. Mốc 3.8s mắt nhìn xuống nút “Mở thiệp” (`face` y +3, x hướng vào giữa).
-- **Lặp chậm:** chu kỳ 6s gồm `blinkLoop` + `lookAround` rồi quay về nhìn nút. Dừng khi khách bấm mở.
+### 3.1 Màn mở đầu: hai bạn đứng trước cửa (cập nhật 23/10/2026)
+- **Bố cục:** hai chibi đứng hẳn bên ngoài, phía trước cửa, ở hai bên nút “Mở thiệp” (`.hosts`, đáy màn hình). Khoảng giữa `clamp(168px, 50vw, 400px)` luôn đủ chỗ cho nút; chibi cao `min(clamp(100px, 34vw, 210px), 30svh)`. Lớp DOM nằm trên canvas 3D nên dùng chung cho bản 2.5D và 3D. Cánh cửa không còn tên hay chibi.
+- *Đã bỏ:* hai cái đầu ló ở mép màn hình, hai chibi chạy vào, chibi in trên cánh cửa.
+- **Intro** (`introDoors`): 1.0s hai bạn bước ra (y 18 → 0, lệch nhau 0.12s), 1.8s nhìn quanh, 3.1s chớp mắt.
+- **Đứng chờ:** thở nhẹ liên tục (`--body-y` −3px, 1.3s) + chuỗi cử chỉ lặp ~7s: chớp mắt → quay sang nhìn nhau cười, nghiêng đầu, tóc chú rể nảy → nhìn quanh → lần lượt vẫy tay chào khách → nhún chân. Dừng khi khách bấm mở.
+- **Giảm chuyển động:** hai bạn đứng yên.
 
-### 3.2 Bấm “Mở thiệp”: chạy vào mở cửa
-Tổng thời lượng giữ khoảng **2.5s** như hiện tại. Mọi tween nằm trong cùng timeline mở cửa nên chạm lần nữa vẫn tua nhanh ×3 (`fastForward`).
+### 3.2 Bấm “Mở thiệp”: đi ra mở cửa và mời vào
+Overlay tan lúc 2.4s (trước là 2.0s) để kịp cảnh mời; chạm lần nữa vẫn tua nhanh ×3.
 
 | t | Diễn biến |
 |---|---|
-| 0–0.25 | Hai cái đầu thụt vào (x → −100%) |
-| 0.1–0.6 | Hai nhân vật cỡ `md` chạy (`run`) từ hai mép vào sát khe cửa, đứng ở dải dưới chỗ CTA (CTA mờ đi từ 0.2) |
-| 0.6–1.2 | Đặt tay lên cánh cửa (`arm` biến thể `point` hướng vào cửa), `upper` nghiêng 12° như đang đẩy, đúng lúc cửa bắt đầu xoay (0.6) |
-| 1.2–1.9 | Quay ra phía khách: chú rể `bow`, cô dâu `wave` |
-| 2.0–2.5 | Mờ dần cùng overlay (đã có sẵn ở 2.0) |
+| 0–0.2 | Quay sang nhìn nhau, mắt cười |
+| 0.05–0.55 | Đi vào giữa tới sát khe cửa (chân bước, người nảy) |
+| 0.55–0.85 | Đưa hai tay đẩy cánh cửa của mình, người nghiêng ra ngoài — cửa bắt đầu xoay lúc 0.6 |
+| 1.15–1.6 | Lùi ra hai bên, nhường lối vào |
+| 1.6–2.15 | Đưa tay về phía cửa đã mở, nghiêng đầu, cúi chào mời khách vào |
+| 2.4–2.9 | Overlay tan, bìa hiện |
 
-- **Tích hợp:** viết `chibiOpen(root)` riêng trong `openingMotion.ts`. Hàm này trả về timeline, `Opening.tsx:open()` gọi nó cho cả nhánh 2.5D lẫn 3D, rồi gộp vào `OpenControl` (`fastForward` và `finish` áp dụng cho cả hai timeline). Không sửa `three/Doors3D.tsx`.
-- **Giảm chuyển động / nhánh `fadeOut`:** hai cái đầu đứng yên ở trạng thái ló, rồi mờ cùng overlay.
+- **Bản 3D:** `openHosts` chạy cùng timeline cho hai bạn trên canvas.
 
 ### 3.3 Bìa (`Hero`, chỉ ở biến thể stationery)
 - **Bố cục:**
