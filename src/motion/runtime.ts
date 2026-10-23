@@ -5,6 +5,7 @@
 import type Lenis from 'lenis'
 import { MEDIA, type MotionConditions, ScrollTrigger, gsap, guard } from '../lib/gsap'
 import { detailsMotion } from '../scenes/Details/detailsMotion'
+import { countdownMotion } from '../scenes/Countdown/countdownMotion'
 import { galleryMotion } from '../scenes/Gallery/galleryMotion'
 import { giftMotion } from '../scenes/Gift/giftMotion'
 
@@ -16,7 +17,7 @@ import { startLight } from './light'
 
 export { introDoors, openHosts } from '../scenes/Opening/openingMotion'
 
-export type SceneKey = 'hero' | 'details' | 'locations' | 'gallery' | 'gift'
+export type SceneKey = 'hero' | 'countdown' | 'details' | 'locations' | 'gallery' | 'gift'
 
 const root = document.documentElement
 
@@ -47,6 +48,7 @@ const SCENES: Record<SceneKey, (conditions: MotionConditions, el: HTMLElement) =
     else guard(heroTimeline)
   },
   details: (_, el) => detailsMotion(el),
+  countdown: (_, el) => countdownMotion(el),
   locations: (_, el) => locationsMotion(el),
   gallery: galleryMotion,
   gift: (_, el) => giftMotion(el),
