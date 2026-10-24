@@ -97,6 +97,18 @@ describe('background piano', () => {
     expect(audio.volume).toBe(0)
   })
 
+  it('keeps volume valid when an already queued frame predates the fade', () => {
+    let frame: FrameRequestCallback = () => {}
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      frame = callback
+      return 1
+    })
+    player.play()
+    audio.start()
+    frame(performance.now() - 8)
+    expect(audio.volume).toBe(0)
+  })
+
   it('keeps audio audible when the guest resumes during a fade-out', () => {
     player.play()
     audio.start()

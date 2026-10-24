@@ -83,7 +83,8 @@ export class MusicPlayer {
     const from = audio.volume
     const start = performance.now()
     const step = (now: number) => {
-      const t = Math.min(1, (now - start) / ms)
+      // A frame already queued by the browser can carry a timestamp before start.
+      const t = Math.max(0, Math.min(1, (now - start) / ms))
       audio.volume = from + (to - from) * t
       if (t < 1) this.fadeFrame = requestAnimationFrame(step)
       else done?.()

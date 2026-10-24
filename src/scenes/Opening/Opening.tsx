@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Button } from '../../components/Button'
 import { Chibi } from '../../components/chibi/Chibi'
 import { CoupleNames } from '../../components/CoupleNames'
 import { Seal } from '../../components/Seal'
@@ -35,7 +34,7 @@ const FADE_MS = 420
 export function Opening({ content, onDone }: OpeningProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [closing, setClosing] = useState(false)
-  const [withMusic, setWithMusic] = useState(() => music.getSnapshot().wanted)
+  const [withMusic, setWithMusic] = useState(() => Boolean(content.music))
   const started = useRef(false)
   const finished = useRef(false)
   const dismissing = useRef(false)
@@ -78,8 +77,7 @@ export function Opening({ content, onDone }: OpeningProps) {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault()
-        if (control.current) control.current.finish()
-        else fadeOut()
+        dismissOpening()
         return
       }
       if (event.key !== 'Tab') return
@@ -176,10 +174,15 @@ export function Opening({ content, onDone }: OpeningProps) {
     else doors3D.discard()
   }
 
-  function skip() {
+  function dismissOpening() {
     started.current = true
     if (control.current) control.current.finish()
     else fadeOut()
+  }
+
+  function skip() {
+    if (withMusic) music.play()
+    dismissOpening()
   }
 
   return (
@@ -244,10 +247,14 @@ export function Opening({ content, onDone }: OpeningProps) {
       </div>
 
       <div className={styles.actions} data-anim="cta">
-        <Button variant="primary" size="lg" className={styles.openButton} onClick={open}
-          icon={<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.2"><path d="M5 15L15 5M5 5h10v10" /></svg>}>
-          Mở thiệp
-        </Button>
+        <button type="button" className={styles.openButton} onClick={open}>
+          <span className={styles.openLabel}>Mở thiệp</span>
+          <span className={styles.openArrow} aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" focusable="false">
+              <path d="M4 12h16m-5-5 5 5-5 5" />
+            </svg>
+          </span>
+        </button>
         {track && (
           <button
             type="button"
@@ -259,8 +266,13 @@ export function Opening({ content, onDone }: OpeningProps) {
               setWithMusic((value) => !value)
             }}
           >
-            <span className={styles.check} aria-hidden="true" />
-            Mở kèm nhạc
+            <svg className={styles.musicNote} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" focusable="false">
+              <path d="M8 14V5l8-2v9M8 8l8-2" />
+              <ellipse cx="5.5" cy="14" rx="2.5" ry="1.8" />
+              <ellipse cx="13.5" cy="12" rx="2.5" ry="1.8" />
+            </svg>
+            <span>Mở kèm nhạc</span>
+            <span className={styles.musicSwitch} aria-hidden="true" />
           </button>
         )}
       </div>

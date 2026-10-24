@@ -5,6 +5,7 @@
 .overlay {
   --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.19 0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   --seal-size: clamp(64px, 18vw, 96px);
+  --opening-action-width: clamp(164px, 48vw, 216px);
   position: fixed;
   inset: 0;
   z-index: 300;
@@ -196,7 +197,7 @@
   justify-content: center;
   align-items: flex-end;
   /* Khoảng giữa đủ rộng cho nút "Mở thiệp": chibi không bao giờ chồng lên nút. */
-  gap: clamp(128px, 42vw, 320px);
+  gap: calc(var(--opening-action-width) + 20px);
   pointer-events: none;
 }
 
@@ -211,10 +212,10 @@
   z-index: 2;
   left: 0;
   right: 0;
-  bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  bottom: calc(28px + env(safe-area-inset-bottom));
   display: grid;
   justify-items: center;
-  gap: var(--space-3);
+  gap: 4px;
   pointer-events: none;
 }
 
@@ -225,32 +226,50 @@
 .musicChoice {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: center;
+  gap: 8px;
+  width: var(--opening-action-width);
   min-height: 44px;
-  padding: 0 var(--space-3);
+  padding: 0 4px;
   border: 0;
-  border-radius: 999px;
-  background: rgb(248 240 232 / 0.75);
-  color: var(--color-taupe-ink);
-  font-size: 14px;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b5643;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.check {
-  width: 18px;
-  height: 18px;
-  border: 1px solid currentColor;
-  border-radius: 2px;
-  display: grid;
-  place-items: center;
+.musicNote { flex: none; width: 15px; height: 15px; color: #8a6937; }
+.musicSwitch {
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 16px;
+  margin-left: 1px;
+  border: 1px solid rgb(143 111 65 / 0.45);
+  border-radius: 999px;
+  background: rgb(255 250 240 / 0.6);
+  box-shadow: inset 0 1px 2px rgb(110 90 75 / 0.08);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
-
-.musicChoice[aria-pressed='true'] .check::after {
+.musicSwitch::after {
   content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
   width: 10px;
   height: 10px;
-  background: var(--color-gold);
+  border-radius: 50%;
+  background: #a48a63;
+  box-shadow: 0 1px 2px rgb(93 67 37 / 0.15);
+  transition: transform 0.25s var(--ease-paper), background-color 0.25s ease;
 }
+.musicChoice[aria-pressed='true'] .musicSwitch { background: #b7985e; border-color: #9c7b41; }
+.musicChoice[aria-pressed='true'] .musicSwitch::after { transform: translateX(12px); background: #fffaf0; }
 
 /* Góc trên phải: không bao giờ chồng lên nút "Mở thiệp", kể cả màn hình thấp. */
 .skip {
@@ -271,13 +290,42 @@
   cursor: pointer;
 }
 
-.actions > button:first-child {
+.openButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 12px;
-  border-radius: 999px;
-  box-shadow: 0 8px 24px rgb(72 49 29 / 0.15);
+  width: var(--opening-action-width);
+  min-height: 58px;
+  padding: 0 16px;
+  overflow: hidden;
+  border: 1px solid #b19560;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fffaf0 0%, #f0e4cc 55%, #e9d8b7 100%);
+  color: #624a2b;
+  box-shadow: 0 8px 20px -12px rgb(103 75 37 / 0.4), inset 0 1px 0 #fffdf6;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
 }
-.openButton { white-space: nowrap; flex-wrap: nowrap; }
-.openButton > [aria-hidden='true'] { order: 1; flex: none; }
+.openButton::before { content: ''; position: absolute; inset: 4px; border: 1px solid rgb(255 255 255 / 0.7); border-radius: 12px; pointer-events: none; }
+.openButton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.5) 50%, transparent 80%); transform: translateX(-110%); transition: transform 0.7s ease; pointer-events: none; }
+.openLabel { position: relative; z-index: 1; font-family: var(--font-serif); font-size: 25px; font-weight: 500; line-height: 1.1; letter-spacing: 0.01em; }
+.openArrow { position: relative; z-index: 1; display: grid; place-items: center; flex: none; width: 30px; height: 30px; border: 1px solid rgb(143 111 65 / 0.3); border-radius: 50%; background: rgb(255 252 245 / 0.35); }
+.openArrow svg { width: 21px; height: 21px; }
+.openButton:active { transform: translateY(1px); box-shadow: 0 3px 10px -8px rgb(103 75 37 / 0.4), inset 0 1px 0 #fffdf6; }
+.openButton:focus-visible, .musicChoice:focus-visible { outline: 2px solid #8a6937; outline-offset: 4px; }
+@media (hover: hover) and (pointer: fine) {
+  .openButton:hover { box-shadow: 0 10px 24px -12px rgb(103 75 37 / 0.5), inset 0 1px 0 #fffdf6; }
+  .openButton:hover::after { transform: translateX(110%); }
+  .musicChoice:hover { background: rgb(255 250 240 / 0.25); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .openButton, .openButton::after, .musicSwitch, .musicSwitch::after { transition: none; }
+}
 .greeting {
   position: absolute;
   z-index: 2;
@@ -306,4 +354,14 @@
   .greeting { top: 56px; gap: 0; }
   .openingNames[data-size='section'] { font-size: 48px; }
   .openingDate { font-size: 10px; }
+}
+
+@media (max-height: 380px) and (min-width: 480px) {
+  .actions { bottom: calc(8px + env(safe-area-inset-bottom)); gap: 2px; }
+  .openButton { min-height: 50px; }
+  .openLabel { font-size: 23px; }
+  .greeting { top: 38px; }
+  .openingNames[data-size='section'] { font-size: 36px; }
+  .openingDate { font-size: 9px; }
+  .skip { top: calc(4px + env(safe-area-inset-top)); padding-inline: 8px; font-size: 11px; }
 }
