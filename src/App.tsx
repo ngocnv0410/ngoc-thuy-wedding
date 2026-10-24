@@ -87,7 +87,7 @@ function App() {
       {/* Khi màn mở cửa đang hiện, phần thiệp phía sau không nhận focus/thao tác. */}
       <div className="app-shell" inert={opening}>
         <ChapterNav chapters={chapters} />
-        {wedding.music && !opening && <AudioToggle />}
+        {wedding.music && <AudioToggle track={wedding.music} opening={opening} />}
         <main key={invitationVersion}>
           <Hero content={wedding} onReplay={opening ? undefined : replayOpening} />
           <Details content={wedding} />

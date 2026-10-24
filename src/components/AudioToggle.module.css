@@ -1,8 +1,13 @@
-.toggle {
+.dock {
   position: fixed;
   top: calc(var(--space-3) + env(safe-area-inset-top));
   right: var(--space-3);
   z-index: 150;
+}
+
+.dock[data-opening='true'] { visibility: hidden; pointer-events: none; }
+.controls { display: flex; align-items: center; gap: 4px; }
+.toggle {
   display: grid;
   place-items: center;
   width: 44px;
@@ -62,3 +67,18 @@
 .bars span {
   transform-origin: bottom;
 }
+
+.details { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-mocha); cursor: pointer; }
+.details svg { width: 18px; height: 18px; }
+.retryHint { position: absolute; top: 56px; right: 0; min-height: 44px; width: 220px; padding: 8px 12px; border: 1px solid rgb(168 130 63 / 0.35); border-radius: 12px; background: var(--color-ivory); color: var(--color-mocha); font-size: 11px; cursor: pointer; box-shadow: var(--shadow-paper); }
+.panel { position: absolute; top: 56px; right: 0; width: min(344px, calc(100vw - 24px)); padding: 16px; border: 1px solid rgb(168 130 63 / 0.35); border-radius: 16px; background: var(--color-ivory); color: var(--color-espresso); box-shadow: 0 14px 50px -16px rgb(48 39 32 / 0.3); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s ease; }
+.panel[data-open='true'] { opacity: 1; visibility: visible; pointer-events: auto; }
+.panelHeader { display: flex; justify-content: space-between; align-items: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--color-mocha); }
+.panelHeader button { display: grid; place-items: center; width: 44px; height: 36px; margin: -6px -6px 0 0; border: 0; background: transparent; font-size: 28px; color: var(--color-mocha); cursor: pointer; }
+.trackTitle { font-family: var(--font-serif); font-size: 25px; font-weight: 500; line-height: 1.2; margin-top: 3px; }
+.artist { font-size: 11px; color: var(--color-mocha); margin-block: 8px 18px; }
+.audio audio { display: block; width: 100%; height: 42px; }
+.status { font-size: 11px; line-height: 1.5; margin-top: 10px; }
+.status:empty { display: none; }
+.credits { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 14px; font-size: 11px; color: var(--color-mocha); }
+.credits a { text-underline-offset: 3px; padding-block: 4px; }

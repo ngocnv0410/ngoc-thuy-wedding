@@ -82,6 +82,15 @@ export const wedding: WeddingContent = {
   // Chờ ảnh.
   gallery: [],
 
+  music: {
+    src: 'audio/canon-in-d-piano.mp3',
+    title: 'Canon in D — Pachelbel',
+    artist: 'Lee Galloway · Piano',
+    artistUrl: 'https://www.leegalloway.com/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Pachelbel%27s_Canon.ogg',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+  },
+
   // ĐỀ XUẤT
   thankYou: [
     'Cảm ơn bạn đã dành chút thời gian mở tấm thiệp nhỏ này.',

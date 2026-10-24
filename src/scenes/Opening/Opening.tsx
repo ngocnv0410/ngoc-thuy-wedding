@@ -35,7 +35,7 @@ const FADE_MS = 420
 export function Opening({ content, onDone }: OpeningProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [closing, setClosing] = useState(false)
-  const [withMusic, setWithMusic] = useState(false)
+  const [withMusic, setWithMusic] = useState(() => music.getSnapshot().wanted)
   const started = useRef(false)
   const finished = useRef(false)
   const dismissing = useRef(false)
@@ -253,7 +253,11 @@ export function Opening({ content, onDone }: OpeningProps) {
             type="button"
             className={styles.musicChoice}
             aria-pressed={withMusic}
-            onClick={() => setWithMusic((value) => !value)}
+            onClick={() => {
+              if (!withMusic) music.prepare()
+              else music.pause()
+              setWithMusic((value) => !value)
+            }}
           >
             <span className={styles.check} aria-hidden="true" />
             Mở kèm nhạc

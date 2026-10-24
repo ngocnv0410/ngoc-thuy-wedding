@@ -158,6 +158,10 @@ export interface Video {
 export interface Music {
   src: string
   title: string
+  artist?: string
+  artistUrl?: string
+  sourceUrl?: string
+  licenseUrl?: string
 }
 
 export interface WeddingContent {
