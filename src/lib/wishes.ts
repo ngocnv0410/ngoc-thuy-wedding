@@ -1,5 +1,5 @@
 import { getApp, getApps, initializeApp } from 'firebase/app'
-import { connectAuthEmulator, getAuth, signInAnonymously } from 'firebase/auth'
+import { connectAuthEmulator, getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth'
 import {
   collection, connectFirestoreEmulator, doc, getFirestore, limit, onSnapshot, orderBy,
   query, runTransaction, serverTimestamp, Timestamp,
@@ -59,8 +59,39 @@ export function watchWishes(onWishes: (wishes: WeddingWish[], fromCache: boolean
   return () => { cancelled = true; stop?.() }
 }
 
+function readWish(id: string, data: Record<string, unknown> | undefined): WeddingWish | null {
+  if (!data || !(data.createdAt instanceof Timestamp)
+    || typeof data.name !== 'string' || typeof data.message !== 'string'
+    || validateWish({ name: data.name, message: data.message })) return null
+  return { id, name: data.name, message: data.message, createdAt: data.createdAt.toMillis() }
+}
+
+/** Restore the saved identity before allowing input; do not create a new identity just to read. */
+export function watchGuestWish(onWish: (wish: WeddingWish | null) => void, onError: (error: unknown) => void) {
+  let cancelled = false
+  let stopAuth: (() => void) | undefined
+  let stopWish: (() => void) | undefined
+  let version = 0
+  clientsReady.then(({ db, auth }) => {
+    if (cancelled) return
+    stopAuth = onAuthStateChanged(auth, (user) => {
+      if (cancelled) return
+      stopWish?.()
+      const current = ++version
+      if (!user) { onWish(null); return }
+      stopWish = onSnapshot(doc(db, COLLECTION, user.uid), { includeMetadataChanges: true }, (snapshot) => {
+        if (cancelled || current !== version || snapshot.metadata.hasPendingWrites) return
+        const wish = readWish(snapshot.id, snapshot.data())
+        // A missing cached document does not prove this guest has never sent a wish.
+        if (wish || !snapshot.metadata.fromCache) onWish(wish)
+      }, (error) => { if (!cancelled && current === version) onError(error) })
+    }, onError)
+  }).catch((error) => { if (!cancelled) onError(error) })
+  return () => { cancelled = true; version++; stopAuth?.(); stopWish?.() }
+}
+
 /** One immutable wish per anonymous identity. Transactions do not queue offline writes. */
-export async function sendWish(draft: WishDraft): Promise<{ alreadySent: boolean }> {
+export async function sendWish(draft: WishDraft): Promise<{ alreadySent: boolean; wish: WeddingWish }> {
   const clean = normalizeWish(draft)
   const invalid = validateWish(clean)
   if (invalid) throw new Error(invalid)
@@ -69,10 +100,17 @@ export async function sendWish(draft: WishDraft): Promise<{ alreadySent: boolean
   await auth.authStateReady()
   const user = auth.currentUser ?? (await signInAnonymously(auth)).user
   const ref = doc(db, COLLECTION, user.uid)
-  const alreadySent = await runTransaction(db, async (transaction) => {
-    if ((await transaction.get(ref)).exists()) return true
+  const existing = await runTransaction(db, async (transaction) => {
+    const snapshot = await transaction.get(ref)
+    if (snapshot.exists()) {
+      const wish = readWish(snapshot.id, snapshot.data())
+      if (!wish) throw new Error('Saved wish is invalid')
+      return wish
+    }
     transaction.set(ref, { ...clean, createdAt: serverTimestamp() })
-    return false
+    return null
   }, { maxAttempts: 3 })
-  return { alreadySent }
+  // The commit is acknowledged now. Display it immediately even if the feed is delayed;
+  // the document listener replaces this acknowledgement time with the server timestamp.
+  return { alreadySent: existing !== null, wish: existing ?? { id: user.uid, ...clean, createdAt: Date.now() } }
 }

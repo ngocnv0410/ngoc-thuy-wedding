@@ -21,6 +21,8 @@
 .messages { max-height: 520px; margin: 18px 0 0; padding: 0 8px 0 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #cfb98e transparent; list-style: none; }
 .wish { padding: 18px 0; border-bottom: 1px solid rgb(168 130 63 / 0.22); }
 .wish:first-child { padding-top: 0; }
+.ownLabel { display: block; margin-bottom: 10px; font-size: 11px; color: #84623a; }
+.guestCheck { display: grid; align-content: center; justify-items: start; gap: 14px; min-height: 320px; font-size: 14px; line-height: 1.7; color: var(--color-mocha); }
 .author { display: flex; align-items: center; gap: 10px; }
 .initial { display: grid; flex: none; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #eee1cb; color: #84623a; font-family: var(--font-serif); font-size: 20px; }
 .author h4 { margin: 0; font-size: 14px; font-weight: 500; color: #6d5233; overflow-wrap: anywhere; }

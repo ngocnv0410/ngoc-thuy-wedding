@@ -17,6 +17,7 @@ export function Wishes({ content }: { content: WeddingContent }) {
   const ref = useRef<HTMLElement>(null)
   const nameInput = useRef<HTMLInputElement>(null)
   const messageInput = useRef<HTMLTextAreaElement>(null)
+  const list = useRef<HTMLUListElement>(null)
   const mounted = useRef(true)
   const sending = useRef(false)
   const [near, setNear] = useState(false)
@@ -24,6 +25,8 @@ export function Wishes({ content }: { content: WeddingContent }) {
   const [service, setService] = useState<Guestbook>()
   const [wishes, setWishes] = useState<WeddingWish[]>([])
   const [feedState, setFeedState] = useState<FeedState>('loading')
+  const [guestState, setGuestState] = useState<FeedState>('loading')
+  const [ownWish, setOwnWish] = useState<WeddingWish | null>(null)
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -51,10 +54,23 @@ export function Wishes({ content }: { content: WeddingContent }) {
     if (!near) return
     let cancelled = false
     let stop: (() => void) | undefined
+    let stopGuest: (() => void) | undefined
     const timeout = window.setTimeout(() => { if (!cancelled) setFeedState('error') }, 12000)
+    const guestTimeout = window.setTimeout(() => { if (!cancelled) setGuestState('error') }, 12000)
     import('../../lib/wishes').then((api) => {
       if (cancelled) return
       setService(api)
+      stopGuest = api.watchGuestWish((wish) => {
+        if (cancelled) return
+        window.clearTimeout(guestTimeout)
+        setGuestState('ready')
+        if (wish) {
+          setOwnWish(wish)
+          if (!sending.current) setReceipt((previous) => previous ?? 'existing')
+        }
+      }, () => {
+        if (!cancelled) { window.clearTimeout(guestTimeout); setGuestState('error') }
+      })
       stop = api.watchWishes((next, fromCache) => {
         if (cancelled) return
         setWishes(next)
@@ -66,10 +82,25 @@ export function Wishes({ content }: { content: WeddingContent }) {
         if (!cancelled) { window.clearTimeout(timeout); setFeedState('error') }
       })
     }).catch(() => {
-      if (!cancelled) { window.clearTimeout(timeout); setFeedState('error') }
+      if (!cancelled) {
+        window.clearTimeout(timeout); window.clearTimeout(guestTimeout)
+        setFeedState('error'); setGuestState('error')
+      }
     })
-    return () => { cancelled = true; window.clearTimeout(timeout); stop?.() }
+    return () => { cancelled = true; window.clearTimeout(timeout); window.clearTimeout(guestTimeout); stop?.(); stopGuest?.() }
   }, [near, attempt])
+
+  useEffect(() => { if (list.current) list.current.scrollTop = 0 }, [ownWish?.id])
+
+  const displayedWishes = ownWish
+    ? [wishes.find((wish) => wish.id === ownWish.id) ?? ownWish, ...wishes.filter((wish) => wish.id !== ownWish.id)]
+    : wishes
+
+  function retry() {
+    setFeedState('loading')
+    setGuestState('loading')
+    setAttempt((value) => value + 1)
+  }
 
   // Async wishes change the positions of the scenes below the guestbook.
   useEffect(() => {
@@ -88,7 +119,7 @@ export function Wishes({ content }: { content: WeddingContent }) {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (sending.current || receipt) return
+    if (sending.current || receipt || guestState !== 'ready') return
     const draft = normalizeWish({ name, message })
     const invalid = validateWish(draft)
     if (invalid) {
@@ -104,7 +135,10 @@ export function Wishes({ content }: { content: WeddingContent }) {
     const timeout = window.setTimeout(() => { if (mounted.current) setSlow(true) }, 10000)
     try {
       const result = await service.sendWish(draft)
-      if (mounted.current) setReceipt(result.alreadySent ? 'existing' : 'sent')
+      if (mounted.current) {
+        setOwnWish(result.wish)
+        setReceipt(result.alreadySent ? 'existing' : 'sent')
+      }
     } catch (failure) {
       if (mounted.current) setError(wishErrorMessage(failure))
     } finally {
@@ -128,6 +162,11 @@ export function Wishes({ content }: { content: WeddingContent }) {
             <h3>{receipt === 'sent' ? 'Đã gửi lời chúc' : 'Bạn đã gửi lời chúc rồi'}</h3>
             <p>Cảm ơn bạn đã gửi lời chúc đến {content.couple.groom.givenName} &amp; {content.couple.bride.givenName}!</p>
           </div>
+        ) : guestState !== 'ready' ? (
+          <div className={styles.guestCheck} aria-busy={guestState === 'loading'}>
+            <p role="status">{guestState === 'loading' ? 'Đang kiểm tra lời chúc của bạn…' : 'Chưa kiểm tra được lời chúc của bạn. Bạn thử kết nối lại nhé.'}</p>
+            {guestState === 'error' && <button className={styles.submit} type="button" onClick={retry}>Thử lại kết nối</button>}
+          </div>
         ) : (
           <form className={styles.form} onSubmit={submit} noValidate aria-busy={submitting}>
             <label htmlFor="wish-name">Tên của bạn</label>
@@ -149,10 +188,11 @@ export function Wishes({ content }: { content: WeddingContent }) {
         )}
         <section className={styles.feed} aria-labelledby="wish-feed-title">
           <h3 id="wish-feed-title">Lời chúc từ mọi người</h3>
-          {wishes.length > 0 && (
-            <ul className={styles.messages} data-lenis-prevent="true" tabIndex={0} aria-label="Những lời chúc mới nhất">
-              {wishes.map((wish) => (
+          {displayedWishes.length > 0 && (
+            <ul ref={list} className={styles.messages} data-lenis-prevent="true" tabIndex={0} aria-label="Những lời chúc mới nhất">
+              {displayedWishes.map((wish) => (
                 <li key={wish.id} className={styles.wish}>
+                  {wish.id === ownWish?.id && <span className={styles.ownLabel}>Lời chúc của bạn</span>}
                   <div className={styles.author}>
                     <span className={styles.initial} aria-hidden="true">{Array.from(wish.name)[0]}</span>
                     <div><h4>{wish.name}</h4><time dateTime={new Date(wish.createdAt).toISOString()}>{dateFormat.format(wish.createdAt)}</time></div>
@@ -162,12 +202,12 @@ export function Wishes({ content }: { content: WeddingContent }) {
               ))}
             </ul>
           )}
-          {feedState === 'loading' && wishes.length === 0 && <p className={styles.empty} role="status">Đang tải lời chúc…</p>}
-          {feedState === 'ready' && wishes.length === 0 && <p className={styles.empty}>Chưa có lời chúc. Bạn có thể là người đầu tiên gửi lời chúc đến hai chúng mình.</p>}
+          {feedState === 'loading' && displayedWishes.length === 0 && <p className={styles.empty} role="status">Đang tải lời chúc…</p>}
+          {feedState === 'ready' && displayedWishes.length === 0 && <p className={styles.empty}>Chưa có lời chúc. Bạn có thể là người đầu tiên gửi lời chúc đến hai chúng mình.</p>}
           {feedState === 'error' && (
             <div className={styles.feedError}>
               <p role="status">Chưa tải được lời chúc. Bạn thử lại nhé.</p>
-              <button type="button" onClick={() => { setFeedState('loading'); setAttempt((value) => value + 1) }}>Tải lại lời chúc</button>
+              <button type="button" onClick={retry}>Tải lại lời chúc</button>
             </div>
           )}
         </section>

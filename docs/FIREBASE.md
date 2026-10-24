@@ -26,7 +26,7 @@ File rules của repo dành cho dự án riêng của thiệp. Nếu dự án đ
 
 Quyền của khách:
 
-- Đọc công khai tối đa 50 tài liệu mỗi truy vấn; website nghe 40 lời chúc gần nhất, sắp theo thời gian server.
+- Đọc công khai tối đa 50 tài liệu mỗi truy vấn; website nghe 40 lời chúc gần nhất, sắp theo thời gian server. Lời chúc của chính khách được ghim ở đầu, kể cả khi đã nằm ngoài 40 lời chúc gần nhất.
 - Chỉ tạo tài liệu có ID bằng UID của chính mình, chỉ có `name`, `message`, `createdAt`.
 - Tên 1–60 ký tự, lời chúc 1–600 ký tự, không rỗng hoặc toàn khoảng trắng; thời gian phải là `serverTimestamp()`.
 - Không được sửa, ghi đè hoặc xóa lời chúc từ client. Một UID ẩn danh gửi được một lời chúc. Giới hạn này theo UID trình duyệt, không xác minh danh tính thật.
@@ -86,4 +86,6 @@ Vào `http://127.0.0.1:5173/#loi-chuc`. Emulator chỉ kết nối trong chế �
 
 ## Hành vi khi gửi
 
-Client dùng transaction để kiểm tra tài liệu theo UID trước khi tạo; gửi lại không tạo thêm tài liệu. Form chỉ báo thành công sau khi Firestore xác nhận, không hiển thị ghi tạm ở local như lời chúc đã gửi. Khi lỗi, nội dung ô nhập vẫn còn để thử lại. Lời chúc được render dưới dạng text thuần, không chèn HTML của người gửi.
+Khi mở phần lời chúc, client khôi phục UID và kiểm tra tài liệu đã gửi trước khi hiện ô nhập. Khách đã gửi sẽ thấy lời cảm ơn và lời chúc cũ ngay; trong lúc kiểm tra hoặc khi kiểm tra lỗi, form chưa mở để tránh nhập lại vô ích. Việc kiểm tra không tạo tài khoản ẩn danh mới.
+
+Client vẫn dùng transaction để kiểm tra tài liệu theo UID trước khi tạo, phòng hai tab cùng gửi; gửi lại không tạo thêm tài liệu. Form chỉ báo thành công sau khi Firestore xác nhận và đưa lời chúc đã lưu lên đầu danh sách ngay, không cần reload hay đợi truy vấn danh sách cập nhật. Thời gian ban đầu là lúc nhận xác nhận, sau đó listener thay bằng thời gian server. Khi lỗi, nội dung ô nhập vẫn còn để thử lại. Lời chúc được render dưới dạng text thuần, không chèn HTML của người gửi.
