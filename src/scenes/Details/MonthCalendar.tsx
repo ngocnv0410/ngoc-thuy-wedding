@@ -24,9 +24,10 @@ export function MonthCalendar({ days, primaryId }: MonthCalendarProps) {
   return (
     <figure className={styles.calendar} data-anim="calendar">
       <figcaption className={styles.caption}>
-        Tháng {month} · {year}
+        <span className={styles.month}>Tháng {month}</span>
+        <span className={styles.year}>{year}</span>
       </figcaption>
-      <table className={styles.grid}>
+      <table className={styles.grid} aria-label={`Lịch tháng ${month} năm ${year}`}>
         <thead>
           <tr>
             {WEEKDAY_SHORT.map((label) => (
@@ -43,10 +44,10 @@ export function MonthCalendar({ days, primaryId }: MonthCalendarProps) {
                 const day = date ? marked.get(date) : undefined
                 const isPrimary = day?.id === primaryId
                 return (
-                  <td key={cell} data-mark={day ? (isPrimary ? 'primary' : 'event') : undefined}>
+                  <td key={cell} data-weekend={cell >= 5 || undefined} data-mark={day ? (isPrimary ? 'primary' : 'event') : undefined}>
                     {date && (
                       <>
-                        <span aria-hidden={day ? 'true' : undefined}>{date}</span>
+                        <span className={styles.dayNumber} aria-hidden={day ? 'true' : undefined}>{date}</span>
                         {day && <span className="visually-hidden">{`${date}, ${day.title}`}</span>}
                         {isPrimary && <HandCircle />}
                         {day && !isPrimary && <span className={styles.dot} aria-hidden="true" data-anim="mark-dot" />}
@@ -59,6 +60,14 @@ export function MonthCalendar({ days, primaryId }: MonthCalendarProps) {
           ))}
         </tbody>
       </table>
+      <ul className={styles.legend} aria-label="Các ngày lễ trong tháng">
+        {[...marked.entries()].map(([date, day]) => (
+          <li key={day.id} data-primary={day.id === primaryId}>
+            <span className={styles.legendDate}>{date}</span>
+            <span>{day.title}</span>
+          </li>
+        ))}
+      </ul>
     </figure>
   )
 }

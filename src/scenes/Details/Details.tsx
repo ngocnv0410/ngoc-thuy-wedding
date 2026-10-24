@@ -85,7 +85,7 @@ export function Details({ content }: { content: WeddingContent }) {
       <Countdown content={content} />
 
       {/* Chú rể cầm tờ lịch ngày đầu, cô dâu cầm ngày chính; lịch khoanh xong thì nhìn nhau cười. */}
-      <div className={styles.calendarStage} data-anim="calendar-stage">
+      <div id="lich-cuoi" className={styles.calendarStage} data-anim="calendar-stage">
         <Chibi
           who="groom"
           pose="carry"
@@ -105,20 +105,20 @@ export function Details({ content }: { content: WeddingContent }) {
           className={styles.calBride}
           anim="cal-bride"
         />
-      </div>
 
-      {entries.length > 0 && (
-        <div className={styles.actions} data-anim="actions">
-          <Button variant="primary" onClick={() => downloadIcs(entries)} icon={<CalendarIcon />}>
-            Thêm vào lịch
-          </Button>
-          {mainEntry && (
-            <Button variant="link" href={googleCalendarUrl(mainEntry)} target="_blank" rel="noopener">
-              Google Calendar
+        {entries.length > 0 && (
+          <div className={styles.actions} data-anim="actions">
+            <Button variant="primary" className={styles.calendarDownload} onClick={() => downloadIcs(entries)} icon={<CalendarIcon />}>
+              Thêm vào lịch
             </Button>
-          )}
-        </div>
-      )}
+            {mainEntry && (
+              <Button variant="ghost" href={googleCalendarUrl(mainEntry)} target="_blank" rel="noopener" icon={<CalendarIcon />}>
+                Google Calendar
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
     </SceneShell>
   )
 }
