@@ -69,47 +69,6 @@
   .label { font-size: 11px; }
 }
 
-/* Preserve the earlier compact layout on phones. */
-@media (max-width: 639px) {
-  .keepsake {
-    display: grid;
-    grid-template-columns: clamp(72px, 22vw, 112px) minmax(0, 1fr);
-    align-items: center;
-    gap: 12px;
-    max-width: 400px;
-    margin-top: 32px;
-    padding: 18px 14px;
-    border-color: rgb(168 130 63 / 0.3);
-    border-radius: 20px;
-    background: radial-gradient(ellipse at 50% 18%, #fffcf7, rgb(248 240 227 / 0.94));
-    box-shadow: 0 12px 36px -28px rgb(110 90 75 / 0.3), inset 0 0 0 4px rgb(255 252 246 / 0.8);
-  }
-
-  .intro, .heading { display: contents; }
-  .ornament, .date, .rule, .title br { display: none; }
-  .title { grid-column: 1 / -1; font-size: 24px; font-style: italic; line-height: 1.2; }
-  .title em { font: inherit; color: inherit; }
-  .stage { aspect-ratio: 320 / 250; }
-  .halo { stroke-width: 0.7; }
-  .couple { padding-bottom: 5%; }
-  .couple > span { --chibi-h: clamp(54px, 17vw, 82px); }
-  .couple > span + span { margin-left: -3px; }
-  .heartSeal { top: -4%; left: 44%; width: 12%; border-color: rgb(168 130 63 / 0.4); box-shadow: 0 2px 6px rgb(110 90 75 / 0.08); }
-  .heartSeal > span { width: 7px; height: 7px; }
-  .floatingHeart { width: 5px; height: 5px; animation-name: floatHeartMobile; }
-  .sparkle { font-size: 16px; }
-  .sparkleLeft { left: 5%; }
-  .sparkleRight { right: 13%; font-size: 12px; }
-  .clock { margin-block: 1em; gap: 0; }
-  .unit { position: relative; padding: 0 2px; border: 0; border-radius: 0; background: none; }
-  .unit + .unit::before { content: ''; position: absolute; left: 0; top: 18%; height: 52%; width: 1px; background: linear-gradient(transparent, rgb(168 130 63 / 0.4), transparent); }
-  .number { font-size: clamp(24px, 6vw, 34px); line-height: 1.15; color: #856334; }
-  .label { margin-top: 4px; font-size: 8px; letter-spacing: 0.06em; }
-  .caption { margin-top: 8px; font-size: 16px; font-style: normal; }
-}
-
-@keyframes floatHeartMobile { 0% { opacity: 0; transform: translateY(0) scale(0.6) rotate(-10deg); } 18% { opacity: 0.65; } 75% { opacity: 0.35; } 100% { opacity: 0; transform: translateY(-32px) translateX(5px) scale(1.1) rotate(16deg); } }
-
 @media (prefers-reduced-motion: reduce) {
   .keepsake .floatingHeart { display: none; }
   .keepsake .sparkle, .keepsake .heartSeal > span, .number > span { animation: none; }

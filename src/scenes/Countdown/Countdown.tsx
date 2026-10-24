@@ -48,7 +48,7 @@ export function Countdown({ content }: { content: WeddingContent }) {
       <div className={styles.intro}>
         <header className={styles.heading}>
           <span className={styles.ornament} aria-hidden="true">✧</span>
-          <h3 id="countdown-title" className={styles.title}>Đếm ngược<br />{' '}<em>ngày cưới</em></h3>
+          <h3 id="countdown-title" className={styles.title}>Đếm ngược<br /><em>ngày cưới</em></h3>
           <time className={styles.date} dateTime={day.solar}>
             {String(date.day).padStart(2, '0')}<span aria-hidden="true"> · </span>
             {String(date.month).padStart(2, '0')}<span aria-hidden="true"> · </span>{date.year}
