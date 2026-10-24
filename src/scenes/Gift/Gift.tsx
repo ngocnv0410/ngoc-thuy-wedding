@@ -1,17 +1,15 @@
 import { useCallback, useRef } from 'react'
-import { Button } from '../../components/Button'
-import { Chibi } from '../../components/chibi/Chibi'
 import { ChibiProp } from '../../components/chibi/ChibiProp'
 import { Divider } from '../../components/Ornament'
 import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
 import { SceneShell } from '../../components/SceneShell'
-import { Seal } from '../../components/Seal'
 import type { WeddingContent } from '../../content/types'
-import { dottedDate, orderedCouple, primaryDay, weekday } from '../../lib/format'
+import { orderedCouple } from '../../lib/format'
 import { loadMotion, prefersMotion, useSceneMotion } from '../../motion/useMotion'
 import styles from './Gift.module.css'
 import { GiftCard } from './GiftCard'
+import { Closing } from './Closing'
 
 /** Mừng cưới & lời cảm ơn, giấy kem champagne cùng các phong thư mở QR. */
 export function Gift({ content }: { content: WeddingContent }) {
@@ -28,7 +26,6 @@ export function Gift({ content }: { content: WeddingContent }) {
   }, [])
   const { couple, accounts, thankYou } = content
   const [first, second] = orderedCouple(couple)
-  const day = primaryDay(content.days)
 
   return (
     <SceneShell ref={ref} id="mung-cuoi" light="golden" labelledBy="gift-title" className={styles.scene}>
@@ -88,25 +85,7 @@ export function Gift({ content }: { content: WeddingContent }) {
         )}
       </section>
 
-      <footer className={styles.closing}>
-        {/* Hai bạn hai bên dấu sáp: cúi chào khách rồi giơ tay tạo hình trái tim. */}
-        <div className={styles.closingStage}>
-          <Chibi who="groom" pose="heart" anim="bye-groom" />
-          <span className={styles.closingSeal} data-anim="closing-seal">
-            <Seal monogram={couple.monogram} size={104} />
-          </span>
-          <Chibi who="bride" pose="heart" anim="bye-bride" />
-        </div>
-        <div className={styles.closingText} data-anim="closing-text">
-          <p className={styles.closingLine}>Hẹn gặp bạn trong ngày vui của chúng mình</p>
-          <p className={styles.closingDate}>
-            {weekday(day.solar)} · <time dateTime={day.solar}>{dottedDate(day.solar)}</time>
-          </p>
-          <Button variant="link" href="#bia">
-            Về đầu thiệp
-          </Button>
-        </div>
-      </footer>
+      <Closing content={content} />
     </SceneShell>
   )
 }
