@@ -112,7 +112,7 @@ export function Details({ content }: { content: WeddingContent }) {
               Thêm vào lịch
             </Button>
             {mainEntry && (
-              <Button variant="ghost" href={googleCalendarUrl(mainEntry)} target="_blank" rel="noopener" icon={<CalendarIcon />}>
+              <Button variant="ghost" href={googleCalendarUrl(mainEntry)} target="_blank" rel="noopener">
                 Google Calendar
               </Button>
             )}

@@ -1,32 +1,29 @@
 .calendar { width: 100%; margin: 0 auto; text-align: center; }
-.caption { display: flex; flex-direction: column; justify-content: center; gap: 8px; min-height: 108px; margin-bottom: 18px; }
-.month { font-family: var(--font-serif); font-size: 30px; font-style: italic; font-weight: 500; line-height: 1.1; color: #795b34; }
-.year { font-size: 11px; letter-spacing: 0.2em; color: var(--color-mocha); }
+.caption { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 70px; margin-bottom: 10px; }
+.month { font-family: var(--font-serif); font-size: 26px; font-style: italic; font-weight: 500; line-height: 1.1; color: #795b34; }
+.year { border-left: 1px solid rgb(168 130 63 / 0.35); padding-left: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--color-mocha); }
 .grid { width: 100%; table-layout: fixed; border-collapse: collapse; font-variant-numeric: lining-nums tabular-nums; }
-.grid thead { border-block: 1px solid rgb(168 130 63 / 0.2); }
-.grid th { height: 36px; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: #897052; }
-.grid td { position: relative; height: 42px; font-size: 15px; color: #716050; }
+.grid thead { border-top: 1px solid rgb(168 130 63 / 0.25); }
+.grid th { height: 28px; font-size: 10px; font-weight: 500; letter-spacing: 0.04em; color: #897052; }
+.grid td { position: relative; height: 34px; font-size: 14px; color: #716050; }
 .grid td[data-weekend] { color: #9b7851; }
-.dayNumber { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; line-height: 1; }
+.dayNumber { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; line-height: 1; }
 .grid td[data-mark] { color: #6d4f2b; font-weight: 500; }
-.grid td[data-mark='event'] .dayNumber { background: rgb(231 213 183 / 0.35); }
 .grid td[data-mark='primary'] .dayNumber { background: #edddc1; }
-.dot { position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: #ad8950; transform: translateX(-50%); }
-.circle { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; transform: translate(-50%, -50%) rotate(-8deg); overflow: visible; pointer-events: none; }
+.dot { position: absolute; left: 50%; bottom: 1px; width: 3px; height: 3px; border-radius: 50%; background: #ad8950; transform: translateX(-50%); }
+.circle { position: absolute; left: 50%; top: 50%; width: 34px; height: 34px; transform: translate(-50%, -50%) rotate(-8deg); overflow: visible; pointer-events: none; }
 .circle path { fill: none; stroke: #a88145; stroke-width: 1.6; stroke-linecap: round; }
-.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 14px; margin-top: 16px; padding: 12px 0 0; border-top: 1px solid rgb(168 130 63 / 0.2); list-style: none; }
-.legend li { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #79654c; }
-.legendDate { display: inline-grid; place-items: center; width: 25px; height: 25px; border: 1px solid rgb(168 130 63 / 0.3); border-radius: 50%; font-family: var(--font-serif); font-size: 15px; color: #795b34; }
-.legend li[data-primary='true'] .legendDate { background: #edddc1; border-color: #b59766; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 10px; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: baseline; gap: 4px; font-size: 11px; color: #79654c; }
+.legendDate { font-weight: 500; color: #89683d; }
+.legendDate::after { content: '·'; margin-left: 4px; font-weight: 400; }
 
 @media (min-width: 480px) {
-  .caption { min-height: 126px; }
-  .month { font-size: 36px; }
-  .year { font-size: 12px; }
-  .grid th { height: 40px; font-size: 11px; }
-  .grid td { height: 48px; font-size: 17px; }
-  .dayNumber { width: 36px; height: 36px; }
-  .circle { width: 46px; height: 46px; }
-  .legend { gap: 12px 24px; }
-  .legend li { font-size: 12px; }
+  .caption { min-height: 76px; }
+  .month { font-size: 28px; }
+  .year { font-size: 11px; }
+  .grid td { height: 36px; font-size: 15px; }
+  .dayNumber { width: 28px; height: 28px; }
+  .circle { width: 36px; height: 36px; }
+  .legend li { font-size: 11px; }
 }
