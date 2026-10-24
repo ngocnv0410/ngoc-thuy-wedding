@@ -27,3 +27,8 @@
   .circle { width: 36px; height: 36px; }
   .legend li { font-size: 11px; }
 }
+
+@media (min-width: 1024px) {
+  .month { font-size: 32px; }
+  .year { font-size: 12px; }
+}

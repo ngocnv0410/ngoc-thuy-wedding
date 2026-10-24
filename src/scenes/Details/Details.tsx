@@ -82,42 +82,44 @@ export function Details({ content }: { content: WeddingContent }) {
       </ol>
       {missingTimes && <PendingNote>giờ tổ chức, bên tổ chức (nhà gái/nhà trai) và địa điểm của từng lễ.</PendingNote>}
 
-      <Countdown content={content} />
+      <div className={styles.schedule}>
+        <Countdown content={content} />
 
-      {/* Chú rể cầm tờ lịch ngày đầu, cô dâu cầm ngày chính; lịch khoanh xong thì nhìn nhau cười. */}
-      <div id="lich-cuoi" className={styles.calendarStage} data-anim="calendar-stage">
-        <Chibi
-          who="groom"
-          pose="carry"
-          look="right"
-          eyes="happy"
-          held={<PropArt kind="calendar" label={String(solarParts(days[0].solar).day)} />}
-          className={styles.calGroom}
-          anim="cal-groom"
-        />
-        <MonthCalendar days={days} primaryId={main.id} />
-        <Chibi
-          who="bride"
-          pose={days.length > 1 ? 'carry' : 'stand'}
-          look="left"
-          eyes="happy"
-          held={days.length > 1 ? <PropArt kind="calendar" label={String(solarParts(main.solar).day)} /> : undefined}
-          className={styles.calBride}
-          anim="cal-bride"
-        />
+        {/* Chú rể cầm tờ lịch ngày đầu, cô dâu cầm ngày chính; lịch khoanh xong thì nhìn nhau cười. */}
+        <div id="lich-cuoi" className={styles.calendarStage} data-anim="calendar-stage">
+          <Chibi
+            who="groom"
+            pose="carry"
+            look="right"
+            eyes="happy"
+            held={<PropArt kind="calendar" label={String(solarParts(days[0].solar).day)} />}
+            className={styles.calGroom}
+            anim="cal-groom"
+          />
+          <MonthCalendar days={days} primaryId={main.id} />
+          <Chibi
+            who="bride"
+            pose={days.length > 1 ? 'carry' : 'stand'}
+            look="left"
+            eyes="happy"
+            held={days.length > 1 ? <PropArt kind="calendar" label={String(solarParts(main.solar).day)} /> : undefined}
+            className={styles.calBride}
+            anim="cal-bride"
+          />
 
-        {entries.length > 0 && (
-          <div className={styles.actions} data-anim="actions">
-            <Button variant="primary" className={styles.calendarDownload} onClick={() => downloadIcs(entries)} icon={<CalendarIcon />}>
-              Thêm vào lịch
-            </Button>
-            {mainEntry && (
-              <Button variant="ghost" href={googleCalendarUrl(mainEntry)} target="_blank" rel="noopener">
-                Google Calendar
+          {entries.length > 0 && (
+            <div className={styles.actions}>
+              <Button variant="primary" className={styles.calendarDownload} onClick={() => downloadIcs(entries)} icon={<CalendarIcon />}>
+                Thêm vào lịch
               </Button>
-            )}
-          </div>
-        )}
+              {mainEntry && (
+                <Button variant="ghost" href={googleCalendarUrl(mainEntry)} target="_blank" rel="noopener">
+                  Google Calendar
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </SceneShell>
   )

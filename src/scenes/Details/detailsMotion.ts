@@ -68,6 +68,4 @@ export function detailsMotion(root: HTMLElement) {
     idle(pair, stage)
   }
 
-  const actions = one(root, 'actions')
-  if (actions) riseIn(actions.children, actions)
 }
