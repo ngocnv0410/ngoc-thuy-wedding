@@ -7,7 +7,6 @@ import { wedding } from './content/wedding'
 import { music } from './lib/music'
 import { prefersMotion, loadMotion } from './motion/useMotion'
 import { Details } from './scenes/Details/Details'
-import { Countdown } from './scenes/Countdown/Countdown'
 import { Gallery } from './scenes/Gallery/Gallery'
 import { Gift } from './scenes/Gift/Gift'
 import { Hero } from './scenes/Hero/Hero'
@@ -74,7 +73,6 @@ function App() {
   const chapters: Chapter[] = [
     { id: 'bia', label: 'Bìa thiệp' },
     { id: 'thong-tin', label: 'Thông tin lễ cưới' },
-    { id: 'dem-nguoc', label: 'Đếm ngược ngày cưới' },
     ...(showLocations ? [{ id: 'dia-diem', label: 'Địa điểm' }] : []),
     ...(showGallery ? [{ id: 'album', label: 'Album ảnh' }] : []),
     { id: 'mung-cuoi', label: 'Mừng cưới & lời cảm ơn' },
@@ -91,7 +89,6 @@ function App() {
         <main key={invitationVersion}>
           <Hero content={wedding} onReplay={opening ? undefined : replayOpening} />
           <Details content={wedding} />
-          <Countdown content={wedding} />
           {showLocations && <Locations content={wedding} />}
           {showGallery && <Gallery content={wedding} />}
           <Gift content={wedding} />

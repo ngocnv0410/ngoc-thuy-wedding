@@ -9,7 +9,7 @@ export function countdownMotion(root: HTMLElement) {
   if (!stage || !groom || !bride) return
   const pair = [groom, bride]
   rig(pair)
-  gsap.from(root.querySelector('[data-anim="countdown-card"]'), {
+  gsap.from(root, {
     y: 24, autoAlpha: 0, duration: 1, ease: 'power2.out',
     scrollTrigger: { trigger: root, start: 'top 85%', once: true },
   })

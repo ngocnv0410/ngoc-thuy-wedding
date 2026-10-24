@@ -13,6 +13,7 @@ import { orderedCouple, primaryDay, solarParts } from '../../lib/format'
 import styles from './Details.module.css'
 import { useSceneMotion } from '../../motion/useMotion'
 import { MonthCalendar } from './MonthCalendar'
+import { Countdown } from '../Countdown/Countdown'
 
 /**
  * Scene 2 — Thông tin lễ cưới, bố cục như tờ thiệp in (mẫu tham khảo): đối xứng, nhiều khoảng
@@ -80,6 +81,8 @@ export function Details({ content }: { content: WeddingContent }) {
         ))}
       </ol>
       {missingTimes && <PendingNote>giờ tổ chức, bên tổ chức (nhà gái/nhà trai) và địa điểm của từng lễ.</PendingNote>}
+
+      <Countdown content={content} />
 
       {/* Chú rể cầm tờ lịch ngày đầu, cô dâu cầm ngày chính; lịch khoanh xong thì nhìn nhau cười. */}
       <div className={styles.calendarStage} data-anim="calendar-stage">
