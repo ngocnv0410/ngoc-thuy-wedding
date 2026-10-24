@@ -33,6 +33,6 @@ export default defineConfig({
   // Thư viện chỉ được import động (chunk motion, chunk 3D): khai báo trước để dev server không
   // phải tối ưu lại giữa chừng (lỗi 504 "Outdated Optimize Dep" ở lần tải đầu).
   optimizeDeps: {
-    include: ['gsap', 'gsap/ScrollTrigger', 'gsap/SplitText', 'gsap/DrawSVGPlugin', 'lenis', 'three', '@react-three/fiber'],
+    include: ['gsap', 'gsap/ScrollTrigger', 'gsap/SplitText', 'gsap/DrawSVGPlugin', 'lenis', 'three', '@react-three/fiber', 'firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/app-check'],
   },
 })

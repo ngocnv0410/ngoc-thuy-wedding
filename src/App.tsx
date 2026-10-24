@@ -5,6 +5,7 @@ import { LightLayer } from './components/LightLayer'
 import { ToastProvider } from './components/ToastProvider'
 import { wedding } from './content/wedding'
 import { music } from './lib/music'
+import { guestbookEnabled } from './lib/firebase-config'
 import { prefersMotion, loadMotion } from './motion/useMotion'
 import { Details } from './scenes/Details/Details'
 import { Gallery } from './scenes/Gallery/Gallery'
@@ -12,6 +13,7 @@ import { Gift } from './scenes/Gift/Gift'
 import { Hero } from './scenes/Hero/Hero'
 import { Locations } from './scenes/Locations/Locations'
 import { Opening } from './scenes/Opening/Opening'
+import { Wishes } from './scenes/Wishes/Wishes'
 
 // Bản dev hiện cả scene chưa có dữ liệu (kèm ghi chú) để duyệt bố cục; production thì ẩn.
 const SHOW_EMPTY = import.meta.env.DEV
@@ -75,6 +77,7 @@ function App() {
     { id: 'thong-tin', label: 'Thông tin lễ cưới' },
     ...(showLocations ? [{ id: 'dia-diem', label: 'Địa điểm' }] : []),
     ...(showGallery ? [{ id: 'album', label: 'Album ảnh' }] : []),
+    ...(guestbookEnabled ? [{ id: 'loi-chuc', label: 'Gửi lời chúc' }] : []),
     { id: 'mung-cuoi', label: 'Mừng cưới & lời cảm ơn' },
   ]
 
@@ -91,6 +94,7 @@ function App() {
           <Details content={wedding} />
           {showLocations && <Locations content={wedding} />}
           {showGallery && <Gallery content={wedding} />}
+          {guestbookEnabled && <Wishes content={wedding} />}
           <Gift content={wedding} />
         </main>
       </div>

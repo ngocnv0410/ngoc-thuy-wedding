@@ -19,6 +19,9 @@ export { introDoors, openHosts } from '../scenes/Opening/openingMotion'
 
 export type SceneKey = 'hero' | 'countdown' | 'details' | 'locations' | 'gallery' | 'gift'
 
+/** Re-measure scene positions after async guestbook content changes height. */
+export function refreshLayout() { ScrollTrigger.refresh() }
+
 const root = document.documentElement
 
 // ── Bìa: chờ cửa mở mới phát ─────────────────────────────────
