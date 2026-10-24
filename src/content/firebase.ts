@@ -11,4 +11,4 @@ export const firebaseWebConfig: FirebaseOptions = {
 }
 
 /** Enable on the public site after Firestore Rules and Anonymous Auth are ready. */
-export const firebaseGuestbookReady = false
+export const firebaseGuestbookReady = true
