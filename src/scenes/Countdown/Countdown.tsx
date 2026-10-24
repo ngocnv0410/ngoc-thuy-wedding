@@ -45,26 +45,36 @@ export function Countdown({ content }: { content: WeddingContent }) {
 
   return (
     <div ref={ref} id="dem-nguoc" className={styles.keepsake} aria-labelledby="countdown-title" data-ambient-active={active}>
-      <h3 id="countdown-title" className={styles.title}>Đếm ngược ngày cưới</h3>
+      <div className={styles.intro}>
+        <header className={styles.heading}>
+          <span className={styles.ornament} aria-hidden="true">✧</span>
+          <h3 id="countdown-title" className={styles.title}>Đếm ngược<br /><em>ngày cưới</em></h3>
+          <time className={styles.date} dateTime={day.solar}>
+            {String(date.day).padStart(2, '0')}<span aria-hidden="true"> · </span>
+            {String(date.month).padStart(2, '0')}<span aria-hidden="true"> · </span>{date.year}
+          </time>
+        </header>
 
-      <div className={styles.stage} aria-hidden="true" data-anim="countdown-stage">
-        <svg className={styles.halo} viewBox="0 0 320 250" fill="none" focusable="false">
-          <path d="M38 221V128a122 122 0 0 1 244 0v93M47 217V128a113 113 0 0 1 226 0v89" />
-          <path className={styles.dotted} d="M30 205V128a130 130 0 0 1 260 0v77" />
-          <path d="M14 229q146 17 292 0M20 233q140 17 280 0" />
-        </svg>
-        <span className={styles.heartSeal}><ChibiProp kind="heart" /></span>
-        <div className={styles.couple}>
-          <Chibi who="groom" pose="carry" look="right" size="lg" held={<PropArt kind="calendar" label={String(date.day)} />} anim="countdown-groom" />
-          <Chibi who="bride" pose="carry" look="left" size="lg" held={<PropArt kind="heart" />} anim="countdown-bride" />
+        <div className={styles.stage} aria-hidden="true" data-anim="countdown-stage">
+          <svg className={styles.halo} viewBox="0 0 320 250" fill="none" focusable="false">
+            <path d="M38 221V128a122 122 0 0 1 244 0v93M47 217V128a113 113 0 0 1 226 0v89" />
+            <path className={styles.dotted} d="M30 205V128a130 130 0 0 1 260 0v77" />
+            <path d="M14 229q146 17 292 0M20 233q140 17 280 0" />
+          </svg>
+          <span className={styles.heartSeal}><ChibiProp kind="heart" /></span>
+          <div className={styles.couple}>
+            <Chibi who="groom" pose="carry" look="right" size="lg" held={<PropArt kind="calendar" label={String(date.day)} />} anim="countdown-groom" />
+            <Chibi who="bride" pose="carry" look="left" size="lg" held={<PropArt kind="heart" />} anim="countdown-bride" />
+          </div>
+          {[0, 1, 2, 3].map((index) => (
+            <ChibiProp key={index} kind="heart" className={styles.floatingHeart} style={{ '--i': index } as CSSProperties} />
+          ))}
+          <span className={`${styles.sparkle} ${styles.sparkleLeft}`}>✧</span>
+          <span className={`${styles.sparkle} ${styles.sparkleRight}`}>✧</span>
         </div>
-        {[0, 1, 2, 3].map((index) => (
-          <ChibiProp key={index} kind="heart" className={styles.floatingHeart} style={{ '--i': index } as CSSProperties} />
-        ))}
-        <span className={`${styles.sparkle} ${styles.sparkleLeft}`}>✧</span>
-        <span className={`${styles.sparkle} ${styles.sparkleRight}`}>✧</span>
       </div>
 
+      <div className={styles.rule} aria-hidden="true"><span>♡</span></div>
       <div className={styles.clockArea}>
         <div role="timer" aria-live="off" aria-label="Thời gian còn lại đến ngày cưới">
           <dl className={styles.clock}>
