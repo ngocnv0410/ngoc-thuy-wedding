@@ -10,6 +10,7 @@
     "prebuild": "npm run assets",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "check:secrets": "node scripts/check-secrets.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",

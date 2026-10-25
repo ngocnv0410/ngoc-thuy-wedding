@@ -17,7 +17,9 @@ Khách có thể gửi tên và lời chúc trực tiếp từ trình duyệt; d
 
 Xem [hướng dẫn cấu hình Firebase, Firestore Rules và chạy thử](docs/FIREBASE.md).
 
-Mục lời chúc chỉ công khai khi có Firebase Web config và `firebaseGuestbookReady = true` trong `src/content/firebase.ts`, sau khi database, Rules và Anonymous Auth đã sẵn sàng. Có thể cấu hình bằng file công khai đó, hoặc biến môi trường `VITE_FIREBASE_*` theo `.env.example`. Không đưa service-account key vào frontend.
+Mục lời chúc chỉ công khai khi có Firebase Web config và `firebaseGuestbookReady = true` trong `src/content/firebase.ts`, sau khi database, Rules và Anonymous Auth đã sẵn sàng. API key chỉ lấy từ **Repository Secret `VITE_FIREBASE_API_KEY`** khi deploy GitHub Pages; không ghi khóa vào source. Chạy local dùng `.env.local` theo `.env.example`. Các định danh project công khai vẫn nằm trong file cấu hình; không đưa service-account key vào frontend.
+
+Workflow chạy `npm run check:secrets` để chặn Google API key ghi trực tiếp trong file được Git theo dõi. Firebase Web key vẫn xuất hiện trong JavaScript sau khi build; cần giới hạn API/domain và giữ Firestore Rules. Xem [hướng dẫn xử lý cảnh báo và thay khóa](docs/API-KEY-SECURITY.md).
 
 ```sh
 # Tự khởi động emulator, kiểm tra quyền và tắt emulator sau khi xong.

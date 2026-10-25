@@ -1,8 +1,7 @@
 import type { FirebaseOptions } from 'firebase/app'
 
-/** Public Firebase Web app configuration; never put a service-account key here. */
+/** Public project identifiers. The API key comes only from build-time environment. */
 export const firebaseWebConfig: FirebaseOptions = {
-  apiKey: 'AIzaSyBiAIoBNnCxuJOv55JITDzk_SR-ezVZ5ms',
   authDomain: 'wedding-bfc6a.firebaseapp.com',
   projectId: 'wedding-bfc6a',
   storageBucket: 'wedding-bfc6a.firebasestorage.app',

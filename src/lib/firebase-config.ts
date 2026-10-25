@@ -9,7 +9,8 @@ export function readFirebaseConfig(env: Environment, fallback: FirebaseOptions):
     return typeof raw === 'string' && raw.trim() ? raw.trim() : saved?.trim()
   }
   const projectId = value('VITE_FIREBASE_PROJECT_ID', fallback.projectId)
-  const apiKey = value('VITE_FIREBASE_API_KEY', fallback.apiKey)
+  // Never fall back to a key stored in source, including a previously leaked key.
+  const apiKey = value('VITE_FIREBASE_API_KEY')
   const appId = value('VITE_FIREBASE_APP_ID', fallback.appId)
   if (!projectId || !apiKey || !appId || (env.PROD && projectId.startsWith('demo-'))) return undefined
   return {

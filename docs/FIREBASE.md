@@ -8,7 +8,7 @@ Website vẫn là website tĩnh trên GitHub Pages. Trình duyệt dùng Firebas
 2. Project settings → General → Your apps → tạo ứng dụng **Web**, sao chép `firebaseConfig`.
 3. Build → Firestore Database → tạo database **`(default)`** ở chế độ production.
 4. Build → Authentication → Sign-in method → bật **Anonymous**. Khách không nhìn thấy màn đăng nhập.
-5. Authentication → Settings → Authorized domains: thêm `ngocnv0410.github.io` cho website thật; thêm `localhost` nếu dùng dự án thật khi chạy local.
+5. Authentication → Settings → Authorized domains: thêm `ngocthuywedding.io.vn` và `ngocnv0410.github.io` cho website thật; thêm `localhost` nếu dùng dự án thật khi chạy local.
 
 Không cần gửi hoặc tạo khóa service account. `apiKey`, `authDomain`, `projectId` và `appId` của ứng dụng Web được thiết kế để có thể xuất hiện trong mã frontend; quyền dữ liệu do Firestore Rules quyết định.
 
@@ -34,27 +34,25 @@ Quyền của khách:
 
 ## 3. Cấu hình website
 
-**Cách đơn giản trên GitHub Pages:** điền bốn trường vào [src/content/firebase.ts](../src/content/firebase.ts). Sau khi hoàn tất database, Rules và Anonymous Auth ở hai bước trên, đặt `firebaseGuestbookReady = true` trong cùng file rồi commit và push `main`. Workflow hiện có tự build và deploy. Cờ này giữ form chưa công khai trong lúc backend chưa sẵn sàng; môi trường development vẫn có thể thử giao diện với emulator.
-
-```ts
-export const firebaseWebConfig: FirebaseOptions = {
-  apiKey: 'WEB_API_KEY',
-  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID',
-  appId: 'YOUR_WEB_APP_ID',
-}
-```
-
-Hoặc tạo Repository **Variables** trong GitHub Settings → Secrets and variables → Actions:
+Tạo Repository **Secret** tại [GitHub → Settings → Secrets and variables → Actions](https://github.com/ngocnv0410/ngoc-thuy-wedding/settings/secrets/actions):
 
 ```text
 VITE_FIREBASE_API_KEY
+```
+
+Đặt giá trị là Firebase Web API key đang dùng hoặc khóa thay thế đã giới hạn đúng project và domain. Không đưa khóa vào file mã nguồn hoặc Repository Variables. Workflow lấy khóa từ `secrets.VITE_FIREBASE_API_KEY` và dừng trước khi deploy nếu Secret bị thiếu/rỗng, để không xuất bản bản thiệp mất phần lời chúc.
+
+[src/content/firebase.ts](../src/content/firebase.ts) chỉ chứa các định danh project công khai và cờ `firebaseGuestbookReady`. Có thể override các định danh bằng Repository **Variables**:
+
+```text
 VITE_FIREBASE_AUTH_DOMAIN
 VITE_FIREBASE_PROJECT_ID
 VITE_FIREBASE_APP_ID
 ```
 
-Workflow đã nối các biến này vào bước build. Giá trị không rỗng sẽ thay cấu hình trong file; thay variables xong cần chạy lại workflow Deploy GitHub Pages. Chạy local có thể copy `.env.example` thành `.env.local` rồi điền giá trị.
+Sau khi hoàn tất database, Rules và Anonymous Auth, giữ `firebaseGuestbookReady = true` rồi chạy lại workflow **Deploy GitHub Pages**. Thay Secret hoặc Variables không tự cập nhật bản đã deploy; phải build lại. Chạy local: copy `.env.example` thành `.env.local`, điền khóa trong máy cá nhân; file này được Git bỏ qua.
+
+Firebase Web API key vẫn được đưa vào JavaScript của website vì trình duyệt cần dùng nó. Repository Secret giúp không lưu khóa trong source/log build; quyền dữ liệu vẫn do Firestore Rules quyết định. Xem [xử lý cảnh báo khóa công khai và thay khóa an toàn](API-KEY-SECURITY.md).
 
 ## App Check tùy chọn
 
