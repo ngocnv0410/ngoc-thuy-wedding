@@ -6,7 +6,7 @@ export const firebaseWebConfig: FirebaseOptions = {
   projectId: 'wedding-bfc6a',
   storageBucket: 'wedding-bfc6a.firebasestorage.app',
   messagingSenderId: '883432002161',
-  appId: '1:883432002161:web:ce245265ced45cddd881d0',
+  appId: '1:883432002161:web:f6baf496ef8f72eed881d0',
 }
 
 /** Enable on the public site after Firestore Rules and Anonymous Auth are ready. */
