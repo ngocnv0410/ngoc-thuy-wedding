@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ngoc-thuy-wedding",
+  "compatibility_date": "2026-10-25",
+  "workers_dev": true,
+  // Static assets only: no Worker script, Functions, KV, R2 or database bindings.
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

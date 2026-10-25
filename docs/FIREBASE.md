@@ -1,6 +1,6 @@
 # Gửi lời chúc bằng Firestore
 
-Website vẫn là website tĩnh trên GitHub Pages. Trình duyệt dùng Firebase Authentication ẩn danh và Cloud Firestore; không có server riêng, Admin SDK hoặc Cloud Functions.
+Website là website tĩnh trên Cloudflare Static Assets. Trình duyệt dùng Firebase Authentication ẩn danh và Cloud Firestore; không có server riêng, Admin SDK hoặc Cloud Functions.
 
 ## 1. Chuẩn bị Firebase
 
@@ -8,7 +8,7 @@ Website vẫn là website tĩnh trên GitHub Pages. Trình duyệt dùng Firebas
 2. Project settings → General → Your apps → tạo ứng dụng **Web**, sao chép `firebaseConfig`.
 3. Build → Firestore Database → tạo database **`(default)`** ở chế độ production.
 4. Build → Authentication → Sign-in method → bật **Anonymous**. Khách không nhìn thấy màn đăng nhập.
-5. Authentication → Settings → Authorized domains: thêm `ngocnv0410.github.io` cho website thật; thêm `localhost` nếu dùng dự án thật khi chạy local.
+5. Authentication → Settings → Authorized domains: thêm `ngoc-thuy-wedding.ngoc-nv0410.workers.dev` cho website thật; giữ `ngocnv0410.github.io` nếu vẫn dùng link cũ; thêm `localhost` nếu dùng dự án thật khi chạy local.
 
 Không cần gửi hoặc tạo khóa service account. `apiKey`, `authDomain`, `projectId` và `appId` của ứng dụng Web được thiết kế để có thể xuất hiện trong mã frontend; quyền dữ liệu do Firestore Rules quyết định.
 
@@ -34,18 +34,7 @@ Quyền của khách:
 
 ## 3. Cấu hình website
 
-**Cách đơn giản trên GitHub Pages:** điền bốn trường vào [src/content/firebase.ts](../src/content/firebase.ts). Sau khi hoàn tất database, Rules và Anonymous Auth ở hai bước trên, đặt `firebaseGuestbookReady = true` trong cùng file rồi commit và push `main`. Workflow hiện có tự build và deploy. Cờ này giữ form chưa công khai trong lúc backend chưa sẵn sàng; môi trường development vẫn có thể thử giao diện với emulator.
-
-```ts
-export const firebaseWebConfig: FirebaseOptions = {
-  apiKey: 'WEB_API_KEY',
-  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID',
-  appId: 'YOUR_WEB_APP_ID',
-}
-```
-
-Hoặc tạo Repository **Variables** trong GitHub Settings → Secrets and variables → Actions:
+Thêm biến trong Cloudflare Worker → **Settings → Build → Build variables and secrets**:
 
 ```text
 VITE_FIREBASE_API_KEY
@@ -54,7 +43,11 @@ VITE_FIREBASE_PROJECT_ID
 VITE_FIREBASE_APP_ID
 ```
 
-Workflow đã nối các biến này vào bước build. Giá trị không rỗng sẽ thay cấu hình trong file; thay variables xong cần chạy lại workflow Deploy GitHub Pages. Chạy local có thể copy `.env.example` thành `.env.local` rồi điền giá trị.
+Các giá trị tương ứng với `apiKey`, `authDomain`, `projectId`, `appId` trong Firebase Web config. `authDomain` có thể tự suy ra nếu bỏ trống. Không còn cấu hình Firebase thật lưu cứng trong mã nguồn. Chạy local: copy `.env.example` thành `.env.local` rồi điền giá trị; file này được Git bỏ qua.
+
+Chọn **Secret** để che giá trị trong Cloudflare Dashboard. Các biến `VITE_*` vẫn được đưa vào JavaScript công khai khi build; chúng không phải khóa quản trị. Sau khi thay biến phải build/deploy lại. Xem [hướng dẫn Cloudflare](CLOUDFLARE.md) để đặt đúng phần Build, không nhầm với runtime secrets.
+
+Sau khi database, Rules và Anonymous Auth đã sẵn sàng, giữ `firebaseGuestbookReady = true` trong [src/content/firebase.ts](../src/content/firebase.ts). Cloudflare Git integration build/deploy nhánh `main`; GitHub Actions chỉ chạy kiểm tra.
 
 ## App Check tùy chọn
 

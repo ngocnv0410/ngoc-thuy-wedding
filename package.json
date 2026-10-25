@@ -9,6 +9,9 @@
     "dev": "vite",
     "prebuild": "npm run assets",
     "build": "tsc -b && vite build",
+    "build:cloudflare": "node scripts/build-cloudflare.mjs",
+    "deploy:cloudflare": "wrangler deploy",
+    "preview:cloudflare": "wrangler dev --local",
     "lint": "oxlint",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -49,6 +52,7 @@
     "typescript": "~6.0.3",
     "vite": "^8.3.4",
     "vite-imagetools": "12.0.1",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "wrangler": "4.152.0"
   }
 }

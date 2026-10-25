@@ -1,22 +1,23 @@
 import { describe, expect, it } from 'vitest'
 import { readFirebaseConfig } from './firebase-config'
 
-const saved = { apiKey: 'web-key', projectId: 'wedding-project', appId: '1:123:web:abc' }
+const configured = { VITE_FIREBASE_API_KEY: 'web-key', VITE_FIREBASE_PROJECT_ID: 'wedding-project', VITE_FIREBASE_APP_ID: '1:123:web:abc' }
 
 describe('Firebase Web configuration', () => {
   it('keeps the guestbook disabled until all required configuration is present', () => {
-    expect(readFirebaseConfig({}, {})).toBeUndefined()
-    expect(readFirebaseConfig({}, { projectId: 'wedding-project' })).toBeUndefined()
+    expect(readFirebaseConfig({})).toBeUndefined()
+    expect(readFirebaseConfig({ VITE_FIREBASE_PROJECT_ID: 'wedding-project' })).toBeUndefined()
+    expect(readFirebaseConfig({ ...configured, VITE_FIREBASE_API_KEY: '  ' })).toBeUndefined()
   })
-  it('uses tracked public configuration and derives the auth domain', () => {
-    expect(readFirebaseConfig({}, saved)).toEqual({ ...saved, authDomain: 'wedding-project.firebaseapp.com' })
+  it('reads Cloudflare build variables and derives the auth domain', () => {
+    expect(readFirebaseConfig(configured)).toEqual({ apiKey: 'web-key', projectId: 'wedding-project', appId: '1:123:web:abc', authDomain: 'wedding-project.firebaseapp.com' })
   })
-  it('supports environment overrides without empty CI variables clearing saved values', () => {
-    expect(readFirebaseConfig({ VITE_FIREBASE_PROJECT_ID: '  another-project ', VITE_FIREBASE_API_KEY: '' }, saved))
-      .toMatchObject({ apiKey: 'web-key', projectId: 'another-project', authDomain: 'another-project.firebaseapp.com' })
+  it('trims variables and supports a custom auth domain', () => {
+    expect(readFirebaseConfig({ ...configured, VITE_FIREBASE_PROJECT_ID: '  another-project ', VITE_FIREBASE_AUTH_DOMAIN: ' auth.example.com ' }))
+      .toMatchObject({ apiKey: 'web-key', projectId: 'another-project', authDomain: 'auth.example.com' })
   })
   it('never enables an emulator-only demo project in a production build', () => {
-    expect(readFirebaseConfig({ PROD: true }, { ...saved, projectId: 'demo-test' })).toBeUndefined()
-    expect(readFirebaseConfig({ DEV: true }, { ...saved, projectId: 'demo-test' })).toBeDefined()
+    expect(readFirebaseConfig({ ...configured, PROD: true, VITE_FIREBASE_PROJECT_ID: 'demo-test' })).toBeUndefined()
+    expect(readFirebaseConfig({ ...configured, DEV: true, VITE_FIREBASE_PROJECT_ID: 'demo-test' })).toBeDefined()
   })
 })

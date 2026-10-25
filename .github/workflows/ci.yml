@@ -1,0 +1,45 @@
+name: Verify static site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-firebase-emulators-${{ hashFiles('package-lock.json') }}
+      - name: Verify Firestore Rules with local emulators
+        run: npm run test:rules
+        env:
+          FIREBASE_CLI_DISABLE_USAGE_REPORTING: 'true'
+      # Deployment is handled by Cloudflare's Git integration.
+      # No production Firebase configuration or credentials are needed for CI.
+      - name: Verify static build
+        run: npm run build
+      - name: Validate Cloudflare Static Assets configuration without deploying
+        run: npx wrangler deploy --dry-run

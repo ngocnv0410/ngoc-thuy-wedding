@@ -20,7 +20,7 @@ function shareMeta(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  // GitHub Pages phục vụ site dưới /<tên-repo>/: workflow deploy đặt BASE_PATH.
+  // Cloudflare phục vụ tại gốc domain; BASE_PATH hỗ trợ preview dưới thư mục khi cần.
   base: process.env.BASE_PATH ?? '/',
   plugins: [
     react(),
