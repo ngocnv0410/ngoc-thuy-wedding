@@ -3,6 +3,7 @@ import { Button } from '../../components/Button'
 import { Chibi } from '../../components/chibi/Chibi'
 import { ChibiProp } from '../../components/chibi/ChibiProp'
 import { Seal } from '../../components/Seal'
+import { ShareButton } from '../../components/ShareButton'
 import type { WeddingContent } from '../../content/types'
 import { dottedDate, orderedCouple, primaryDay, weekday } from '../../lib/format'
 import { useVisibleMotion } from '../../motion/useVisibleMotion'
@@ -47,6 +48,7 @@ export function Closing({ content }: { content: WeddingContent }) {
         <p className={styles.closingDate}>
           {weekday(day.solar)} · <time dateTime={day.solar}>{dottedDate(day.solar)}</time>
         </p>
+        <ShareButton content={content} />
         <Button variant="link" href="#bia">Về đầu thiệp</Button>
       </div>
     </footer>

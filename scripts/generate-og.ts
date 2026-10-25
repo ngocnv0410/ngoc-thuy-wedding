@@ -5,14 +5,14 @@ import { sealMarkup, sealSvg } from '../src/components/sealArt.ts'
  * dấu sáp, tên nhũ vàng, ngày. Chữ được chuyển thành đường vẽ (opentype.js) từ chính font của
  * trang, nên dấu tiếng Việt đúng mà không cần cài font trên máy build.
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 // opentype.js là CommonJS: Node chỉ cho import mặc định.
 import opentype, { type Font } from 'opentype.js'
 import sharp from 'sharp'
 import { FOIL_STOPS, MARBLE_COLORS, W as MARBLE_W, frame, washLayer } from '../src/components/decor/marble.ts'
-import { share } from './share.ts'
+import { share, shareImageVersion, versionedShareImage } from './share.ts'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const W = share.imageWidth
@@ -184,5 +184,13 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" 
   ${share.tagline ? centered(tagline, 514, '#6e5a4b') : ''}
 </svg>`
 
-await sharp(Buffer.from(svg)).jpeg({ quality: 88, mozjpeg: true }).toFile(join(root, 'public', 'og.jpg'))
+const jpeg = await sharp(Buffer.from(svg)).jpeg({ quality: 88, mozjpeg: true }).toBuffer()
+// Retain the previous image URL for already-shared links, and publish a fresh cache key.
+writeFileSync(join(root, 'public', 'og.jpg'), jpeg)
+const socialDirectory = join(root, 'public', 'social')
+mkdirSync(socialDirectory, { recursive: true })
+for (const file of readdirSync(socialDirectory)) {
+  if (/^wedding-[a-f0-9]{12}\.jpg$/.test(file)) unlinkSync(join(socialDirectory, file))
+}
+writeFileSync(join(root, 'public', versionedShareImage(shareImageVersion(jpeg))), jpeg)
 console.log(`OG ${W}×${H}: ${share.title}`)

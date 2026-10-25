@@ -1,2 +1,3 @@
 User-agent: *
-Disallow: /
+# Let messaging apps fetch HTML and preview images. The HTML keeps noindex, nofollow.
+Allow: /

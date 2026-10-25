@@ -30,3 +30,4 @@ dist-ssr
 # Sinh lúc build (npm run assets): ảnh QR từ src/content/accounts.json, ảnh chia sẻ từ wedding.ts
 public/qr/
 public/og.jpg
+public/social/

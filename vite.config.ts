@@ -1,7 +1,8 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vite'
 import { imagetools } from 'vite-imagetools'
-import { escapeHtml, share, shareMetaTags } from './scripts/share.ts'
+import { readFileSync } from 'node:fs'
+import { escapeHtml, share, shareImageVersion, shareMetaTags } from './scripts/share.ts'
 
 /**
  * Chèn tiêu đề và thẻ chia sẻ (Open Graph) vào index.html từ wedding.ts — một nguồn dữ liệu.
@@ -13,7 +14,10 @@ function shareMeta(): Plugin {
     transformIndexHtml(html) {
       return html
         .replace('%SHARE_TITLE%', escapeHtml(share.title))
-        .replace('<!-- share-meta -->', shareMetaTags(process.env.SITE_URL ?? process.env.CF_PAGES_URL))
+        .replace('<!-- share-meta -->', shareMetaTags(
+          process.env.SITE_URL ?? process.env.CF_PAGES_URL,
+          shareImageVersion(readFileSync(new URL('./public/og.jpg', import.meta.url))),
+        ))
     },
   }
 }

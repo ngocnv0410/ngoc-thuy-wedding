@@ -1,0 +1,8 @@
+.wrap { display: grid; justify-items: center; gap: 12px; max-width: 100%; margin-top: 12px; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 10px 22px; border: 1px solid #c1a374; border-radius: 999px; background: linear-gradient(125deg, #fff9ed, #ecd9b7); box-shadow: 0 6px 18px -12px rgb(110 82 40 / 0.45); color: #6d5030; font: inherit; font-size: 13px; font-weight: 500; letter-spacing: 0.03em; white-space: nowrap; cursor: pointer; }
+.button svg { width: 19px; height: 19px; flex: none; }
+.button:disabled { opacity: 0.65; cursor: default; }
+.button:focus-visible { outline: 2px solid var(--color-gold-deep); outline-offset: 4px; }
+.manual { display: grid; gap: 8px; width: min(100%, 320px); font-size: 12px; line-height: 1.6; text-align: center; color: var(--color-mocha); }
+.manual input { min-width: 0; width: 100%; min-height: 44px; padding: 8px 12px; border: var(--hairline); border-radius: 10px; background: var(--color-ivory); color: var(--color-espresso); font: inherit; font-size: 16px; }
+@media (hover: hover) and (pointer: fine) { .button:not(:disabled):hover { background: linear-gradient(125deg, #fffdf7, #e5cda4); } }
