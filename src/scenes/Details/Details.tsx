@@ -1,7 +1,5 @@
 import { useRef } from 'react'
 import { Button } from '../../components/Button'
-import { Chibi } from '../../components/chibi/Chibi'
-import { PropArt } from '../../components/chibi/ChibiProp'
 import { DateBlock } from '../../components/DateBlock'
 import { Stationery } from '../../components/decor/Stationery'
 import { Divider } from '../../components/Ornament'
@@ -9,9 +7,9 @@ import { PendingNote } from '../../components/PendingNote'
 import { SceneHeading, SceneShell } from '../../components/SceneShell'
 import type { Person, WeddingContent, WeddingDay, WeddingEvent } from '../../content/types'
 import { buildIcs, googleCalendarUrl, type CalendarEntry } from '../../lib/calendar'
-import { orderedCouple, primaryDay, solarParts } from '../../lib/format'
+import { orderedCouple, primaryDay } from '../../lib/format'
 import styles from './Details.module.css'
-import { useSceneMotion } from '../../motion/useMotion'
+import { loadMotion, prefersMotion, useSceneMotion } from '../../motion/useMotion'
 import { MonthCalendar } from './MonthCalendar'
 import { Countdown } from '../Countdown/Countdown'
 
@@ -36,8 +34,8 @@ export function Details({ content }: { content: WeddingContent }) {
   const missingTimes = events.some((event) => !event.time)
 
   return (
-    <SceneShell ref={ref} id="thong-tin" light="noon" labelledBy="details-title" className={styles.scene}>
-      <Stationery
+    <SceneShell ref={ref} id="thong-tin" petals={false} light="noon" labelledBy="details-title" className={styles.scene}>
+      <Stationery density="quiet"
         seed={8}
         sprigs={[
           { corner: 'top-left', seed: 31 },
@@ -85,27 +83,13 @@ export function Details({ content }: { content: WeddingContent }) {
       <div className={styles.schedule}>
         <Countdown content={content} />
 
-        {/* Chú rể cầm tờ lịch ngày đầu, cô dâu cầm ngày chính; lịch khoanh xong thì nhìn nhau cười. */}
         <div id="lich-cuoi" className={styles.calendarStage} data-anim="calendar-stage">
-          <Chibi
-            who="groom"
-            pose="carry"
-            look="right"
-            eyes="happy"
-            held={<PropArt kind="calendar" label={String(solarParts(days[0].solar).day)} />}
-            className={styles.calGroom}
-            anim="cal-groom"
-          />
-          <MonthCalendar days={days} primaryId={main.id} />
-          <Chibi
-            who="bride"
-            pose={days.length > 1 ? 'carry' : 'stand'}
-            look="left"
-            eyes="happy"
-            held={days.length > 1 ? <PropArt kind="calendar" label={String(solarParts(main.solar).day)} /> : undefined}
-            className={styles.calBride}
-            anim="cal-bride"
-          />
+          <details className={styles.calendarDisclosure} onToggle={() => {
+            if (prefersMotion()) loadMotion().then((runtime) => runtime.refreshLayout()).catch(() => {})
+          }}>
+            <summary>Xem lịch tháng <span aria-hidden="true">⌄</span></summary>
+            <MonthCalendar days={days} primaryId={main.id} />
+          </details>
 
           {entries.length > 0 && (
             <div className={styles.actions}>

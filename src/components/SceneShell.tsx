@@ -12,10 +12,11 @@ interface SceneShellProps {
   className?: string
   ref?: Ref<HTMLElement>
   children: ReactNode
+  petals?: boolean
 }
 
 /** Khung một scene: đặt tông ánh sáng (`data-light`) và anchor cho điều hướng. */
-export function SceneShell({ id, light, labelledBy, className, ref, children }: SceneShellProps) {
+export function SceneShell({ id, light, labelledBy, className, ref, children, petals = true }: SceneShellProps) {
   return (
     <section
       ref={ref}
@@ -25,7 +26,7 @@ export function SceneShell({ id, light, labelledBy, className, ref, children }: 
       className={[styles.scene, className].filter(Boolean).join(' ')}
     >
       {children}
-      <Petals />
+      {petals && <Petals />}
     </section>
   )
 }

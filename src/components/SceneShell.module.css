@@ -56,3 +56,8 @@
   font-size: var(--text-display-lg);
   line-height: 1.1;
 }
+
+@media (max-width: 767px) {
+  .scene { padding-block: 72px; }
+  .heading { margin-bottom: 48px; }
+}
