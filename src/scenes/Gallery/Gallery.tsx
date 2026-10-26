@@ -51,10 +51,7 @@ export function Gallery({ content }: { content: WeddingContent }) {
     <SceneShell ref={ref} id="album" light="golden" labelledBy="gallery-title">
       <Stationery
         seed={21}
-        sprigs={[
-          { corner: 'top-left', seed: 73 },
-          { corner: 'bottom-right', variant: 'sprig', seed: 84 },
-        ]}
+        sprigs={[]}
       />
       <SceneHeading id="gallery-title" eyebrow="Album ảnh cưới">
         Những khoảnh khắc

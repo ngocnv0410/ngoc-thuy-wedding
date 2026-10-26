@@ -17,10 +17,7 @@ export function Locations({ content }: { content: WeddingContent }) {
 
   return (
     <SceneShell ref={ref} id="dia-diem" light="afternoon" labelledBy="locations-title">
-      <Stationery seed={13} sprigs={[
-        { corner: 'top-right', seed: 52 },
-        { corner: 'bottom-left', variant: 'sprig', seed: 61 },
-      ]} />
+      <Stationery seed={13} sprigs={[]} />
       <SceneHeading id="locations-title" eyebrow="Địa điểm tổ chức">
         Nơi ngày vui diễn ra
       </SceneHeading>
