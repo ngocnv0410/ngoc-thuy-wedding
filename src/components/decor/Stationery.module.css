@@ -13,3 +13,8 @@
 .stationery[data-tone='dark'] {
   mask-image: linear-gradient(to bottom, transparent, #000 var(--space-9));
 }
+
+/* Quiet paper between the illustrated cover and closing. */
+.quiet {
+  background: radial-gradient(ellipse at 50% 0%, rgb(255 253 247 / 0.55), transparent 65%);
+}

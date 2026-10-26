@@ -1,8 +1,6 @@
 import { useRef } from 'react'
 import { Button } from '../../components/Button'
 import { CopyButton } from '../../components/CopyButton'
-import { Chibi } from '../../components/chibi/Chibi'
-import { PropArt } from '../../components/chibi/ChibiProp'
 import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
 import { SceneHeading, SceneShell } from '../../components/SceneShell'
@@ -10,7 +8,6 @@ import type { Location, WeddingContent } from '../../content/types'
 import { telHref } from '../../lib/format'
 import { addressText, directionsUrl } from '../../lib/maps'
 import { useSceneMotion } from '../../motion/useMotion'
-import { useVisibleMotion } from '../../motion/useVisibleMotion'
 import styles from './Locations.module.css'
 
 export function Locations({ content }: { content: WeddingContent }) {
@@ -19,8 +16,8 @@ export function Locations({ content }: { content: WeddingContent }) {
   useSceneMotion(ref, 'locations')
 
   return (
-    <SceneShell ref={ref} id="dia-diem" light="afternoon" labelledBy="locations-title">
-      <Stationery seed={13} sprigs={[
+    <SceneShell ref={ref} id="dia-diem" petals={false} light="afternoon" labelledBy="locations-title">
+      <Stationery density="quiet" seed={13} sprigs={[
         { corner: 'top-right', seed: 52 },
         { corner: 'bottom-left', variant: 'sprig', seed: 61 },
       ]} />
@@ -49,13 +46,11 @@ interface LocationCardProps {
 
 function LocationCard({ location, times }: LocationCardProps) {
   const headingId = `location-${location.id}`
-  const ref = useRef<HTMLLIElement>(null)
-  const { active } = useVisibleMotion(ref)
   return (
-    <li ref={ref} className={styles.card} data-location={location.id} data-ambient-active={active}
+    <li className={styles.card} data-location={location.id}
       aria-labelledby={headingId} data-anim="location">
       <p className={styles.label}><span aria-hidden="true" />{location.label}<span aria-hidden="true" /></p>
-      <VenueArt side={location.side} />
+      <span className={styles.venuePin} aria-hidden="true"><RouteIcon /></span>
       <h3 id={headingId} className={styles.name}>{location.name}</h3>
       <div className={styles.rule} aria-hidden="true"><span>♡</span></div>
       <address className={styles.address}>{location.address}</address>
@@ -78,35 +73,6 @@ function LocationCard({ location, times }: LocationCardProps) {
         )}
       </div>
     </li>
-  )
-}
-
-/** Decorative stationery illustration; actual directions use the supplied Maps links. */
-function VenueArt({ side }: { side: Location['side'] }) {
-  const hosts: Array<'groom' | 'bride'> = side === 'both' ? ['groom', 'bride'] : [side === 'bride' ? 'bride' : 'groom']
-  return (
-    <div className={styles.illustration} aria-hidden="true">
-      <svg className={styles.backdrop} viewBox="0 0 240 170" fill="none" focusable="false">
-        <path className={styles.arch} d="M48 149V79a72 72 0 0 1 144 0v70M55 149V79a65 65 0 0 1 130 0v70" />
-        <path className={styles.ground} d="M24 151q96 14 192 0M42 157q78 8 156 0" />
-        <g className={styles.botanical}>
-          <path d="M35 149q-15-28-9-48M34 140q10-20 6-34M204 149q15-28 9-48M205 140q-10-20-6-34" />
-          <path d="M28 120q-12-1-11-11q11 1 11 11ZM31 132q10-2 9-10q-10 0-9 10ZM211 120q12-1 11-11q-11 1-11 11ZM208 132q-10-2-9-10q10 0 9 10Z" />
-          <circle cx="26" cy="101" r="3" /><circle cx="40" cy="106" r="3" />
-          <circle cx="213" cy="101" r="3" /><circle cx="199" cy="106" r="3" />
-        </g>
-      </svg>
-      <span className={styles.pinSeal}><RouteIcon /></span>
-      <div className={styles.hosts}>
-        {hosts.map((who) => (
-          <Chibi key={who} who={who} pose="carry" hand={who === 'groom' ? 'l' : 'r'}
-            look="front" held={<PropArt kind={who === 'groom' ? 'map' : 'heart'} />}
-            anim="venue-host" />
-        ))}
-      </div>
-      <span className={`${styles.sparkle} ${styles.sparkleLeft}`}>✧</span>
-      <span className={`${styles.sparkle} ${styles.sparkleRight}`}>✧</span>
-    </div>
   )
 }
 

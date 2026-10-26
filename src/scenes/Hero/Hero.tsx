@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { ChibiCouple } from '../../components/chibi/Chibi'
 import { CoupleNames } from '../../components/CoupleNames'
 import { DateBlock } from '../../components/DateBlock'
 import { Stationery } from '../../components/decor/Stationery'
@@ -7,8 +8,7 @@ import { ResponsivePicture } from '../../components/ResponsivePicture'
 import { Petals } from '../../components/Petals'
 import type { WeddingContent } from '../../content/types'
 import { orderedCouple, primaryDay, solarParts } from '../../lib/format'
-import { useSceneMotion } from '../../motion/useMotion'
-import { useVisibleMotion } from '../../motion/useVisibleMotion'
+import { goToSection, useSceneMotion } from '../../motion/useMotion'
 import styles from './Hero.module.css'
 
 interface HeroProps {
@@ -24,7 +24,6 @@ interface HeroProps {
  */
 export function Hero({ content, onReplay }: HeroProps) {
   const ref = useRef<HTMLElement>(null)
-  const portraitMotion = useVisibleMotion<HTMLDivElement>()
   useSceneMotion(ref, 'hero')
 
   const { couple, cover } = content
@@ -44,6 +43,13 @@ export function Hero({ content, onReplay }: HeroProps) {
     <p className={styles.tagline} data-anim="meta">
       {couple.tagline}
     </p>
+  )
+
+  const quickLinks = (
+    <nav className={styles.quickLinks} aria-label="Thông tin nhanh" data-anim="meta">
+      <a href="#thong-tin" onClick={(event) => { event.preventDefault(); event.stopPropagation(); goToSection('thong-tin') }}>Xem lịch lễ</a>
+      {content.locations.length > 0 && <a href="#dia-diem" onClick={(event) => { event.preventDefault(); event.stopPropagation(); goToSection('dia-diem') }}>Chỉ đường <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" /></svg></a>}
+    </nav>
   )
 
   if (cover) {
@@ -67,6 +73,7 @@ export function Hero({ content, onReplay }: HeroProps) {
           {names}
           <DateBlock day={day} showLunar={false} size="md" />
           {tagline}
+          {quickLinks}
         </div>
         <ScrollCue />
         {onReplay && <ReplayButton onClick={onReplay} />}
@@ -86,9 +93,9 @@ export function Hero({ content, onReplay }: HeroProps) {
 
       <Petals />
       <div className={styles.composition}>
-        <div ref={portraitMotion.ref} className={styles.portrait} data-anim="portrait" data-ambient-active={portraitMotion.active} aria-hidden="true">
+        <div className={styles.portrait} data-anim="portrait" aria-hidden="true">
           <span className={styles.arch} />
-          <img className={styles.illustration} src={`${import.meta.env.BASE_URL}images/wedding-couple.webp`} alt="" width="768" height="1152" fetchPriority="high" decoding="async" />
+          <ChibiCouple pose="hold" lean size="lg" className={styles.illustration} />
           <span className={styles.portraitDate}>{year} <span>✦</span> {date}.{month}</span>
         </div>
         <div className={styles.frame} data-anim="frame">
@@ -97,6 +104,7 @@ export function Hero({ content, onReplay }: HeroProps) {
           <Divider className={styles.divider} />
           <DateBlock day={day} size="md" />
           {tagline}
+          {quickLinks}
         </div>
       </div>
       <ScrollCue />
