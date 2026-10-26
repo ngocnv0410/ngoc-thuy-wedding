@@ -5,7 +5,6 @@ import { Stationery } from '../../components/decor/Stationery'
 import { Divider } from '../../components/Ornament'
 import { ResponsivePicture } from '../../components/ResponsivePicture'
 import { Petals } from '../../components/Petals'
-import { ShareButton } from '../../components/ShareButton'
 import type { WeddingContent } from '../../content/types'
 import { orderedCouple, primaryDay, solarParts } from '../../lib/format'
 import { useSceneMotion } from '../../motion/useMotion'
@@ -68,7 +67,6 @@ export function Hero({ content, onReplay }: HeroProps) {
           {names}
           <DateBlock day={day} showLunar={false} size="md" />
           {tagline}
-          <ShareButton content={content} />
         </div>
         <ScrollCue />
         {onReplay && <ReplayButton onClick={onReplay} />}
@@ -99,7 +97,6 @@ export function Hero({ content, onReplay }: HeroProps) {
           <Divider className={styles.divider} />
           <DateBlock day={day} size="md" />
           {tagline}
-          <ShareButton content={content} />
         </div>
       </div>
       <ScrollCue />
