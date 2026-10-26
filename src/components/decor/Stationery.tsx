@@ -14,7 +14,6 @@ interface StationeryProps {
   /** Hoa baby ở góc; mặc định một chùm trên + một cành dưới ở hai góc đối nhau. */
   sprigs: Sprig[]
   tone?: 'light' | 'dark'
-  density?: 'full' | 'quiet'
 }
 
 /**
@@ -22,9 +21,7 @@ interface StationeryProps {
  * đầu tiên của scene; tự cắt phần tràn của hoa nên scene không cần `overflow: hidden` (giữ được
  * dải phim cuộn ngang của Album).
  */
-export function Stationery({ seed, sprigs, tone = 'light', density = 'full' }: StationeryProps) {
-  if (density === 'quiet') return <div className={`${styles.stationery} ${styles.quiet}`} aria-hidden="true" />
-
+export function Stationery({ seed, sprigs, tone = 'light' }: StationeryProps) {
   return (
     <div className={styles.stationery} data-tone={tone} aria-hidden="true">
       <MarbleFrame seed={seed} tone={tone} />

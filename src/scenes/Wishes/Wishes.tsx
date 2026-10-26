@@ -149,7 +149,7 @@ export function Wishes({ content }: { content: WeddingContent }) {
   }
 
   return (
-    <SceneShell ref={ref} id="loi-chuc" petals={false} light="afternoon" labelledBy="wishes-title" className={styles.scene}>
+    <SceneShell ref={ref} id="loi-chuc" light="afternoon" labelledBy="wishes-title" className={styles.scene}>
       <header className={styles.heading}>
         <p className={styles.eyebrow}>Lời chúc mừng</p>
         <h2 id="wishes-title">Gửi lời chúc</h2>

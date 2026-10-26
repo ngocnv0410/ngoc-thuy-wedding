@@ -34,8 +34,8 @@ export function Details({ content }: { content: WeddingContent }) {
   const missingTimes = events.some((event) => !event.time)
 
   return (
-    <SceneShell ref={ref} id="thong-tin" petals={false} light="noon" labelledBy="details-title" className={styles.scene}>
-      <Stationery density="quiet"
+    <SceneShell ref={ref} id="thong-tin" light="noon" labelledBy="details-title" className={styles.scene}>
+      <Stationery
         seed={8}
         sprigs={[
           { corner: 'top-left', seed: 31 },

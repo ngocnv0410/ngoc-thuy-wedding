@@ -16,8 +16,8 @@ export function Locations({ content }: { content: WeddingContent }) {
   useSceneMotion(ref, 'locations')
 
   return (
-    <SceneShell ref={ref} id="dia-diem" petals={false} light="afternoon" labelledBy="locations-title">
-      <Stationery density="quiet" seed={13} sprigs={[
+    <SceneShell ref={ref} id="dia-diem" light="afternoon" labelledBy="locations-title">
+      <Stationery seed={13} sprigs={[
         { corner: 'top-right', seed: 52 },
         { corner: 'bottom-left', variant: 'sprig', seed: 61 },
       ]} />
