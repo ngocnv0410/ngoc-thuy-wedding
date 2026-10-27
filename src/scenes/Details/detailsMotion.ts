@@ -1,4 +1,4 @@
-import { DUR, drawDivider, gsap, growSprigs, riseIn, washIn } from '../../lib/gsap'
+import { DUR, drawDivider, gsap, growDrapes, riseIn, washIn } from '../../lib/gsap'
 import { animateSceneHeading } from '../../lib/sceneHeading'
 
 const all = (root: Element, name: string) => root.querySelectorAll(`[data-anim="${name}"]`)
@@ -10,7 +10,7 @@ const one = (root: Element, name: string) => root.querySelector(`[data-anim="${n
 export function detailsMotion(root: HTMLElement) {
   animateSceneHeading(root)
   washIn(root, root)
-  growSprigs(root, root)
+  growDrapes(root, root)
 
   const families = one(root, 'families')
   if (families) riseIn(all(families, 'family'), families, { stagger: 0.15 })

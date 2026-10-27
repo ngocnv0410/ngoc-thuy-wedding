@@ -1,11 +1,11 @@
-import { growSprigs, gsap, riseIn, ScrollTrigger, washIn } from '../../lib/gsap'
+import { growDrapes, gsap, riseIn, ScrollTrigger, washIn } from '../../lib/gsap'
 import { animateSceneHeading } from '../../lib/sceneHeading'
 import { idle, rig } from '../../motion/chibi'
 
 export function locationsMotion(root: HTMLElement) {
   animateSceneHeading(root)
   washIn(root, root)
-  growSprigs(root, root)
+  growDrapes(root, root)
 
   for (const card of root.querySelectorAll<HTMLElement>('[data-anim="location"]')) {
     // Address and directions appear together, with no delayed interaction.

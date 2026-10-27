@@ -7,7 +7,6 @@
 }
 
 .stationery[data-tone='light'] > canvas { opacity: 0.38; }
-.stationery[data-tone='light'] > [data-anim='bouquet'] { opacity: 0.94; }
 
 /* Scene ánh nến: mép trên tan dần vào nền trang để chuyển từ ngày sang tối không bị gắt. */
 .stationery[data-tone='dark'] {

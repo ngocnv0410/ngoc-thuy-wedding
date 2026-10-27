@@ -7,12 +7,12 @@ export function heroMotion(root: HTMLElement) {
   const tl = gsap.timeline({ defaults: { ease: 'paper' }, delay: 0.1 })
   const portrait = root.querySelector('[data-anim="portrait"]')
   const photo = root.querySelector('[data-anim="photo"]')
-  const bouquets = q(root, 'bouquet')
+  const drapes = q(root, 'drape')
   const washes = q(root, 'wash')
   if (photo) tl.fromTo(photo, { scale: 1 }, { scale: 1.04, duration: 8, ease: 'none' }, 0)
   if (portrait) tl.from(portrait, { autoAlpha: 0, y: 20, scale: 0.96, duration: 1.2 }, 0)
   if (washes.length) tl.from(washes, { autoAlpha: 0, duration: 1.2 }, 0)
-  if (bouquets.length) tl.from(bouquets, { autoAlpha: 0, scale: 0.94, duration: 1.2, stagger: 0.15 }, 0.1)
+  if (drapes.length) tl.from(drapes, { autoAlpha: 0, scale: 0.94, duration: 1.2, stagger: 0.15 }, 0.1)
   tl.from(q(root, 'masthead'), { autoAlpha: 0, y: 10, duration: DUR.md }, 0.2)
 
   const names = [...q(root, 'name')]

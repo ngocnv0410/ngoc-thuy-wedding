@@ -122,13 +122,13 @@ export function drawDivider(divider: Element) {
 }
 
 /**
- * Hoa baby khô: cả bó nở ra từ góc gắn (phóng nhẹ + hiện). Bó hoa là ảnh tĩnh nên chỉ animate
- * opacity/transform — chạy trên compositor, không bắt điện thoại vẽ lại hàng nghìn bông.
+ * Lụa satin + cành lá ở góc: hiện dần và nở nhẹ từ góc gắn. Ảnh tĩnh nên chỉ animate
+ * opacity/transform — chạy trên compositor, không bắt điện thoại vẽ lại.
  */
-export function growSprigs(root: Element, trigger: Element = root, delay = 0) {
-  const bouquets = root.querySelectorAll('[data-anim="bouquet"]')
-  if (!bouquets.length) return
-  gsap.from(bouquets, {
+export function growDrapes(root: Element, trigger: Element = root, delay = 0) {
+  const drapes = root.querySelectorAll('[data-anim="drape"]')
+  if (!drapes.length) return
+  gsap.from(drapes, {
     autoAlpha: 0,
     scale: 0.88,
     duration: DUR.xl,

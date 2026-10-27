@@ -1,4 +1,4 @@
-import { DUR, type MotionConditions, SplitText, growSprigs, gsap, washIn } from '../../lib/gsap'
+import { DUR, type MotionConditions, SplitText, growDrapes, gsap, washIn } from '../../lib/gsap'
 import { animateSceneHeading } from '../../lib/sceneHeading'
 
 const once = (trigger: Element, start = 'top 85%') => ({ trigger, start, once: true })
@@ -15,7 +15,7 @@ const once = (trigger: Element, start = 'top 85%') => ({ trigger, start, once: t
 export function galleryMotion({ desktop }: MotionConditions, root: HTMLElement) {
   animateSceneHeading(root)
   washIn(root, root)
-  growSprigs(root, root)
+  growDrapes(root, root)
 
   for (const head of root.querySelectorAll('[data-anim="chapter-head"]')) {
     gsap.from(head.children, { autoAlpha: 0, y: 16, duration: DUR.md, ease: 'paper', stagger: 0.1, scrollTrigger: once(head) })

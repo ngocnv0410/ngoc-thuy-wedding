@@ -1,0 +1,32 @@
+.drape {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.drape[data-corner='top-left'] { top: 0; left: 0; width: clamp(180px, 34vw, 320px); transform-origin: 0% 0%; }
+.drape[data-corner='bottom-right'] { right: 0; bottom: 0; width: clamp(180px, 40vw, 360px); transform-origin: 100% 100%; }
+
+/* Lụa và lá khẽ đung đưa quanh góc gắn, như có gió nhẹ. */
+.sway {
+  display: block;
+  transform-origin: inherit;
+  animation: drapeSway var(--drape-cycle) ease-in-out var(--drape-delay) infinite alternate;
+  animation-play-state: paused;
+}
+.drape[data-ambient-active='true'] .sway { animation-play-state: running; }
+:root[data-opening='on'] .sway { animation-play-state: paused; }
+
+.photo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes drapeSway {
+  from { transform: rotate(-0.6deg) scale(1); }
+  to { transform: rotate(0.8deg) scale(1.012); }
+}
+@media (prefers-reduced-motion: reduce) { .sway { animation: none; transform: none; } }

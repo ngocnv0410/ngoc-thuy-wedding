@@ -37,7 +37,6 @@ export function Details({ content }: { content: WeddingContent }) {
     <SceneShell ref={ref} id="thong-tin" light="noon" labelledBy="details-title" className={styles.scene}>
       <Stationery
         seed={8}
-        sprigs={[]}
       />
 
       <SceneHeading id="details-title" eyebrow="Thông tin lễ cưới">

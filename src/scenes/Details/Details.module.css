@@ -260,5 +260,4 @@
 
 @media (min-width: 1024px) {
   .scene > [data-tone='light'] { mask-image: linear-gradient(90deg, #000, rgb(0 0 0 / 0.35) 12%, transparent 20%, transparent 80%, rgb(0 0 0 / 0.35) 88%, #000); }
-  .scene [data-anim='bouquet'][data-corner='bottom-right'] { width: 130px; }
 }

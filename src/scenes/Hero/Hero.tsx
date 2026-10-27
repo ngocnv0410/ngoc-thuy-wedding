@@ -85,10 +85,7 @@ export function Hero({ content, onReplay }: HeroProps) {
     <section ref={ref} id="bia" className={styles.stationery} aria-labelledby="hero-title" data-light="morning">
       <Stationery
         seed={5}
-        sprigs={[
-          { corner: 'top-right', seed: 11 },
-          { corner: 'bottom-left', variant: 'sprig', seed: 23 },
-        ]}
+        drapes={['top-left', 'bottom-right']}
       />
 
       <Petals />

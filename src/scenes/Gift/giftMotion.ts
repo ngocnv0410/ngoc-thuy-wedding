@@ -1,4 +1,4 @@
-import { DUR, drawDivider, growSprigs, gsap, revealLines, riseIn, washIn } from '../../lib/gsap'
+import { DUR, drawDivider, growDrapes, gsap, revealLines, riseIn, washIn } from '../../lib/gsap'
 import { floatUp } from '../../motion/chibi'
 import { closingMotion } from './closingMotion'
 
@@ -35,7 +35,7 @@ export function giftCelebrate(mail: HTMLElement) {
  */
 export function giftMotion(root: HTMLElement) {
   washIn(root, root)
-  growSprigs(root, root)
+  growDrapes(root, root)
   const eyebrow = one(root, 'letter-eyebrow')
   if (eyebrow) riseIn(eyebrow, eyebrow, { y: 12 })
   const title = one(root, 'letter-title')

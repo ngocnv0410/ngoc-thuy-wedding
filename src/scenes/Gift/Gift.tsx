@@ -32,10 +32,7 @@ export function Gift({ content }: { content: WeddingContent }) {
       <Stationery
         seed={34}
         tone="light"
-        sprigs={[
-          { corner: 'top-right', seed: 95 },
-          { corner: 'bottom-left', variant: 'sprig', seed: 106 },
-        ]}
+        drapes={['top-left', 'bottom-right']}
       />
       <article className={styles.letter}>
         <p className={styles.eyebrow} data-anim="letter-eyebrow">
