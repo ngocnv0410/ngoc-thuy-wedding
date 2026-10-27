@@ -1,7 +1,12 @@
+/*
+ * Mỗi scene một lớp phủ, cuộn theo trang: hoa và lá rơi trên mọi thành phần (nội dung, nút Mục lục/nhạc,
+ * thông báo), dưới màn mở cửa và trình xem ảnh album; không nhận thao tác. `main` không tạo nhóm xếp
+ * lớp riêng nên z-index này so thẳng với các nút cố định.
+ */
 .petals {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 250;
   overflow: hidden;
   contain: paint;
   pointer-events: none;
@@ -56,6 +61,8 @@
 .petals[data-active='true'] > span,
 .petals[data-active='true'] i { animation-play-state: running; }
 
+/* Màn mở cửa có hiệu ứng riêng: ẩn lớp hoa cho tới khi thiệp mở. */
+:root[data-opening='on'] .petals { visibility: hidden; }
 :root[data-opening='on'] .petals > span,
 :root[data-opening='on'] .petals i { animation-play-state: paused; }
 

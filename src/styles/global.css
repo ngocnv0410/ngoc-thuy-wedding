@@ -40,10 +40,12 @@ body::before {
   display: contents;
 }
 
-/* Nội dung nằm trên LightLayer (z-index 0). */
+/*
+ * Nội dung nằm trên LightLayer (z-index 0) nhờ đứng sau nó trong DOM. Không đặt z-index cho main để
+ * không tạo nhóm xếp lớp riêng: lớp hoa rơi trong từng scene cần nổi lên trên các nút cố định.
+ */
 main {
   position: relative;
-  z-index: 1;
 }
 
 img,

@@ -4,7 +4,7 @@ import styles from './Petals.module.css'
 /** Vị trí lá xanh trong 16 hạt rơi: 5 lá trên màn lớn, 4 lá trong 10 hạt đầu hiện trên điện thoại. */
 const LEAVES = [0, 2, 5, 8, 12]
 
-/** Cherry blossoms with a few green leaves behind each scene's content; sleeps off screen and in background tabs. */
+/** Cherry blossoms with a few green leaves falling over each scene's content; sleeps off screen and in background tabs. */
 export function Petals({ className = '' }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(false)
