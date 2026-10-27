@@ -17,10 +17,10 @@
     "test:rules": "firebase emulators:exec --only auth,firestore --project demo-ngoc-thuy-wedding \"node --test tests/firestore.rules.mjs\""
   },
   "dependencies": {
+    "@fontsource/alex-brush": "5.3.0",
     "@fontsource/be-vietnam-pro": "5.3.0",
     "@fontsource/cormorant-garamond": "5.3.0",
     "@fontsource/great-vibes": "5.3.0",
-    "@fontsource/pinyon-script": "5.3.0",
     "@react-three/fiber": "9.8.2",
     "firebase": "13.1.0",
     "gsap": "3.15.0",

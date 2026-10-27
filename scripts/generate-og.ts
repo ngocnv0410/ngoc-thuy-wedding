@@ -27,7 +27,7 @@ function font(pkg: string, file: string): Font {
 const SERIF = [font('cormorant-garamond', 'cormorant-garamond-latin-500-normal.woff'), font('cormorant-garamond', 'cormorant-garamond-vietnamese-500-normal.woff')]
 const SERIF_ITALIC = [font('cormorant-garamond', 'cormorant-garamond-latin-500-italic.woff'), font('cormorant-garamond', 'cormorant-garamond-vietnamese-500-italic.woff')]
 const SANS = [font('be-vietnam-pro', 'be-vietnam-pro-latin-500-normal.woff'), font('be-vietnam-pro', 'be-vietnam-pro-vietnamese-500-normal.woff')]
-const NAMES = [font('pinyon-script', 'pinyon-script-latin-400-normal.woff'), font('pinyon-script', 'pinyon-script-vietnamese-400-normal.woff')]
+const NAMES = [font('alex-brush', 'alex-brush-latin-400-normal.woff'), font('alex-brush', 'alex-brush-vietnamese-400-normal.woff')]
 
 interface Run {
   d: string
@@ -116,19 +116,19 @@ const sprig = await sharp(join(root, 'public/images/decor/baby-sprig.webp')).res
 const flowers = `<image x="${W - spray.info.width}" y="-6" width="${spray.info.width}" height="${spray.info.height}" href="data:image/png;base64,${spray.data.toString('base64')}"/>
   <image x="-4" y="${H - sprig.info.height + 4}" width="${sprig.info.width}" height="${sprig.info.height}" href="data:image/png;base64,${sprig.data.toString('base64')}"/>`
 
-// ── Tên nhũ vàng (Pinyon Script như bìa), "&" serif nghiêng ──
+// ── Tên và "&" nhũ vàng (Alex Brush như bìa) ──
 const nameSize = 116
 const firstRun = run(NAMES, share.first, nameSize)
 const secondRun = run(NAMES, share.second, nameSize)
-const ampRun = run(SERIF_ITALIC, '&', 64)
-const gap = 26
+const ampRun = run(NAMES, '&', 82)
+const gap = 18
 const namesWidth = firstRun.width + ampRun.width + secondRun.width + gap * 2
 let x = (W - namesWidth) / 2
 const namesBaseline = 352
 const namesLeft = x
 const names = [
   `<path transform="translate(${x.toFixed(1)} ${namesBaseline})" d="${firstRun.d}" fill="url(#gold)"/>`,
-  `<path transform="translate(${(x += firstRun.width + gap).toFixed(1)} ${namesBaseline - 8})" d="${ampRun.d}" fill="#6e5a4b"/>`,
+  `<path transform="translate(${(x += firstRun.width + gap).toFixed(1)} ${namesBaseline})" d="${ampRun.d}" fill="url(#gold)"/>`,
   `<path transform="translate(${(x += ampRun.width + gap).toFixed(1)} ${namesBaseline})" d="${secondRun.d}" fill="url(#gold)"/>`,
 ].join('')
 

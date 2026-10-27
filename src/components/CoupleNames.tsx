@@ -13,7 +13,7 @@ interface CoupleNamesProps {
 }
 
 /**
- * Tên cô dâu chú rể viết tay nhũ vàng (Pinyon Script), dấu "&" serif nghiêng — theo mẫu
+ * Tên cô dâu chú rể và dấu "&" viết tay nhũ vàng (Alex Brush) — theo mẫu
  * chữ tên tham khảo. Mỗi phần có `data-anim="name"` để motion xử lý.
  */
 export function CoupleNames({

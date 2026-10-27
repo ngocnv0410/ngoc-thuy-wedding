@@ -35,14 +35,19 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* "&" cùng nét script nhũ vàng với tên, nhỏ hơn một chút để tên vẫn là điểm nhấn. */
 .amp {
   display: block;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 500;
-  font-size: 0.5em;
-  line-height: 1;
-  color: var(--color-mocha);
+  padding: 0.18em 0.04em 0.12em;
+  font-family: var(--font-names);
+  font-weight: 400;
+  font-size: 0.8em;
+  line-height: 1.15;
+  color: var(--color-gold-deep);
+  background: var(--gold-foil);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .names[data-size='hero'] {
@@ -59,9 +64,4 @@
 
 .names[data-size='signature'] {
   font-size: clamp(38px, 6vw, 56px);
-}
-
-/* Nền tối (ánh nến): "&" vàng thay vì mocha. */
-[data-light='candle'] .amp {
-  color: var(--color-gold);
 }

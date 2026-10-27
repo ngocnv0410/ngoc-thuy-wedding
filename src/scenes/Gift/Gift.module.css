@@ -172,7 +172,7 @@
 .closing[data-ambient-active='true'] .closingFloat, .closing[data-ambient-active='true'] .closingSpark { animation-play-state: running; }
 :root[data-opening='on'] .closingFloat, :root[data-opening='on'] .closingSpark { animation-play-state: paused; }
 .closingNames { font-family: var(--font-names); font-size: clamp(46px, 9vw, 64px); line-height: 1.2; color: var(--color-gold-deep); white-space: nowrap; }
-.closingNames span { font-family: var(--font-serif); font-size: 0.55em; font-style: italic; margin-inline: 5px; }
+.closingNames span { font-size: 0.8em; margin-inline: 5px; }
 
 @keyframes farewellFloat {
   0% { opacity: 0; transform: translateY(0) scale(0.6) rotate(-14deg); }
