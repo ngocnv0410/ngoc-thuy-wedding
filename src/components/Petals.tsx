@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import styles from './Petals.module.css'
 
-/** Leaves and petals behind each scene's content; sleeps off screen and in background tabs. */
+/** Vị trí lá xanh trong 16 hạt rơi: 5 lá trên màn lớn, 4 lá trong 10 hạt đầu hiện trên điện thoại. */
+const LEAVES = [0, 2, 5, 8, 12]
+
+/** Cherry blossoms with a few green leaves behind each scene's content; sleeps off screen and in background tabs. */
 export function Petals({ className = '' }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(false)
@@ -30,11 +33,19 @@ export function Petals({ className = '' }: { className?: string }) {
   }, [])
   return (
     <div ref={ref} className={`${styles.petals} ${className}`} data-petals data-active={active} aria-hidden="true">
-      {Array.from({ length: 10 }, (_, i) => (
-        <span key={i} style={{ '--i': i, '--x': `${(i * 29 + 7) % 96}%`, '--drift': `${i % 2 ? 54 : -42}px`, '--phase': (i * 0.137 + 0.05) % 1 } as CSSProperties}>
-          <i data-kind={i % 3 === 0 ? 'petal' : 'leaf'} />
-        </span>
-      ))}
+      {Array.from({ length: 16 }, (_, i) => {
+        const slot = LEAVES.indexOf(i)
+        const leaf = slot < 0 ? 0 : (slot % 4) + 1 // 4 ảnh lá, dùng vòng lại
+        const kind = leaf ? 'leaf' : 'flower'
+        // Ba lớp sâu: vài bông sát ống kính (to, nhoè), bông xa nhỏ, còn lại cỡ vừa.
+        const depth = kind !== 'flower' ? undefined : i === 4 || i === 9 ? 'near' : i % 3 === 1 ? 'far' : undefined
+        return (
+          <span key={i} data-kind={kind} data-depth={depth}
+            style={{ '--i': i, '--x': `${(i * 29 + 7) % 96}%`, '--drift': `${i % 2 ? 54 : -42}px`, '--phase': (i * 0.137 + 0.05) % 1 } as CSSProperties}>
+            <i data-kind={kind} data-variant={leaf ? undefined : (i % 4) + 1} data-leaf={leaf || undefined} />
+          </span>
+        )
+      })}
     </div>
   )
 }

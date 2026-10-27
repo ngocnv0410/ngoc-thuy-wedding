@@ -24,32 +24,35 @@
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 85% 0 80% 15%;
-  background: linear-gradient(135deg, #c1bd92, #e2d5ae 65%, #a6a17b);
   animation: sway calc(4s + var(--i) * 0.25s) ease-in-out infinite alternate;
   animation-delay: calc(var(--i) * -0.7s);
   animation-play-state: paused;
 }
 
-.petals i::after {
-  content: '';
-  position: absolute;
-  width: 1px;
-  height: 78%;
-  top: 14%;
-  left: 48%;
-  background: rgb(111 109 76 / 0.25);
-  transform: rotate(28deg);
-}
-
-.petals i[data-kind='petal'] {
-  width: 10px;
-  height: 15px;
-  border-radius: 80% 35% 70% 30%;
-  background: linear-gradient(135deg, #debba4, #f2e0cf);
-}
-.petals i[data-kind='petal']::after { display: none; }
 .petals > span:nth-child(even) { width: 10px; height: 17px; }
+
+/* Lá xanh cắt từ ảnh mẫu (leaf-1..4.webp): lá dài có cuống, lá to xanh nhạt, lá nghiêng, lá nhỏ. */
+.petals > span[data-kind='leaf'] { --peak: 0.8; width: 18px; height: 18px; }
+.petals > span[data-kind='leaf']:nth-child(even) { width: 15px; height: 15px; }
+.petals i[data-kind='leaf'] { background: center / contain no-repeat; }
+.petals i[data-leaf='1'] { background-image: url('./leaf-1.webp'); }
+.petals i[data-leaf='2'] { background-image: url('./leaf-2.webp'); }
+.petals i[data-leaf='3'] { background-image: url('./leaf-3.webp'); }
+.petals i[data-leaf='4'] { background-image: url('./leaf-4.webp'); }
+
+/* Hoa anh đào cắt từ ảnh mẫu (sakura-1..4.webp): bông cam hồng, nụ có đài, bông nghiêng chéo, bông nhìn thẳng. */
+.petals > span[data-kind='flower'] { --peak: 0.9; width: 19px; height: 19px; }
+/* Ba lớp sâu: bông xa nhỏ và nhạt hơn, bông sát ống kính to hơn và chỉ hơi nhoè. */
+.petals > span[data-depth='far'] { --peak: 0.75; width: 13px; height: 13px; }
+.petals > span[data-depth='near'] { --peak: 0.85; width: 26px; height: 26px; filter: blur(0.5px); }
+
+.petals i[data-kind='flower'] { background: center / contain no-repeat; }
+.petals i[data-variant='1'] { background-image: url('./sakura-1.webp'); }
+/* Nụ chưa nở: nhỏ hơn bông đã nở cùng lớp sâu (≈ 60%). */
+.petals i[data-variant='2'] { background-image: url('./sakura-2.webp'); background-size: 60%; }
+.petals i[data-variant='3'] { background-image: url('./sakura-3.webp'); }
+.petals i[data-variant='4'] { background-image: url('./sakura-4.webp'); }
+
 .petals[data-active='true'] > span,
 .petals[data-active='true'] i { animation-play-state: running; }
 
@@ -58,7 +61,7 @@
 
 @keyframes fall {
   0% { transform: translate3d(0, -20px, 0); opacity: 0; }
-  12%, 80% { opacity: 0.48; }
+  12%, 80% { opacity: var(--peak, 0.48); }
   100% { transform: translate3d(var(--drift), var(--fall-height, 100svh), 0); opacity: 0; }
 }
 @keyframes sway {
@@ -67,6 +70,6 @@
 }
 
 @media (max-width: 639px) {
-  .petals > span:nth-child(n+8) { display: none; }
+  .petals > span:nth-child(n+11) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .petals { display: none; } }
