@@ -1,7 +1,7 @@
 .divider {
   width: 280px;
   max-width: 80%;
-  height: 20px;
+  height: 28px;
   overflow: visible;
 }
 
@@ -9,6 +9,13 @@
   fill: none;
   stroke: var(--color-gold);
   stroke-width: 0.9;
+  stroke-linecap: round;
+}
+
+.tendril {
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 0.6;
   stroke-linecap: round;
 }
 

@@ -97,7 +97,7 @@ export function riseIn(
   })
 }
 
-/** Cành nguyệt quế phân cách: thân vẽ vào giữa, lá nở dọc thân, hạt thoi xoay hiện ra. */
+/** Dây lá phân cách: dây và tua cuốn vẽ dần, lá nở dọc dây, sao bốn cánh xoay hiện ra. */
 export function drawDivider(divider: Element) {
   const once = { trigger: divider, start: 'top 85%', once: true }
   drawIn(divider.querySelectorAll('[data-anim="rule"]'), divider, { duration: DUR.lg })

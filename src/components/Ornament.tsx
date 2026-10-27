@@ -1,52 +1,79 @@
 import styles from './Ornament.module.css'
 
-/** Lá hình hạt hạnh, gốc tại (0,0), dài 1 đơn vị theo trục x. */
-const LEAF = 'M0,0 C0.25,-0.32 0.7,-0.34 1,0 C0.7,0.34 0.25,0.32 0,0 Z'
+type Point = [number, number]
+type Cubic = [Point, Point, Point, Point]
 
-const LAUREL_LEAVES = (() => {
-  const leaves: Array<{ x: number; angle: number; size: number }> = []
-  for (let i = 0; i < 6; i++) {
-    const x = 8 + i * 17
-    const size = 15 - i * 1.4
-    leaves.push({ x, angle: -38, size }, { x: x + 5, angle: 38, size })
-  }
-  return leaves
-})()
+/** Lá liễu thuôn, gốc tại (0,0), dài 1 đơn vị theo trục x, ngọn hơi cong lên. */
+const LEAF = 'M0,0 C0.2,-0.24 0.62,-0.28 1,-0.07 C0.66,0.13 0.26,0.17 0,0 Z'
 
 /**
- * Cành nguyệt quế nhũ vàng nằm ngang (theo mẫu chữ tên tham khảo): thân thẳng, lá xếp đôi
- * nhỏ dần về phía ngọn. `flip` để cành hướng ngược lại.
+ * Dây lá mọc từ giữa ra ngoài (trục x dương), uốn lượn hình sóng rồi cuộn xoắn ở ngọn.
+ * Hai đoạn bậc ba nối mượt để có thể dò vị trí và hướng tiếp tuyến cho từng lá.
  */
-function LaurelBranch({ flip, offsetX }: { flip?: boolean; offsetX: number }) {
+const VINE: Cubic[] = [
+  [[0, 0], [20, -7], [42, 6], [64, 1.5]],
+  [[64, 1.5], [82, -2], [97, -6], [110, -3]],
+]
+const CURL = 'C116,-1.5 117.5,4 113,4.6 C109.6,5 108.6,1.6 111,0.8'
+const VINE_PATH = `M0,0 ${VINE.map(([, a, b, c]) => `C${a} ${b} ${c}`).join(' ')} ${CURL}`
+
+/** Tua cuốn nhỏ tách khỏi dây gần gốc, cuộn về phía dưới. */
+const TENDRIL = 'M4,-0.9 C7,4.6 13.5,6.6 15.8,4 C17.2,2.3 15,1 13.9,2.6'
+
+function cubicAt([p0, p1, p2, p3]: Cubic, t: number): { point: Point; angle: number } {
+  const u = 1 - t
+  const point: Point = [
+    u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0],
+    u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1],
+  ]
+  const dx = 3 * u * u * (p1[0] - p0[0]) + 6 * u * t * (p2[0] - p1[0]) + 3 * t * t * (p3[0] - p2[0])
+  const dy = 3 * u * u * (p1[1] - p0[1]) + 6 * u * t * (p2[1] - p1[1]) + 3 * t * t * (p3[1] - p2[1])
+  return { point, angle: (Math.atan2(dy, dx) * 180) / Math.PI }
+}
+
+/** Lá so le hai bên dây, nghiêng theo tiếp tuyến và nhỏ dần về phía ngọn. */
+const VINE_LEAVES = (() => {
+  const stops: Array<[segment: number, t: number]> = [
+    [0, 0.3], [0, 0.5], [0, 0.68], [0, 0.86],
+    [1, 0.08], [1, 0.32], [1, 0.55], [1, 0.78],
+  ]
+  return stops.map(([segment, t], index) => {
+    const { point, angle } = cubicAt(VINE[segment], t)
+    const side = index % 2 === 0 ? -1 : 1
+    const size = 13.5 - index * 0.8
+    return `translate(${point[0].toFixed(2)} ${point[1].toFixed(2)}) rotate(${(angle + side * 36).toFixed(1)}) scale(${size} ${side * -size})`
+  })
+})()
+
+/** Một nửa hoạ tiết: dây lá uốn lượn. `flip` để dây mọc sang trái. */
+function Vine({ flip, offsetX }: { flip?: boolean; offsetX: number }) {
   return (
-    <g transform={`translate(${offsetX} 10) ${flip ? 'scale(-1 1)' : ''}`}>
-      <path d="M0,0 H112" className={styles.stem} data-anim="rule" />
-      {LAUREL_LEAVES.map((leaf, index) => (
-        <path
-          key={index}
-          d={LEAF}
-          className={styles.leaf}
-          data-anim="leaf"
-          transform={`translate(${leaf.x} 0) rotate(${leaf.angle}) scale(${leaf.size})`}
-        />
+    <g transform={`translate(${offsetX} 14) ${flip ? 'scale(-1 1)' : ''}`}>
+      <path d={VINE_PATH} className={styles.stem} data-anim="rule" />
+      <path d={TENDRIL} className={styles.tendril} data-anim="rule" />
+      {VINE_LEAVES.map((transform, index) => (
+        <path key={index} d={LEAF} className={styles.leaf} data-anim="leaf" transform={transform} />
       ))}
-      <path d={LEAF} className={styles.leaf} data-anim="leaf" transform="translate(112 0) scale(13)" />
     </g>
   )
 }
 
-/** Đường phân cách: hai cành nguyệt quế hướng vào một hạt thoi ở giữa. */
+/** Đường phân cách: hai dây lá uốn lượn đối xứng, ở giữa là một ngôi sao bốn cánh thon. */
 export function Divider({ className }: { className?: string }) {
   return (
     <svg
       className={[styles.divider, className].filter(Boolean).join(' ')}
-      viewBox="0 0 280 20"
+      viewBox="0 0 280 28"
       aria-hidden="true"
       data-anim="divider"
     >
-      <LaurelBranch offsetX={8} />
-      <LaurelBranch offsetX={272} flip />
-      <path d="M140,4 L146,10 L140,16 L134,10 Z" className={styles.diamond} data-anim="diamond" />
+      <Vine offsetX={131} flip />
+      <Vine offsetX={149} />
+      <path
+        d="M140,6 Q141.1,12.9 146.5,14 Q141.1,15.1 140,22 Q138.9,15.1 133.5,14 Q138.9,12.9 140,6 Z"
+        className={styles.diamond}
+        data-anim="diamond"
+      />
     </svg>
   )
 }
