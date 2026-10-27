@@ -68,9 +68,7 @@
   place-items: center;
   padding: 100px var(--gutter) 120px;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 70% 55% at 70% 18%, rgb(255 251 244 / 0.95), transparent 70%),
-    var(--color-ivory);
+  background: radial-gradient(ellipse 70% 55% at 70% 18%, rgb(255 251 244 / 0.95), transparent 70%);
   color: var(--color-espresso);
 }
 

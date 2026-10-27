@@ -5,10 +5,10 @@ import styles from './SatinCorner.module.css'
 /** Hai góc đối nhau như mẫu thiệp: lụa phủ góc trên trái, lụa cuộn lên ở góc dưới phải. */
 export type DrapeCorner = 'top-left' | 'bottom-right'
 
-/** Kích thước góc theo "px thiệp" (thiệp mẫu rộng 441px); thêm ảnh 2x, 3x đã làm nét cho màn hình dày điểm. */
+/** Kích thước theo "px thiệp" (rộng 441px); bản 6x giữ mẫu và alpha cho màn hình DPR cao. */
 const ASSET: Record<DrapeCorner, { name: string; width: number; height: number; sizes: string }> = {
-  'top-left': { name: 'satin-top', width: 224, height: 277, sizes: '(min-width: 595px) 302px, 51vw' },
-  'bottom-right': { name: 'satin-bottom', width: 268, height: 335, sizes: '(min-width: 595px) 362px, 61vw' },
+  'top-left': { name: 'satin-top', width: 224, height: 277, sizes: '(min-width: 595.35px) 302.4px, (max-width: 317.52px) 161.28px, 50.7937vw' },
+  'bottom-right': { name: 'satin-bottom', width: 268, height: 335, sizes: '(min-width: 595.35px) 361.8px, (max-width: 317.52px) 192.96px, 60.7710vw' },
 }
 
 /**
@@ -31,7 +31,7 @@ export function SatinCorner({ corner, index = 0 }: { corner: DrapeCorner; index?
     >
       <span className={styles.sway}>
         <img className={styles.photo} src={`${src}.webp`}
-          srcSet={`${src}-1x.webp ${width}w, ${src}.webp ${width * 2}w, ${src}-3x.webp ${width * 3}w`}
+          srcSet={`${src}-1x.webp ${width}w, ${src}.webp ${width * 2}w, ${src}-3x.webp ${width * 3}w, ${src}-6x.webp ${width * 6}w`}
           sizes={sizes} alt="" loading="lazy" decoding="async" width={width} height={height} />
       </span>
     </div>

@@ -1,9 +1,12 @@
 /* Màu nền nằm trong marble.ts (ảnh SVG tự chứa); ảnh kéo giãn vừa section. */
 .frame {
+  --edge-fade: min(96px, 18%);
   position: absolute;
   inset: 0;
   z-index: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
+  /* Hai nền loang khác seed cùng tan về nền trang ở chỗ nối giữa các phần. */
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--edge-fade), #000 calc(100% - var(--edge-fade)), transparent);
 }

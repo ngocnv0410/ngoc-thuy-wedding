@@ -26,9 +26,15 @@
   --scene-bg: color-mix(in srgb, var(--color-ivory) 88%, var(--color-gold));
 }
 
+/* Khi không chạy motion, vẫn nối các tông giấy về cùng nền trang ở hai đầu. */
+.scene:not([data-light='candle']) {
+  --surface-fade: min(96px, 18%);
+  background: linear-gradient(to bottom, transparent, var(--scene-bg) var(--surface-fade), var(--scene-bg) calc(100% - var(--surface-fade)), transparent);
+}
+
 /* Khi motion bật, nền trang (body) chuyển màu xuyên suốt nên nền từng scene trong suốt. */
 :root[data-motion='on'] .scene:not([data-light='candle']) {
-  background-color: transparent;
+  background: none;
 }
 
 .heading {

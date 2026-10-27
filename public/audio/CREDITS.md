@@ -1,4 +1,15 @@
-# Canon in D — Piano
+# Background music
+
+## Current track: Forever in Love — Kenny G
+
+- Recording selected by the invitation owner.
+- Source: https://www.nhaccuatui.com/song/0zgSpVtFWT
+- Local file: `forever-in-love-kenny-g.mp3`.
+- Format: MP3, 128 kbps; approximately 5 minutes.
+- The public MP3 download was saved without conversion, trimming or rearrangement.
+- The invitation links to Kenny G's official website and the supplied recording page.
+
+## Previous track: Canon in D — Piano
 
 - Composition: Johann Pachelbel, public domain.
 - Piano arrangement and performance: Lee Galloway, from *Soothing the Soul*.

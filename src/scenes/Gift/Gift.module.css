@@ -6,19 +6,7 @@
   justify-items: center;
   gap: var(--space-8);
   text-align: center;
-  /* Giấy champagne sáng, giữ chữ nâu đậm xuyên suốt phần cuối. */
-  background:
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgb(198 166 107 / 0.16), transparent 70%),
-    var(--scene-bg);
-}
-
-/*
- * Giữ nền sáng cả khi hiệu ứng ánh sáng đang chuyển giữa các phần.
- */
-:root[data-motion='on'] .scene[data-light='golden'] {
-  background:
-    radial-gradient(ellipse 60% 40% at 50% var(--space-9), rgb(198 166 107 / 0.16), transparent 70%),
-    var(--scene-bg);
+  /* SceneShell hòa giấy champagne vào nền chung, giữ chữ nâu đậm. */
 }
 
 .letter {

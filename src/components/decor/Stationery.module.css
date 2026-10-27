@@ -1,9 +1,17 @@
 .stationery {
+  --join-fade: clamp(32px, 6vw, 56px);
   position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  /* Mép lụa ở đáy cũng tan vào phần kế tiếp, không kết thúc thành đường ngang. */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--join-fade)), transparent);
+}
+
+/* Các phần sau bìa nối cả mép trên; mép trên của bìa vẫn giữ nguyên góc lụa. */
+:global(main > section + section) > .stationery {
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--join-fade), #000 calc(100% - var(--join-fade)), transparent);
 }
 
 .stationery[data-tone='light'] > canvas { opacity: 0.38; }

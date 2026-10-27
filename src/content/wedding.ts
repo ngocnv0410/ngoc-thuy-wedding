@@ -83,12 +83,11 @@ export const wedding: WeddingContent = {
   gallery: [],
 
   music: {
-    src: 'audio/canon-in-d-piano.mp3',
-    title: 'Canon in D — Pachelbel',
-    artist: 'Lee Galloway · Piano',
-    artistUrl: 'https://www.leegalloway.com/',
-    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Pachelbel%27s_Canon.ogg',
-    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    src: 'audio/forever-in-love-kenny-g.mp3',
+    title: 'Forever in Love',
+    artist: 'Kenny G',
+    artistUrl: 'https://www.kennyg.com/',
+    sourceUrl: 'https://www.nhaccuatui.com/song/0zgSpVtFWT',
   },
 
   // ĐỀ XUẤT

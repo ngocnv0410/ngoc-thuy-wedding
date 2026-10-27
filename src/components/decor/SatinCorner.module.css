@@ -11,12 +11,24 @@
 .drape[data-corner='top-left'] { top: 0; left: 0; width: calc(224 * var(--u)); transform-origin: 0% 0%; }
 .drape[data-corner='bottom-right'] { right: 0; bottom: 0; width: calc(268 * var(--u)); transform-origin: 100% 100%; }
 
+/* Chỉ hòa mép cắt vào giấy, không làm mờ bitmap hay thay đổi ảnh/srcset. */
+.drape[data-corner='top-left'] {
+  --fade-x: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  --fade-y: linear-gradient(to bottom, #000 calc(100% - 32px), transparent);
+}
+.drape[data-corner='bottom-right'] {
+  --fade-x: linear-gradient(to right, transparent, #000 32px);
+  --fade-y: linear-gradient(to bottom, transparent, #000 32px);
+}
+
 /* Lụa và lá khẽ đung đưa quanh góc gắn. */
 .sway {
   display: block;
   transform-origin: inherit;
   animation: drapeSway var(--drape-cycle) ease-in-out var(--drape-delay) infinite alternate;
   animation-play-state: paused;
+  mask-image: var(--fade-x), var(--fade-y);
+  mask-composite: intersect;
 }
 .drape[data-ambient-active='true'] .sway { animation-play-state: running; }
 :root[data-opening='on'] .sway { animation-play-state: paused; }
