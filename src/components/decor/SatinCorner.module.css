@@ -1,15 +1,17 @@
+/* `--u` = 1px của thiệp mẫu (rộng 441px): điện thoại co theo bề ngang, màn lớn giới hạn để ảnh không vỡ. */
 .drape {
+  --u: clamp(0.72px, calc(100vw / 441), 1.35px);
   position: absolute;
-  z-index: 0;
+  z-index: 1;
   display: block;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
 }
-.drape[data-corner='top-left'] { top: 0; left: 0; width: clamp(180px, 34vw, 320px); transform-origin: 0% 0%; }
-.drape[data-corner='bottom-right'] { right: 0; bottom: 0; width: clamp(180px, 40vw, 360px); transform-origin: 100% 100%; }
+.drape[data-corner='top-left'] { top: 0; left: 0; width: calc(224 * var(--u)); transform-origin: 0% 0%; }
+.drape[data-corner='bottom-right'] { right: 0; bottom: 0; width: calc(268 * var(--u)); transform-origin: 100% 100%; }
 
-/* Lụa và lá khẽ đung đưa quanh góc gắn, như có gió nhẹ. */
+/* Lụa và lá khẽ đung đưa quanh góc gắn. */
 .sway {
   display: block;
   transform-origin: inherit;
@@ -26,7 +28,7 @@
 }
 
 @keyframes drapeSway {
-  from { transform: rotate(-0.6deg) scale(1); }
-  to { transform: rotate(0.8deg) scale(1.012); }
+  from { transform: rotate(-0.35deg) scale(1); }
+  to { transform: rotate(0.45deg) scale(1.006); }
 }
 @media (prefers-reduced-motion: reduce) { .sway { animation: none; transform: none; } }
