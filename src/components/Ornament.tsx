@@ -58,7 +58,31 @@ function Vine({ flip, offsetX }: { flip?: boolean; offsetX: number }) {
   )
 }
 
-/** Đường phân cách: hai dây lá uốn lượn đối xứng, ở giữa là một ngôi sao bốn cánh thon. */
+/** Cánh hoa nhài tròn đầy, đầu chỉ hơi gợn, mọc lên trên (trục y âm) từ sát nhuỵ. */
+const PETAL = 'M0,-1 C-3,-1.8 -4.6,-5 -3.4,-7.3 C-2.3,-9.1 -0.9,-9.1 0,-8.75 C0.9,-9.1 2.3,-9.1 3.4,-7.3 C4.6,-5 3,-1.8 0,-1 Z'
+const PETAL_ANGLES = [0, 72, 144, 216, 288]
+const STAMEN_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315]
+
+/** Bông hoa nhài năm cánh ở giữa đường phân cách: cánh xếp chồng nhẹ, nhuỵ là cụm chấm nhỏ. */
+function Blossom({ cx, cy }: { cx: number; cy: number }) {
+  return (
+    <g transform={`translate(${cx} ${cy})`} data-anim="blossom">
+      {PETAL_ANGLES.map((angle) => (
+        <g key={angle} transform={`rotate(${angle})`}>
+          <path d={PETAL} className={styles.petal} />
+          <path d="M0,-3.4 V-6.2" className={styles.vein} />
+        </g>
+      ))}
+      <circle r="2.3" className={styles.pistil} />
+      {STAMEN_ANGLES.map((angle) => (
+        <circle key={angle} cx="0" cy="-1.55" r="0.38" className={styles.stamen} transform={`rotate(${angle})`} />
+      ))}
+      <circle r="0.6" className={styles.stamen} />
+    </g>
+  )
+}
+
+/** Đường phân cách: hai dây lá uốn lượn đối xứng, ở giữa là một bông hoa nhài năm cánh. */
 export function Divider({ className }: { className?: string }) {
   return (
     <svg
@@ -69,11 +93,7 @@ export function Divider({ className }: { className?: string }) {
     >
       <Vine offsetX={131} flip />
       <Vine offsetX={149} />
-      <path
-        d="M140,6 Q141.1,12.9 146.5,14 Q141.1,15.1 140,22 Q138.9,15.1 133.5,14 Q138.9,12.9 140,6 Z"
-        className={styles.diamond}
-        data-anim="diamond"
-      />
+      <Blossom cx={140} cy={14} />
     </svg>
   )
 }

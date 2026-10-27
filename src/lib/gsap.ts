@@ -97,7 +97,7 @@ export function riseIn(
   })
 }
 
-/** Dây lá phân cách: dây và tua cuốn vẽ dần, lá nở dọc dây, sao bốn cánh xoay hiện ra. */
+/** Dây lá phân cách: dây và tua cuốn vẽ dần, lá nở dọc dây, bông hoa giữa xoay nở ra. */
 export function drawDivider(divider: Element) {
   const once = { trigger: divider, start: 'top 85%', once: true }
   drawIn(divider.querySelectorAll('[data-anim="rule"]'), divider, { duration: DUR.lg })
@@ -110,9 +110,9 @@ export function drawDivider(divider: Element) {
     delay: 0.3,
     scrollTrigger: once,
   })
-  gsap.from(divider.querySelectorAll('[data-anim="diamond"]'), {
+  gsap.from(divider.querySelectorAll('[data-anim="blossom"]'), {
     scale: 0,
-    rotate: 45,
+    rotate: -72,
     transformOrigin: '50% 50%',
     duration: DUR.md,
     ease: 'back.out(2)',

@@ -32,7 +32,7 @@ export function heroMotion(root: HTMLElement) {
   if (rules.length) {
     tl.from(rules, { drawSVG: 0, duration: 0.8, ease: 'silk' }, 0.9)
       .from(q(root, 'leaf'), { scale: 0, transformOrigin: '0% 50%', duration: 0.3, stagger: 0.02 }, 1)
-      .from(q(root, 'diamond'), { scale: 0, rotate: 45, transformOrigin: '50% 50%', duration: 0.5 }, 1.2)
+      .from(q(root, 'blossom'), { scale: 0, rotate: -72, transformOrigin: '50% 50%', duration: 0.5 }, 1.2)
   }
   tl.from(q(root, 'date-block'), { autoAlpha: 0, y: 12, duration: 0.7 }, 1.1)
     .from(q(root, 'meta'), { autoAlpha: 0, y: 10, duration: DUR.md, stagger: 0.12 }, 1.2)

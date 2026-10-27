@@ -105,7 +105,7 @@
   white-space: nowrap;
 }
 
-.divider { width: min(74%, 260px); margin-block: 0 4px; }
+.divider { width: min(74%, 325px); margin-block: 0 4px; }
 
 .stationery .tagline {
   margin-top: 8px;
