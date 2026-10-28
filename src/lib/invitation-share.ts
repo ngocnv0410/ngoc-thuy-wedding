@@ -1,3 +1,4 @@
+import { usesAlternateMusic } from './music-source'
 import { copyText } from './clipboard'
 
 export interface InvitationShareData { title: string; text: string; url: string }
@@ -7,15 +8,19 @@ export type ShareResult = 'shared' | 'copied' | 'cancelled' | 'manual'
 export function invitationShareUrl(currentUrl: string, basePath: string, preferredUrl?: string): string {
   const fallback = new URL(basePath, currentUrl)
   fallback.search = ''; fallback.hash = ''
-  if (!preferredUrl) return fallback.href
+  const finish = (url: URL) => {
+    if (usesAlternateMusic(new URL(currentUrl).search)) url.searchParams.set('music', 'youtube')
+    return url.href
+  }
+  if (!preferredUrl) return finish(fallback)
   try {
     const target = new URL(preferredUrl, currentUrl)
-    if (!['http:', 'https:'].includes(target.protocol)) return fallback.href
+    if (!['http:', 'https:'].includes(target.protocol)) return finish(fallback)
     const version = target.searchParams.get('v')
     target.search = ''; target.hash = ''
     if (version) target.searchParams.set('v', version)
-    return target.href
-  } catch { return fallback.href }
+    return finish(target)
+  } catch { return finish(fallback) }
 }
 
 export async function shareInvitation(data: InvitationShareData): Promise<ShareResult> {

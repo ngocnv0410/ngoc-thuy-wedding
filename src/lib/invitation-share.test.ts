@@ -17,6 +17,14 @@ describe('invitation sharing', () => {
     expect(invitationShareUrl('https://local.example/#bia', '/', 'https://wedding.example/?v=abc&utm_source=test#loi-chuc'))
       .toBe('https://wedding.example/?v=abc')
   })
+  it('keeps the selected soundtrack and preview version without forwarding private query data', () => {
+    expect(invitationShareUrl('https://wedding.example/?music=youtube&guest=private#dia-diem', '/', 'https://wedding.example/?v=abc'))
+      .toBe('https://wedding.example/?v=abc&music=youtube')
+    expect(invitationShareUrl('https://wedding.example/?music=youtube', '/'))
+      .toBe('https://wedding.example/?music=youtube')
+    expect(invitationShareUrl('https://wedding.example/?music=unknown&guest=private', '/'))
+      .toBe('https://wedding.example/')
+  })
   it('rejects a non-web preferred URL', () => {
     expect(invitationShareUrl('https://wedding.example/#bia', '/', 'javascript:alert(1)')).toBe('https://wedding.example/')
   })

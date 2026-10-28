@@ -8,6 +8,9 @@ class FakeAudio extends EventTarget {
   controls = false
   volume = 1
   readyState = 0
+  currentTime = 0
+  duration = 180
+  ended = false
   paused = true
   load = vi.fn()
   setAttribute = vi.fn()
@@ -167,6 +170,39 @@ describe('background piano', () => {
     vi.advanceTimersByTime(650)
     expect(audio.pause).toHaveBeenCalledOnce()
     player.resume()
+    expect(audio.play).toHaveBeenCalledTimes(2)
+  })
+
+  it('waits for metadata, starts at 15 seconds and resumes without resetting the position', () => {
+    player.configure('audio/alternate.mp3', 15)
+    player.play()
+    expect(audio.currentTime).toBe(0)
+    audio.readyState = 1
+    audio.dispatchEvent(new Event('loadedmetadata'))
+    expect(audio.currentTime).toBe(15)
+    audio.start()
+    audio.currentTime = 42
+    player.pause()
+    vi.advanceTimersByTime(650)
+    player.play()
+    expect(audio.currentTime).toBe(42)
+  })
+
+  it('loops an offset track from 15 seconds and does not restart after a user pause', () => {
+    player.configure('audio/alternate.mp3', 15)
+    player.play()
+    audio.start()
+    expect(audio.loop).toBe(false)
+    audio.currentTime = 180
+    audio.ended = true
+    audio.pause()
+    audio.dispatchEvent(new Event('ended'))
+    expect(audio.currentTime).toBe(15)
+    expect(audio.play).toHaveBeenCalledTimes(2)
+    audio.ended = false
+    player.pause()
+    vi.advanceTimersByTime(650)
+    audio.dispatchEvent(new Event('ended'))
     expect(audio.play).toHaveBeenCalledTimes(2)
   })
 

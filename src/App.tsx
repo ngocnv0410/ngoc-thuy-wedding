@@ -3,7 +3,8 @@ import { AudioToggle } from './components/AudioToggle'
 import { ChapterNav, type Chapter } from './components/ChapterNav'
 import { LightLayer } from './components/LightLayer'
 import { ToastProvider } from './components/ToastProvider'
-import { wedding } from './content/wedding'
+import { wedding as weddingContent } from './content/wedding'
+import { selectMusic } from './lib/music-source'
 import { music } from './lib/music'
 import { guestbookEnabled } from './lib/firebase-config'
 import { prefersMotion, loadMotion } from './motion/useMotion'
@@ -19,7 +20,8 @@ import { Wishes } from './scenes/Wishes/Wishes'
 const SHOW_EMPTY = import.meta.env.DEV
 const OPENED_KEY = 'thiep-da-mo'
 
-if (wedding.music) music.configure(wedding.music.src)
+const wedding = { ...weddingContent, music: selectMusic(weddingContent.music, window.location.search) }
+if (wedding.music) music.configure(wedding.music.src, wedding.music.startSeconds)
 // Bắt đầu tải chunk motion ngay, song song với lần render đầu.
 if (prefersMotion()) loadMotion().catch(() => {})
 

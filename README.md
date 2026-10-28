@@ -11,6 +11,10 @@ npm run build
 
 Nội dung thiệp nằm trong `src/content/wedding.ts`; thông tin mừng cưới ở `src/content/accounts.json`.
 
+## Nhạc theo liên kết
+
+Link thường dùng bản nhạc trong `wedding.ts`. Thêm `?music=youtube` (hoặc `&music=youtube` nếu đã có `?v=…`) để dùng `public/audio/youtube-hGu7BVQy5G0.mp3`, bắt đầu và lặp lại từ giây 15. Nút “Chia sẻ thiệp” giữ lựa chọn này khi gửi tiếp. Cả hai bản chỉ tải/phát sau thao tác bật nhạc của khách.
+
 ## Lời chúc với Firebase Firestore
 
 Khách có thể gửi tên và lời chúc trực tiếp từ trình duyệt; danh sách cập nhật theo thời gian thực. Không cần server riêng hoặc Cloud Functions. Firebase SDK chỉ tải khi khách đến gần phần lời chúc.

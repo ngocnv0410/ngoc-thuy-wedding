@@ -14,13 +14,28 @@ const FADE_OUT_MS = 600
 export class MusicPlayer {
   private audio: HTMLAudioElement | undefined
   private src = ''
+  private startSeconds = 0
+  private positioned = false
   private fadeFrame = 0
   private intent = 0
   private suspended = false
   private listeners = new Set<Listener>()
   private state: MusicState = { playing: false, wanted: false, requested: false, loading: false, error: false }
 
-  configure(src: string) { this.src = src }
+  configure(src: string, startSeconds = 0) {
+    this.src = src
+    this.startSeconds = Number.isFinite(startSeconds) ? Math.max(0, startSeconds) : 0
+  }
+
+  private positionStart() {
+    const audio = this.audio
+    if (!audio || this.positioned || audio.readyState < 1) return
+    const start = Number.isFinite(audio.duration) && this.startSeconds >= audio.duration ? 0 : this.startSeconds
+    try {
+      audio.currentTime = start
+      this.positioned = true
+    } catch { /* Metadata is not yet seekable; retry before playing. */ }
+  }
   get playing() { return this.state.playing }
   getPlaying = () => this.state.playing
   getSnapshot = () => this.state
@@ -41,15 +56,26 @@ export class MusicPlayer {
     // Setting preload before src avoids downloading music on the first page load.
     const audio = this.audio = new Audio()
     audio.preload = 'none'
-    audio.loop = true
+    audio.loop = this.startSeconds === 0
     audio.volume = 0
     audio.src = this.src
+    audio.addEventListener('loadstart', () => { this.positioned = false })
+    audio.addEventListener('loadedmetadata', () => this.positionStart())
+    audio.addEventListener('ended', () => {
+      if (!this.startSeconds || !this.state.wanted) return
+      this.positioned = false
+      this.positionStart()
+      this.play()
+    })
     audio.addEventListener('play', () => this.update({ wanted: true, requested: true, error: false }))
     audio.addEventListener('playing', () => {
+      this.positionStart()
       this.update({ playing: true, loading: false, error: false })
       this.fade(TARGET_VOLUME, FADE_IN_MS)
     })
     audio.addEventListener('pause', () => {
+      // An offset track loops from its chosen start, unless the guest paused it.
+      if (audio.ended && this.startSeconds > 0 && this.state.wanted) return
       ++this.intent
       cancelAnimationFrame(this.fadeFrame)
       this.update({ wanted: false, playing: false, loading: false })
@@ -106,6 +132,7 @@ export class MusicPlayer {
     const audio = this.ensureAudio()
     if (!audio) return
     if (this.playing && !audio.paused) return
+    this.positionStart()
     const intent = ++this.intent
     cancelAnimationFrame(this.fadeFrame)
     // Resume during the short fade-out without waiting for a new 'playing' event.
