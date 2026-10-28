@@ -38,14 +38,14 @@ export const wedding: WeddingContent = {
     {
       id: 'an-hoi',
       title: 'Lễ ăn hỏi',
-      solar: '2026-12-23',
-      lunar: { day: 15, month: 11, year: 2026, yearName: 'Bính Ngọ' },
+      solar: '2026-12-26',
+      lunar: { day: 18, month: 11, year: 2026, yearName: 'Bính Ngọ' },
     },
     {
       id: 'don-dau',
       title: 'Lễ đón dâu',
-      solar: '2026-12-24',
-      lunar: { day: 16, month: 11, year: 2026, yearName: 'Bính Ngọ' },
+      solar: '2026-12-27',
+      lunar: { day: 19, month: 11, year: 2026, yearName: 'Bính Ngọ' },
       primary: true,
     },
   ],
