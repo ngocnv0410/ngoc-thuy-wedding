@@ -2,14 +2,8 @@ import type { CSSProperties } from 'react'
 import { useVisibleMotion } from '../../motion/useVisibleMotion'
 import styles from './SatinCorner.module.css'
 
-/** Hai góc đối nhau như mẫu thiệp: lụa phủ góc trên trái, lụa cuộn lên ở góc dưới phải. */
-export type DrapeCorner = 'top-left' | 'bottom-right'
-
-/** Kích thước theo "px thiệp" (rộng 441px); bản 6x giữ mẫu và alpha cho màn hình DPR cao. */
-const ASSET: Record<DrapeCorner, { name: string; width: number; height: number; sizes: string }> = {
-  'top-left': { name: 'satin-top', width: 224, height: 277, sizes: '(min-width: 595.35px) 302.4px, (max-width: 317.52px) 161.28px, 50.7937vw' },
-  'bottom-right': { name: 'satin-bottom', width: 268, height: 335, sizes: '(min-width: 595.35px) 361.8px, (max-width: 317.52px) 192.96px, 60.7710vw' },
-}
+import { SATIN_ASSETS, type DrapeCorner } from './satin.ts'
+export type { DrapeCorner } from './satin.ts'
 
 /**
  * Lụa satin + cành lá khuynh diệp nhũ vàng ở góc thiệp, tách từ thiệp mẫu (nền đã tách trong suốt
@@ -17,7 +11,7 @@ const ASSET: Record<DrapeCorner, { name: string; width: number; height: number; 
  */
 export function SatinCorner({ corner, index = 0 }: { corner: DrapeCorner; index?: number }) {
   const { ref, active } = useVisibleMotion<HTMLDivElement>()
-  const { name, width, height, sizes } = ASSET[corner]
+  const { name, width, height, sizes } = SATIN_ASSETS[corner]
   const src = `${import.meta.env.BASE_URL}images/decor/${name}`
   return (
     <div

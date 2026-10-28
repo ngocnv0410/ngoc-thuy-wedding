@@ -1,7 +1,7 @@
 import { sealMarkup, sealSvg } from '../src/components/sealArt.ts'
 /**
  * Sinh ảnh xem trước khi chia sẻ link (public/og.jpg, 1200×630) theo đúng phong cách tờ thiệp:
- * nền loang cẩm thạch + gân nhũ vàng, hoa baby khô ở hai góc (cùng bộ sinh hoạ tiết với trang),
+ * nền loang cẩm thạch + gân nhũ vàng, lụa satin ở hai góc (dùng chung dữ liệu với trang),
  * dấu sáp, tên nhũ vàng, ngày. Chữ được chuyển thành đường vẽ (opentype.js) từ chính font của
  * trang, nên dấu tiếng Việt đúng mà không cần cài font trên máy build.
  */
@@ -11,7 +11,8 @@ import { fileURLToPath } from 'node:url'
 // opentype.js là CommonJS: Node chỉ cho import mặc định.
 import opentype, { type Font } from 'opentype.js'
 import sharp from 'sharp'
-import { FOIL_STOPS, MARBLE_COLORS, W as MARBLE_W, frame, washLayer } from '../src/components/decor/marble.ts'
+import { W as MARBLE_W, frame, frameSoftSvg, frameCrispSvg } from '../src/components/decor/marble.ts'
+import { SATIN_ASSETS, type DrapeCorner } from '../src/components/decor/satin.ts'
 import { share, shareImageVersion, versionedShareImage } from './share.ts'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -90,31 +91,40 @@ function centered(r: Run, baseline: number, fill: string) {
   return `<path transform="translate(${((W - r.width) / 2).toFixed(1)} ${baseline})" d="${r.d}" fill="${fill}"/>`
 }
 
-// ── Nền: cùng bộ sinh với MarbleFrame (khung 1000 đơn vị, co lên bề ngang ảnh) ──
-const marbleScale = W / MARBLE_W
-const marble = frame(5, H / marbleScale)
-const foil = FOIL_STOPS.map(([offset, color]) => `<stop offset="${offset}" stop-color="${color}"/>`).join('')
-const background = `
-  <rect width="${W}" height="${H}" fill="${MARBLE_COLORS.base}"/>
-  <g transform="scale(${marbleScale})">
-    <rect width="${MARBLE_W}" height="${H / marbleScale}" filter="url(#clouds)" opacity="0.18"/>
-    ${washLayer(marble.washes, 5, 'light', 'ink')}
-  </g>
-  <rect width="${W}" height="${H}" fill="url(#glow)"/>
-  <g transform="scale(${marbleScale})">
-    <g fill="none" stroke="url(#foilTile)" stroke-linecap="round" stroke-linejoin="round" filter="url(#leaf)">
-      ${marble.veins.map((v) => `<path d="${v.d}" stroke-width="${v.weight ? 1.4 : 0.9}" opacity="${v.weight ? 0.9 : 0.75}"/>`).join('')}
-    </g>
-    <path d="${marble.grit}" fill="${MARBLE_COLORS.grit}" opacity="0.35"/>
-    <path d="${marble.specks}" fill="url(#foilTile)" opacity="0.95"/>
-    <path d="${marble.glitter}" fill="url(#foilTile)" opacity="0.75"/>
+// Share the marble renderer and satin assets with the live invitation.
+const marbleHeight = H * MARBLE_W / W
+const marble = frame(5, marbleHeight)
+const soft = await sharp(Buffer.from(frameSoftSvg(marble, 5, marbleHeight, 'light'))).resize(W, H).png().toBuffer()
+const crisp = await sharp(Buffer.from(frameCrispSvg(marble, marbleHeight, 'light'))).resize(W, H).png().toBuffer()
+const background = `<rect width="${W}" height="${H}" fill="#f8f4ec"/>
+  <g opacity="0.38">
+    <image width="${W}" height="${H}" href="data:image/png;base64,${soft.toString('base64')}"/>
+    <image width="${W}" height="${H}" href="data:image/png;base64,${crisp.toString('base64')}"/>
   </g>`
 
-// The share card uses the same photographic corner flowers as the invitation.
-const spray = await sharp(join(root, 'public/images/decor/baby-spray.webp')).resize({ width: 340 }).png().toBuffer({ resolveWithObject: true })
-const sprig = await sharp(join(root, 'public/images/decor/baby-sprig.webp')).resize({ height: 330 }).png().toBuffer({ resolveWithObject: true })
-const flowers = `<image x="${W - spray.info.width}" y="-6" width="${spray.info.width}" height="${spray.info.height}" href="data:image/png;base64,${spray.data.toString('base64')}"/>
-  <image x="-4" y="${H - sprig.info.height + 4}" width="${sprig.info.width}" height="${sprig.info.height}" href="data:image/png;base64,${sprig.data.toString('base64')}"/>`
+async function satinCorner(corner: DrapeCorner) {
+  const asset = SATIN_ASSETS[corner]
+  // Use the same desktop scale and high-resolution source as SatinCorner.
+  const image = await sharp(join(root, `public/images/decor/${asset.name}-6x.webp`))
+    .resize({ width: Math.round(asset.width * 1.35) }).png().toBuffer({ resolveWithObject: true })
+  const top = corner === 'top-left'
+  const width = image.info.width
+  const height = image.info.height
+  const id = top ? 'satinTop' : 'satinBottom'
+  const stops = (fade: number) => top
+    ? `<stop offset="0" stop-color="white"/><stop offset="${1 - fade}" stop-color="white"/><stop offset="1" stop-color="black"/>`
+    : `<stop offset="0" stop-color="black"/><stop offset="${fade}" stop-color="white"/><stop offset="1" stop-color="white"/>`
+  return `<svg x="${top ? 0 : W - width}" y="${top ? 0 : H - height}" width="${width}" height="${height}">
+    <defs>
+      <linearGradient id="${id}X" x1="0" y1="0" x2="1" y2="0">${stops((top ? 28 : 32) / width)}</linearGradient>
+      <linearGradient id="${id}Y" x1="0" y1="0" x2="0" y2="1">${stops(32 / height)}</linearGradient>
+      <mask id="${id}MaskX"><rect width="100%" height="100%" fill="url(#${id}X)"/></mask>
+      <mask id="${id}MaskY"><rect width="100%" height="100%" fill="url(#${id}Y)"/></mask>
+    </defs>
+    <g mask="url(#${id}MaskX)"><image width="100%" height="100%" mask="url(#${id}MaskY)" href="data:image/png;base64,${image.data.toString('base64')}"/></g>
+  </svg>`
+}
+const drapes = (await Promise.all([satinCorner('top-left'), satinCorner('bottom-right')])).join('')
 
 // ── Tên và "&" nhũ vàng (Alex Brush như bìa) ──
 const nameSize = 116
@@ -142,30 +152,12 @@ const tagline = run(SERIF_ITALIC, share.tagline, 30)
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
-    <filter id="clouds" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.004 0.003" numOctaves="4" seed="5"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.39  0 0 0 0 0.33  0 0 0 -1.2 0.62"/>
-    </filter>
-    <filter id="leaf" x="-5%" y="-5%" width="110%" height="110%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="1" seed="8" result="grain"/>
-      <feDisplacementMap in="SourceGraphic" in2="grain" scale="4"/>
-    </filter>
-    <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
-    <linearGradient id="foil" x1="0" y1="0" x2="1" y2="1">${foil}</linearGradient>
-    <pattern id="foilTile" width="160" height="160" patternUnits="userSpaceOnUse">
-      <rect width="160" height="160" fill="url(#foil)"/>
-    </pattern>
-    <radialGradient id="glow" cx="50%" cy="52%" r="42%" gradientTransform="translate(0.5 0.52) scale(1 1.25) translate(-0.5 -0.52)">
-      <stop offset="0" stop-color="${MARBLE_COLORS.glow}" stop-opacity="0.95"/>
-      <stop offset="0.6" stop-color="${MARBLE_COLORS.glow}" stop-opacity="0.6"/>
-      <stop offset="1" stop-color="${MARBLE_COLORS.glow}" stop-opacity="0"/>
-    </radialGradient>
     <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="${namesLeft}" y1="0" x2="${namesLeft + namesWidth}" y2="0">
-      <stop offset="0" stop-color="#9a7637"/>
-      <stop offset="0.3" stop-color="#c9a462"/>
-      <stop offset="0.48" stop-color="#e2c88f"/>
-      <stop offset="0.66" stop-color="#b48d4a"/>
-      <stop offset="1" stop-color="#9a7637"/>
+      <stop offset="0" stop-color="#795929"/>
+      <stop offset="0.3" stop-color="#ac8245"/>
+      <stop offset="0.48" stop-color="#bd975d"/>
+      <stop offset="0.66" stop-color="#96703b"/>
+      <stop offset="1" stop-color="#795929"/>
     </linearGradient>
     <radialGradient id="wax" cx="38%" cy="32%" r="75%">
       <stop offset="0" stop-color="#d9bf8c"/>
@@ -174,7 +166,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" 
     </radialGradient>
   </defs>
   ${background}
-  ${flowers}
+  ${drapes}
   ${seal}
   ${centered(eyebrow, 218, '#6e5a4b')}
   ${names}
