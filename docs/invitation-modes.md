@@ -1,12 +1,13 @@
 # Invitation modes
 
-The invitation keeps its existing layout and animations. Its two compact mode
-choices are **Nguyên bản** (Forever in Love, the default) and **Sôi động**
-(BANG BANG BANG, with the existing couple dance). The same radio picker appears
+The invitation keeps its existing layout and animations. Its compact mode
+choices are **Nguyên bản** (Forever in Love, the default), **BANG BANG**
+(the existing excerpt and couple dance), and **BAD** (the supplied ATEEZ dance
+challenge, with its own recording and choreography). The same radio picker appears
 before opening and in the floating **Chế độ** panel; keyboard arrow keys work.
 
 The removed **Nhạc cưới** mode is no longer offered. Old `?music=youtube` links
-open the original mode. Sharing keeps `?music=bangbangbang` when selected and
+open the original mode. Sharing keeps `?music=bangbangbang` or `?music=bad` when selected and
 does not forward guest parameters or the current section.
 
 Changing mode reuses one audio element and preserves playback intent. Music has
@@ -16,10 +17,15 @@ handler, including on iPhone.
 
 ## Optional online MP3 sources
 
+Dance data loads on demand for the selected mode, shared by both characters.
+The default invitation does not download either dance recording or pose track.
+
 Set these build variables (locally in `.env.local`, or as GitHub Actions
 repository variables for the Pages workflow):
 
 - `VITE_MUSIC_ORIGINAL_URL`: a direct HTTPS URL for the Forever in Love recording.
+- `VITE_MUSIC_BAD_URL`: a direct HTTPS URL for the **same 27.4-second BAD
+  challenge excerpt**, starting at the beginning of the supplied video.
 - `VITE_MUSIC_BANGBANGBANG_URL`: a direct HTTPS URL for the **same 28.444-second
   dance excerpt**; replacing it with the full song would misalign choreography.
 
@@ -29,6 +35,6 @@ host is configured by default. Empty or invalid settings use the existing local
 recordings. Runtime playback errors remain visible in the music panel for retry.
 
 The unused Canon in D and removed Nhạc cưới MP3 files are deleted from the
-current tree and deployment, saving 6,331,480 bytes (~6.04 MiB). The two active
+current tree and deployment, saving 6,331,480 bytes (~6.04 MiB). The active
 local files remain available until stable online recordings are supplied and
 verified. Deleting current files does not rewrite Git history.

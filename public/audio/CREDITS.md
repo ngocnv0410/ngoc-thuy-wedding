@@ -1,5 +1,16 @@
 # Background music
 
+## Optional track (`?music=bad`): BAD · ATEEZ dance challenge
+
+- Audio extracted from the MP4 supplied by the invitation owner.
+- Source: `snapvideo--😎#ateez #bad #dancechallenge #kpop #dance -3797843.mp4`.
+- Excerpt: 00:00–00:27.400 of the supplied challenge, with no speed change.
+- Local file: `ateez-bad-chorus.mp3`, mono MP3 at 96 kbps (329,750 bytes).
+- 15 ms / 30 ms edge fades soften the loop boundary.
+- Pose data follows this recording at 30 fps; it is not the BANG BANG BANG dance.
+- The label identifies the supplied ATEEZ challenge, not a verified song-artist credit.
+- Optional direct HTTPS replacement: `VITE_MUSIC_BAD_URL`, using the same excerpt.
+
 ## Optional track (`?music=bangbangbang`): BANG BANG BANG — BIGBANG
 
 - Audio extracted from the dance-reference MP4 supplied by the invitation owner.
@@ -23,6 +34,6 @@
 - The public MP3 download was saved without conversion, trimming or rearrangement.
 - The invitation links to Kenny G's official website and the supplied recording page.
 
-Optional online MP3 URLs can replace these two recordings at build time; see
+Optional online MP3 URLs can replace these recordings at build time; see
 `docs/invitation-modes.md`. The unused Canon in D recording and the removed
 Nhạc cưới recording are no longer distributed in the current deployment.

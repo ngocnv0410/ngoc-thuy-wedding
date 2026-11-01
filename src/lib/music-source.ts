@@ -1,6 +1,6 @@
 import type { Music } from '../content/types'
 
-export type MusicModeId = 'original' | 'bangbangbang'
+export type MusicModeId = 'original' | 'bangbangbang' | 'bad'
 export interface MusicMode {
   id: MusicModeId
   label: string
@@ -11,6 +11,7 @@ export interface MusicMode {
 interface OnlineMusicSources {
   original?: string
   bangbangbang?: string
+  bad?: string
 }
 
 /** Configured HTTPS recordings may replace bundled files; guest URLs never select a recording. */
@@ -23,25 +24,31 @@ export function onlineMusicSource(value: string | undefined, fallback: string): 
   return fallback
 }
 
-/** Both pickers share two modes; the dance stays paired with its matching excerpt. */
+/** Both pickers share the registry; each dance stays paired with its own excerpt. */
 export function getMusicModes(original: Music | undefined, online: OnlineMusicSources = {
   original: import.meta.env?.VITE_MUSIC_ORIGINAL_URL,
   bangbangbang: import.meta.env?.VITE_MUSIC_BANGBANGBANG_URL,
+  bad: import.meta.env?.VITE_MUSIC_BAD_URL,
 }): MusicMode[] {
   const originalSrc = original && onlineMusicSource(online.original, original.src)
   const originalTrack = original && originalSrc && originalSrc !== original.src ? { ...original, src: originalSrc } : original
   return [
     ...(originalTrack ? [{ id: 'original' as const, label: 'Nguyên bản', description: 'Dịu dàng · Forever in Love', track: originalTrack }] : []),
-    { id: 'bangbangbang', label: 'Sôi động', description: 'BANG BANG BANG · Cùng cô dâu chú rể nhảy', track: {
+    { id: 'bangbangbang', label: 'BANG BANG', description: 'BANG BANG BANG · Cùng cô dâu chú rể nhảy', track: {
       src: onlineMusicSource(online.bangbangbang, 'audio/bang-bang-bang-chorus.mp3'),
       title: 'BANG BANG BANG · Điệp khúc', artist: 'BIGBANG', dance: 'bang-bang-bang',
+    } },
+    { id: 'bad', label: 'BAD', description: 'BAD · ATEEZ dance challenge', track: {
+      src: onlineMusicSource(online.bad, 'audio/ateez-bad-chorus.mp3'),
+      title: 'BAD · ATEEZ dance challenge', dance: 'ateez-bad',
     } },
   ]
 }
 
 /** Old Nhạc cưới links and unknown values fall back to the original invitation. */
 export function musicModeFromSearch(search: string): MusicModeId {
-  return new URLSearchParams(search).get('music') === 'bangbangbang' ? 'bangbangbang' : 'original'
+  const value = new URLSearchParams(search).get('music')
+  return value === 'bangbangbang' || value === 'bad' ? value : 'original'
 }
 
 export function selectMusic(original: Music | undefined, search: string): Music | undefined {

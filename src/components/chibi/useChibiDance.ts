@@ -1,13 +1,17 @@
 import { useEffect, type RefObject } from 'react'
 import { music } from '../../lib/music'
-import { dancePose } from './chibiDance'
+import type { DanceId } from '../../content/types'
+import type { DanceSampler } from './danceSampler'
+import { loadDance } from './loadDance'
 import { bindDanceLimbs } from './danceLimbs'
 
 /** Override inherited GSAP rig values on the inner SVG, leaving door/reveal motion intact. */
-export function useChibiDance(ref: RefObject<SVGSVGElement | null>, enabled: boolean) {
+export function useChibiDance(ref: RefObject<SVGSVGElement | null>, dance: DanceId | undefined) {
   useEffect(() => {
     const svg = ref.current
-    if (!enabled || !svg) return
+    if (!dance || !svg) return
+    let sample: DanceSampler | undefined
+    let disposed = false
     const limbs = bindDanceLimbs(svg)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
     let visible = true
@@ -19,11 +23,11 @@ export function useChibiDance(ref: RefObject<SVGSVGElement | null>, enabled: boo
     const clear = () => {
       stop()
       limbs.reset()
-      for (const key of Object.keys(dancePose(0))) svg.style.removeProperty(key)
+      for (const key of Object.keys(sample?.(0) ?? {})) svg.style.removeProperty(key)
     }
     const tick = () => {
-      if (!music.advancing) { frame = 0; return }
-      const pose = dancePose(music.currentTime)
+      if (!sample || !music.advancing) { frame = 0; return }
+      const pose = sample(music.currentTime)
       limbs.apply(pose)
       for (const [key, value] of Object.entries(pose)) svg.style.setProperty(key, value)
       frame = requestAnimationFrame(tick)
@@ -43,13 +47,18 @@ export function useChibiDance(ref: RefObject<SVGSVGElement | null>, enabled: boo
     const unsubscribe = music.subscribe(sync)
     reduced.addEventListener('change', sync)
     document.addEventListener('visibilitychange', sync)
-    sync()
+    loadDance(dance).then((sampler) => {
+      if (disposed) return
+      sample = sampler
+      sync()
+    }).catch(() => { /* A failed decorative chunk must not interrupt audio or invitation. */ })
     return () => {
+      disposed = true
       clear()
       observer.disconnect()
       unsubscribe()
       reduced.removeEventListener('change', sync)
       document.removeEventListener('visibilitychange', sync)
     }
-  }, [ref, enabled])
+  }, [ref, dance])
 }
