@@ -263,8 +263,11 @@
 /* Bridal hair and a light floral pearl comb, drawn inside the same head rig. */
 .bridalStrands { fill: none; stroke: #a27e62 !important; stroke-width: 0.8 !important; opacity: 0.52; }
 .headpieceStem { fill: none; stroke: #c5a46a !important; stroke-width: 0.85 !important; }
-.headpieceLeaf { fill: #e9d9b8; stroke: #b69561 !important; stroke-width: 0.55 !important; }
 .headpiecePetal { fill: #fffaf0; stroke: #d5bd94 !important; stroke-width: 0.55 !important; }
 .headpieceGold { fill: #c9a35f; stroke: none !important; }
 .headpiecePearl { fill: #fffdf7; stroke: #cfb78e !important; stroke-width: 0.55 !important; }
 .headpieceGlint { fill: #fff; stroke: none !important; }
+
+/* One sheer veil pinned at the nape; thin warm edges avoid a stiff curtain silhouette. */
+.bridalVeil { fill: rgb(255 253 248 / 0.34); stroke: #d3c5ae !important; stroke-width: 0.65 !important; }
+.veilFolds { fill: none; stroke: #d4c8b5 !important; stroke-width: 0.65 !important; opacity: 0.45; }
