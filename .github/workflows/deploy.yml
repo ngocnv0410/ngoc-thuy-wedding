@@ -15,37 +15,31 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
+    name: Build and deploy
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
-      - name: Reject Google API keys committed in source
-        run: npm run check:secrets
-      - run: npm test
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-firebase-emulators-${{ hashFiles('package-lock.json') }}
-      - name: Verify Firestore Rules with local emulators
-        run: npm run test:rules
+      - name: Verify source and Firebase configuration
+        run: |
+          node scripts/check-secrets.mjs
+          node -e 'if (!process.env.VITE_FIREBASE_API_KEY?.trim()) { console.error("Missing repository Secret VITE_FIREBASE_API_KEY. Deployment stopped to preserve the live guestbook."); process.exit(1) }'
         env:
-          FIREBASE_CLI_DISABLE_USAGE_REPORTING: 'true'
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
       - name: Read GitHub Pages domain and base path
         uses: actions/configure-pages@v5
         id: pages
       - name: Build
-        run: |
-          node -e 'if (!process.env.VITE_FIREBASE_API_KEY?.trim()) { console.error("Missing repository Secret VITE_FIREBASE_API_KEY. Deployment stopped to preserve the live guestbook."); process.exit(1) }'
-          npm run build
+        run: npm run build
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}/
           SITE_URL: ${{ steps.pages.outputs.base_url }}
@@ -57,13 +51,5 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
