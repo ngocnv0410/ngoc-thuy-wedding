@@ -37,8 +37,8 @@ export class MusicPlayer {
       this.audio.volume = 0
       this.audio.preload = 'none'
       this.audio.loop = start === 0
+      // Assigning src resets media selection; explicit load() can fetch even with preload=none.
       this.audio.src = src
-      this.audio.load()
     }
     this.update({ playing: false, wanted: false, requested: false, loading: false, error: false })
   }
@@ -80,7 +80,10 @@ export class MusicPlayer {
     audio.volume = 0
     audio.src = this.src
     audio.addEventListener('loadstart', () => { this.positioned = false })
-    audio.addEventListener('loadedmetadata', () => this.positionStart())
+    audio.addEventListener('loadedmetadata', () => {
+      this.positionStart()
+      if (!this.state.wanted) this.update({ loading: false })
+    })
     audio.addEventListener('ended', () => {
       if (!this.startSeconds || !this.state.wanted) return
       this.positioned = false
@@ -142,12 +145,12 @@ export class MusicPlayer {
     this.fadeFrame = requestAnimationFrame(step)
   }
 
-  /** Preload when “Mở kèm nhạc” is selected; this does not start playback. */
+  /** Read metadata after an explicit choice; leave the full download to play(). */
   prepare() {
     const audio = this.ensureAudio()
     if (!audio || (this.state.requested && !this.state.error)) return
-    audio.preload = 'auto'
-    this.update({ requested: true, loading: audio.readyState < 2, error: false })
+    audio.preload = 'metadata'
+    this.update({ requested: true, loading: audio.readyState < 1, error: false })
     audio.load()
   }
 
