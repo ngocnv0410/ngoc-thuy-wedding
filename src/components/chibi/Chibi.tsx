@@ -41,6 +41,8 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
           <g className={styles.head} style={origin(PIVOT.head)}>
             <g className={styles.veil} style={origin(PIVOT.veil)}>
               <path d={BRIDE.veil} className={styles.bridalVeil} />
+              <path d={BRIDE.veilInner} className={styles.veilInner} />
+              <path d={BRIDE.veilEdge} className={styles.veilEdge} />
               <path d={BRIDE.veilFolds} className={styles.veilFolds} />
             </g>
           </g>
@@ -79,6 +81,8 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
           {!groom && (
             <g className={styles.head} style={origin(PIVOT.head)}>
               <path d={BRIDE.hairBack} className={styles.hairBride} />
+              <path d={BRIDE.bun} className={styles.hairBride} />
+              <path d={BRIDE.bunStrands} className={styles.bridalStrands} />
             </g>
           )}
           <path d={SHARED.neck} className={styles.skin} />
@@ -141,6 +145,7 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
             ) : (
               <>
                 <path d={BRIDE.hair} className={styles.hairBride} />
+                <path d={BRIDE.hairLight} className={styles.hairLight} />
                 <path d={BRIDE.strands} className={styles.bridalStrands} />
                 <path d={BRIDE.lockL} className={styles.hairBride} />
                 <path d={BRIDE.lockR} className={styles.hairBride} />
@@ -158,8 +163,8 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
 /** A small pearl-and-blossom pin lies against the hair, without floating sprigs. */
 function BridalHeadpiece() {
   return <g className={styles.headpiece}>
-    <path d="M25 49Q28 37 41 31" className={styles.headpieceStem} />
-    {[[28, 43, .85], [36, 34, .6]].map(([x, y, scale]) => (
+    <path d="M25 49C26 41 32 32 42 29" className={styles.headpieceStem} />
+    {[[28, 43, .88], [34, 35, .65], [41, 30, .45]].map(([x, y, scale]) => (
       <g key={x} transform={`translate(${x} ${y}) scale(${scale})`}>
         {[0, 72, 144, 216, 288].map((angle) => (
           <path key={angle} d="M0 0C-3-1-3.3-4.5-1.4-5.1C.8-5.8 2.8-3.5 0 0Z" transform={`rotate(${angle})`} className={styles.headpiecePetal} />
