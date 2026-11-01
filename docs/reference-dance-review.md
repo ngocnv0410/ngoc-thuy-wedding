@@ -23,10 +23,12 @@ pointing arm shortens instead of sticking out at its full length. The same
 length drives both the drawn segment and child attachment. Rounded segments
 close the joints; cuff and hand positions follow the forearm endpoint.
 
-The dance rig uses longer arms and a smaller head to leave space for crossed
-and overhead gestures. The lower foot anchors the stance to the ground rather
-than allowing the whole figure to float while bending its knees. Original
-(non-dancing) illustrations keep their existing proportions.
+The dance rig retains the original head, hair, veil and full-length bridal gown.
+Limbs use filled, tapered curves with thin outlines and soft joints; the hands
+have a thumb contour and a subtle palm crease. Costume-specific widths keep
+the bridal arms slender and the suit sleeves slightly fuller. The lower foot
+anchors the stance to the ground while bending the knees. The longer dance
+arms leave room for cross-body and overhead gestures.
 
 Joint tracks use filtering and continuous interpolation. Ambiguous projected
 rotations are velocity-limited to avoid full turns when the arm points toward

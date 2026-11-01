@@ -254,7 +254,8 @@
 .danceArmL, .danceArmR, .elbowL, .elbowR,
 .danceLegL, .danceLegR, .kneeL, .kneeR { transform-origin: 0 0; }
 
-/* Give the dance rig room to lift its hands around the oversized chibi head. */
-.figure[data-articulated='true'] .head {
-  transform: translateY(var(--head-y, 0px)) rotate(var(--head-r, 0deg)) scale(0.7);
-}
+/* Keep original head, hair, veil and full-length bridal gown proportions. */
+.figure [data-bone] { opacity: 0; }
+.figure [data-shape] { stroke-width: 0.85; }
+.figure [data-costume='bridal'] [data-shape] { stroke-width: 0.7; }
+.palmLine { fill: none; stroke: var(--chibi-ink); stroke-width: 0.55 !important; opacity: 0.45; }
