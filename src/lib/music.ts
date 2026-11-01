@@ -36,6 +36,8 @@ export class MusicPlayer {
       this.positioned = true
     } catch { /* Metadata is not yet seekable; retry before playing. */ }
   }
+  /** Media time keeps choreography aligned across pauses, seeks and loops. */
+  get currentTime() { return this.audio?.currentTime ?? 0 }
   get playing() { return this.state.playing }
   getPlaying = () => this.state.playing
   getSnapshot = () => this.state

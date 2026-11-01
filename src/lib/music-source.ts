@@ -6,6 +6,12 @@ export function usesAlternateMusic(search: string): boolean {
 }
 
 export function selectMusic(defaultTrack: Music | undefined, search: string): Music | undefined {
+  if (new URLSearchParams(search).get('music') === 'bangbangbang') return {
+    src: 'audio/bang-bang-bang-chorus.mp3',
+    title: 'BANG BANG BANG · Điệp khúc',
+    artist: 'BIGBANG',
+    dance: 'bang-bang-bang',
+  }
   if (!usesAlternateMusic(search)) return defaultTrack
   return {
     src: 'audio/youtube-hGu7BVQy5G0.mp3',

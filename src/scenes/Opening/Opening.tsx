@@ -242,8 +242,8 @@ export function Opening({ content, onDone }: OpeningProps) {
        * canvas). Bấm mở: đi tới đẩy cửa rồi đứng sang hai bên mời khách vào.
        */}
       <div className={styles.hosts} aria-hidden="true">
-        <Chibi who={leftWho} hand="r" look="front" anim="host-left" />
-        <Chibi who={leftWho === 'groom' ? 'bride' : 'groom'} hand="l" look="front" anim="host-right" />
+        <Chibi dance={track?.dance === 'bang-bang-bang'} who={leftWho} hand="r" look="front" anim="host-left" />
+        <Chibi dance={track?.dance === 'bang-bang-bang'} who={leftWho === 'groom' ? 'bride' : 'groom'} hand="l" look="front" anim="host-right" />
       </div>
 
       <div className={styles.actions} data-anim="cta">

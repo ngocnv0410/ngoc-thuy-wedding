@@ -1,4 +1,5 @@
-import type { CSSProperties, ReactNode } from 'react'
+import { useRef, type CSSProperties, type ReactNode } from 'react'
+import { useChibiDance } from './useChibiDance'
 import { BRIDE, EYE_X, EYE_Y, GROOM, HAND_L, HAND_R, HEAD_VIEWBOX, MIRROR_X, PIVOT, SHARED, VIEW_H, VIEW_W, eye } from './chibiArt'
 import styles from './Chibi.module.css'
 import { type ChibiLook, type ChibiPose, type ChibiSize, type FigureProps, type Side, chibiVars } from './chibiPose'
@@ -183,6 +184,7 @@ interface ChibiProps extends FigureProps {
   size?: ChibiSize
   /** Chỉ hiện phần đầu (ló ra sau cánh cửa). */
   headOnly?: boolean
+  dance?: boolean
   className?: string
   anim?: string
 }
@@ -191,11 +193,13 @@ interface ChibiProps extends FigureProps {
  * Một nhân vật chibi — trang trí thuần tuý: `aria-hidden`, không nhận chuột/chạm, không có thông
  * tin nào chỉ nằm trong hình.
  */
-export function Chibi({ size = 'md', headOnly = false, className, anim, ...figure }: ChibiProps) {
+export function Chibi({ size = 'md', headOnly = false, dance = false, className, anim, ...figure }: ChibiProps) {
+  const danceRef = useRef<SVGSVGElement>(null)
+  useChibiDance(danceRef, dance)
   const classes = [styles.chibi, headOnly ? styles.headOnly : styles[size], className].filter(Boolean).join(' ')
   return (
     <span className={classes} style={chibiVars(figure)} data-chibi={figure.who} data-anim={anim} aria-hidden="true">
-      <svg viewBox={headOnly ? HEAD_VIEWBOX : `0 0 ${VIEW_W} ${VIEW_H}`} focusable="false">
+      <svg ref={danceRef} viewBox={headOnly ? HEAD_VIEWBOX : `0 0 ${VIEW_W} ${VIEW_H}`} focusable="false">
         <ChibiFigure who={figure.who} held={figure.held} hand={figure.hand} />
       </svg>
     </span>
@@ -203,6 +207,7 @@ export function Chibi({ size = 'md', headOnly = false, className, anim, ...figur
 }
 
 interface CoupleProps {
+  dance?: boolean
   pose?: ChibiPose
   size?: ChibiSize
   lean?: boolean
@@ -213,7 +218,7 @@ interface CoupleProps {
 }
 
 /** Chú rể bên trái, cô dâu bên phải (thứ tự "groom-first"); tư thế "hold" thì nắm tay nhau ở giữa. */
-export function ChibiCouple({ pose = 'hold', size = 'md', lean = false, look, className, anim, children }: CoupleProps) {
+export function ChibiCouple({ dance = false, pose = 'hold', size = 'md', lean = false, look, className, anim, children }: CoupleProps) {
   return (
     <span
       className={[styles.couple, styles[size], className].filter(Boolean).join(' ')}
@@ -221,8 +226,8 @@ export function ChibiCouple({ pose = 'hold', size = 'md', lean = false, look, cl
       data-anim={anim}
       aria-hidden="true"
     >
-      <Chibi who="groom" pose={pose} size={size} look={look ?? (lean ? 'right' : 'front')} anim="chibi-groom" />
-      <Chibi who="bride" pose={pose} size={size} lean={lean} look={look ?? (lean ? 'left' : 'front')} anim="chibi-bride" />
+      <Chibi dance={dance} who="groom" pose={pose} size={size} look={look ?? (lean ? 'right' : 'front')} anim="chibi-groom" />
+      <Chibi dance={dance} who="bride" pose={pose} size={size} lean={lean} look={look ?? (lean ? 'left' : 'front')} anim="chibi-bride" />
       {children}
     </span>
   )

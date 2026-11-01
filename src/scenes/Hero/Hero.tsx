@@ -92,7 +92,7 @@ export function Hero({ content, onReplay }: HeroProps) {
       <div className={styles.composition}>
         <div className={styles.portrait} data-anim="portrait" aria-hidden="true">
           <span className={styles.arch} />
-          <ChibiCouple pose="hold" lean size="lg" className={styles.illustration} />
+          <ChibiCouple dance={content.music?.dance === 'bang-bang-bang'} pose={content.music?.dance ? 'stand' : 'hold'} lean size="lg" className={styles.illustration} />
           <span className={styles.portraitDate}>{year} <span>✦</span> {date}.{month}</span>
         </div>
         <div className={styles.frame} data-anim="frame">

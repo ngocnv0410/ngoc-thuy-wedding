@@ -1,6 +1,18 @@
 # Background music
 
-## Current track: Forever in Love — Kenny G
+## Optional track (`?music=bangbangbang`): BANG BANG BANG — BIGBANG
+
+- Audio extracted from the dance-reference MP4 supplied by the invitation owner.
+- Local file: `bang-bang-bang-chorus.mp3`, MP3 128 kbps (~456 KB).
+- Excerpt: 00:00–00:28.444 of the supplied clip (64 beats at 135 BPM).
+- Tiny 15 ms / 30 ms edge fades avoid clicks on the loop boundary.
+- Chibi choreography is a stylized interpretation of the reference, sampled from
+  the audio playback clock. It stops when paused, buffering, offscreen, or when
+  reduced motion is requested.
+- Only `?music=bangbangbang` selects this excerpt and dance. Ordinary links and
+  `?music=original` use Kenny G; `?music=youtube` keeps its existing soundtrack.
+
+## Default track: Forever in Love — Kenny G
 
 - Recording selected by the invitation owner.
 - Source: https://www.nhaccuatui.com/song/0zgSpVtFWT
