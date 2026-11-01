@@ -2,6 +2,9 @@ import { useId, type CSSProperties } from 'react'
 import { approvedChibiArt } from './approvedArt'
 import type { FigureProps, Side } from './chibiPose'
 import { HAND_L, HAND_R, PIVOT } from './chibiArt'
+import brideDress from '../../assets/chibi/approved/bride-dress-layer.webp'
+import brideVeil from '../../assets/chibi/approved/bride-veil-layer.webp'
+import { brideDressPlacement, brideVeilPlacement, neckPlacement } from './approvedRigLayout'
 import { faceArt } from './faceArt'
 import brideArms from '../../assets/chibi/approved/bride-arm-paths.json'
 import styles from './Chibi.module.css'
@@ -19,13 +22,16 @@ export function ApprovedChibiFigure({ who, held, hand }: Pick<FigureProps, 'who'
     right: 'M77 107H120V161H80L81 130Z',
     legL: 'M0 154H61V200H0Z', legR: 'M61 154H120V200H61Z',
   } : {
-    torso: 'M49 100H72L74 125H46Z',
+    torso: 'M0 90H120V125H0Z',
     left: brideArms.left,
     right: brideArms.right,
-    skirt: 'M47 123H73L120 200H0Z',
-    veil: 'M31 86L48 96L42 111L27 143L24 151L8 145L7 130ZM85 85L92 99L111 129L120 146L99 154L88 134L75 104Z',
+    skirt: 'M0 124H120V200H0Z',
+    veil: 'M0 0H120V200H0Z',
   }
-  const part = (name: string) => <image href={source} width="120" height="200" clipPath={`url(#${id}-${name})`} />
+  const part = (name: string) => !groom && (name === 'torso' || name === 'skirt' || name === 'veil')
+    ? <image href={name === 'veil' ? brideVeil : brideDress} {...(name === 'veil' ? brideVeilPlacement : brideDressPlacement)}
+      preserveAspectRatio="none" opacity={name === 'veil' ? .55 : 1} clipPath={`url(#${id}-${name})`} data-art-layer={name} />
+    : <image href={source} width="120" height="200" clipPath={`url(#${id}-${name})`} />
   const side = hand ?? (groom ? 'r' : 'l')
   const shoulder = (at: Side): readonly [number, number] => groom ? (at === 'l' ? PIVOT.shoulderL : PIVOT.shoulderR) : (at === 'l' ? [45.5, 102] : [73.5, 102])
   const palm = (at: Side): readonly [number, number] => groom ? (at === 'l' ? HAND_L : HAND_R) : (at === 'l' ? [30, 138] : [88, 139])
@@ -52,13 +58,15 @@ export function ApprovedChibiFigure({ who, held, hand }: Pick<FigureProps, 'who'
       {groom ? <>
         <g className={styles.legL} style={origin(PIVOT.hipL)} data-part="leg-l">{part('legL')}</g>
         <g className={styles.legR} style={origin(PIVOT.hipR)} data-part="leg-r">{part('legR')}</g>
-      </> : <g className={styles.skirt} style={origin(PIVOT.skirt)} data-part="skirt">{part('skirt')}</g>}
-      <g className={styles.upper} style={origin(PIVOT.upper)} data-part="upper">
+      </> : <g className={styles.skirt} style={origin([60, 125])} data-part="skirt">{part('skirt')}</g>}
+      <g className={styles.upper} style={origin(groom ? PIVOT.upper : [60, 125])} data-part="upper">
+        {!groom && <path d="M44.5 104C45 99 52 97 60 98C68 97 75 99 75.5 104L73 115H47Z" fill="#ffe2ce" data-part="shoulders" />}
+        <rect {...neckPlacement} rx="4" fill="#ffe2ce" data-part="neck" />
         {/* Joint fills stay behind the source artwork when an arm is raised. */}
         <ellipse cx={groom ? 45 : 45.5} cy={groom ? 113 : 102} rx={groom ? 4 : 3.2} ry={groom ? 5 : 3.5} fill={groom ? '#a18a79' : '#ffe2ce'} />
         <ellipse cx={groom ? 75 : 73.5} cy={groom ? 113 : 102} rx={groom ? 4 : 3.2} ry={groom ? 5 : 3.5} fill={groom ? '#a18a79' : '#ffe2ce'} />
         {part('torso')}
-        <g className={styles.head} style={origin(PIVOT.head)} data-part="head">
+        <g className={styles.head} style={origin(groom ? PIVOT.head : [60, 99])} data-part="head">
           <g className={styles.portraitGaze}><g clipPath={`url(#${id}-face)`}>{expression('open')}{expression('closed')}{expression('happy')}</g>{groom && <g className={styles.tuft} style={origin([74, 21])} data-part="tuft"><g clipPath={`url(#${id}-face-tuft)`}>{expression('open', false)}{expression('closed', false)}{expression('happy', false)}</g></g>}</g>
         </g>
         {arm('l')}{arm('r')}
