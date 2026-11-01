@@ -6,6 +6,10 @@ export function usesAlternateMusic(search: string): boolean {
 }
 
 export function selectMusic(defaultTrack: Music | undefined, search: string): Music | undefined {
+  if (new URLSearchParams(search).get('music') === 'original') return {
+    src: 'audio/forever-in-love-kenny-g.mp3', title: 'Forever in Love', artist: 'Kenny G',
+    artistUrl: 'https://www.kennyg.com/', sourceUrl: 'https://www.nhaccuatui.com/song/0zgSpVtFWT',
+  }
   if (!usesAlternateMusic(search)) return defaultTrack
   return {
     src: 'audio/youtube-hGu7BVQy5G0.mp3',

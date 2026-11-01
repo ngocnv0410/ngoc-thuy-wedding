@@ -10,3 +10,11 @@ describe('invitation soundtrack', () => {
     expect(selectMusic(original, '?v=abc&music=youtube')).toMatchObject({ src: 'audio/youtube-hGu7BVQy5G0.mp3', startSeconds: 15 })
   })
 })
+
+it('keeps dance metadata only on the matching track', () => {
+  const bang = { src: 'audio/bang-bang-bang-chorus.mp3', title: 'BANG BANG BANG', dance: 'bang-bang-bang' as const }
+  expect(selectMusic(bang, '')).toBe(bang)
+  expect(selectMusic(bang, '?music=original')).toMatchObject(original)
+  expect(selectMusic(bang, '?music=original')?.dance).toBeUndefined()
+  expect(selectMusic(bang, '?music=youtube')?.dance).toBeUndefined()
+})

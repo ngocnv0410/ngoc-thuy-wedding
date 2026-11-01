@@ -156,6 +156,8 @@ export interface Video {
 }
 
 export interface Music {
+  /** Choreography enabled only for the matching soundtrack. */
+  dance?: 'bang-bang-bang'
   /** Điểm bắt đầu phát, tính bằng giây; tiếp tục từ vị trí hiện tại sau khi tạm dừng. */
   startSeconds?: number
   src: string

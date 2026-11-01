@@ -83,11 +83,10 @@ export const wedding: WeddingContent = {
   gallery: [],
 
   music: {
-    src: 'audio/forever-in-love-kenny-g.mp3',
-    title: 'Forever in Love',
-    artist: 'Kenny G',
-    artistUrl: 'https://www.kennyg.com/',
-    sourceUrl: 'https://www.nhaccuatui.com/song/0zgSpVtFWT',
+    src: 'audio/bang-bang-bang-chorus.mp3',
+    title: 'BANG BANG BANG · Điệp khúc',
+    artist: 'BIGBANG',
+    dance: 'bang-bang-bang',
   },
 
   // ĐỀ XUẤT
