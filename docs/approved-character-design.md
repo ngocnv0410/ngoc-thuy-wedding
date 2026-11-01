@@ -7,27 +7,35 @@ a light taupe groom suit and a white bridal gown/veil with a low bun and blossom
 
 ## 2D
 
-`approvedArt.ts` supplies transparent WebP illustrations for both characters:
-standing, carrying an invitation envelope and making a heart. The opening, normal
-cover, location-map figures, gift cards, QR dialogs, guestbook hostess and closing
-all use this family. The public Chibi props and existing layout/scene hooks remain
-available. Whole-illustration greetings/bobbing remain CSS/GSAP transforms; detailed
-joint choreography is rendered in the 3D dance stage.
+`ApprovedChibiFigure.tsx` splits the approved standing illustration at the original
+SVG joint pivots using clip paths. Each arm, leg, head, torso, skirt, veil and hair
+tuft reads the original CSS rig channels. Closed/happy eye overlays restore blinks
+and expressions. Held envelopes/maps remain attached to the moving hands with
+counter-rotation. Opening walk/push/welcome, idle greetings and the complete closing
+story continue to use the unchanged scene timelines.
 
-Body illustrations are 25–31 KB each, 300×500, with lazy loading outside the opening.
-The opening eagerly loads the two standing illustrations (about 60 KB total).
-No PNG atlas or video reference is shipped to the browser. Original vector source
-is retained as legacy artwork, but is not used by the active 2D components.
+The previous static-pose implementation was a regression: retaining CSS variables
+on a single image did not preserve the original joint motions. Browser checks must
+measure actual child transforms/expressions changing, not just data attributes.
+
+All 2D locations share two transparent standing WebPs (about 60 KB total). Repeated
+SVG image references reuse the same browser resources; no atlas or video is shipped.
+Original vector source remains available as legacy artwork.
 
 ## 3D
 
-The same approved head artwork is painted onto rounded, depth-bearing head meshes,
-with additional nose curvature and a volumetric hair/bun backing. Head materials
-preserve the approved portrait colors independently of lighting/tone mapping.
-The suit front and gown folds use detail maps from the same 2D artwork. Actual
-3D bones and geometry still drive body, hands, legs, turning, bending and depth.
-This is textured stylized geometry reconstructed from a single approved view,
-not a recovered original production mesh or a claim of exact unseen profile geometry.
+The approved portraits are mapped onto closed front/back head volumes whose row
+profiles follow each portrait's alpha silhouette. Both surfaces meet at a common
+seam; an inner visible hair surface prevents transparent gaps. The old open plane
+and separate backing sphere caused distorted, disconnected profiles during bows
+and have been removed. Head pitch/yaw are intentionally limited to a gentle
+forward-facing range; the torso, hips and limbs keep the full tracked choreography.
+The jacket has geometric collar/lapels/bowtie/buttons; the white gown has a curved,
+pleated volume with fold detail from the approved artwork.
+
+This is stylized geometry reconstructed from a single view, not a recovered
+production character mesh. Hidden profiles remain an approximation, so visual
+review must include moving views on the deployed website.
 
 The white gown/bodice and fair hands use stable bright materials; neutral studio
 lighting avoids yellow cast. Textures are cached with the existing idle preload.
@@ -40,5 +48,5 @@ Browser review covers the opening, normal cover, gift cards, QR dialog and closi
 including white artwork against dark backgrounds. All rendered Chibi instances are
 checked for approved artwork and loaded assets. Both dance tracks are played in real
 time through their loop boundary, with screenshots at 1/5/10/15/18/22/26 seconds.
-Unit checks cover SVG-map embedding, held-object compatibility, portrait depth and
+Unit checks cover independent 2D joints/expressions, SVG-map embedding, held-object compatibility, portrait depth and
 texture identity, bone lengths, grounding, rotation limits and media behavior.
