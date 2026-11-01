@@ -114,6 +114,7 @@
 
 .portrait {
   position: relative;
+  container-type: inline-size;
   width: min(62vw, 260px);
   aspect-ratio: 0.85;
   display: grid;
@@ -140,9 +141,9 @@
 .illustration {
   position: absolute;
   z-index: 1;
-  left: -6%;
+  left: 0;
   bottom: 3%;
-  width: 112%;
+  width: 100%;
   max-width: none;
   height: 92%;
   align-items: flex-end;
@@ -263,7 +264,7 @@
 }
 
 /* One illustration family throughout the invitation. */
-.illustration > [data-chibi] { --chibi-h: clamp(200px, 48vw, 255px); }
+.illustration > [data-chibi] { --chibi-h: 92cqw; }
 .quickLinks { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
 .quickLinks a {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -276,12 +277,10 @@
 .quickLinks a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 .photoHero .quickLinks a { background: var(--color-ivory); color: var(--color-espresso); }
 @media (hover: hover) { .quickLinks a:hover { background: var(--color-paper); color: var(--color-espresso); } }
-@media (min-width: 900px) { .illustration > [data-chibi] { --chibi-h: clamp(300px, 29vw, 420px); } }
 @media (max-width: 899px) {
   .stationery { padding-top: 72px; padding-bottom: 100px; }
   .composition { gap: 32px; }
   .portrait { width: min(50vw, 195px); }
-  .illustration > [data-chibi] { --chibi-h: clamp(180px, 45vw, 225px); }
   .quickLinks { margin-top: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .quickLinks a { transition: none; } }

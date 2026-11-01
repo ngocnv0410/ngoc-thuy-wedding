@@ -49,7 +49,7 @@
 }
 
 .couple > .chibi + .chibi {
-  margin-left: calc(var(--chibi-h) * -0.10);
+  margin-left: calc(var(--chibi-h) * -0.16);
 }
 
 /* Không nắm tay: đứng sát nhau nhưng không chồng hình. */
@@ -292,6 +292,3 @@
 .openFace { opacity: calc(1 - max(var(--face-closed), var(--face-happy))); }
 .closedFace { opacity: max(0, calc(var(--face-closed) - var(--face-happy))); }
 .happyFace { opacity: var(--face-happy); }
-
-/* The bride's shoulder is higher and her relaxed arm already points outward. */
-.brideArm { transform: rotate(calc((min(var(--bride-angle), calc(45deg + var(--bride-angle) * .5)) + min(0deg, var(--bride-angle)) * .4) * var(--arm-sign))); }

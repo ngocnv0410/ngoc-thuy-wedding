@@ -7,7 +7,8 @@ import { PropArt } from './ChibiProp'
 describe('approved artwork with the original animation rig', () => {
   it('keeps independent joints, expressions and held objects instead of a flat pose', () => {
     const carry = renderToStaticMarkup(createElement(Chibi, { who: 'bride', pose: 'carry', held: createElement(PropArt, { kind: 'envelope' }) }))
-    expect(carry).toContain('bride-stand.webp')
+    expect(carry).toContain('bride-dress-layer.webp')
+    expect(carry).toContain('data-seamless-arms')
     expect(carry).toContain('data-part="arm-l"')
     expect(carry).toContain('data-part="arm-r"')
     expect(carry).toContain('data-part="head"')
@@ -28,14 +29,14 @@ describe('approved artwork with the original animation rig', () => {
     expect(figure).toContain('<path')
   })
   it('uses painted eye states and keeps raised bridal hands above the head layer', () => {
-    const bride = renderToStaticMarkup(createElement(ChibiFigure, { who: 'bride', held: createElement(PropArt, { kind: 'envelope' }) }))
+    const bride = renderToStaticMarkup(createElement('svg', null, createElement(ChibiFigure, { who: 'bride', held: createElement(PropArt, { kind: 'envelope' }) })))
     expect(bride).toContain('bride-open-face.webp')
     expect(bride).toContain('bride-closed-face.webp')
     expect(bride).toContain('bride-happy-face.webp')
-    expect(bride).not.toContain('<radialGradient')
-    expect(bride).toContain('transform-origin:45.5px 102px')
-    expect(bride).toContain('transform-origin:73.5px 102px')
-    expect(bride).toContain('translate(30 126)')
+    expect(bride).toContain('data-seamless-arms')
+    expect(bride).toContain('data-surface="skin"')
+    expect(bride).toContain('data-held="l"')
+    expect(bride).not.toContain('data-joint-cap')
     expect(bride.indexOf('data-part="arm-r"')).toBeGreaterThan(bride.indexOf('data-part="head"'))
   })
 

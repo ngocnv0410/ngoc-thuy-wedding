@@ -78,17 +78,17 @@ export function run(el: Element, fromX: number, duration = 0.5) {
 export function bow(target: Target, depth = 1) {
   return gsap
     .timeline()
-    .to(target, { '--upper-y': `${7 * depth}px`, '--upper-sy': `${1 - 0.07 * depth}`, '--head-y': `${5 * depth}px`, '--eo': '0', '--ec': '1', duration: 0.4, ease: 'paper' })
-    .to(target, { '--upper-y': '0px', '--upper-sy': '1', '--head-y': '0px', '--eo': '1', '--ec': '0', duration: 0.4, ease: 'silk' }, '+=0.3')
+    .to(target, { '--upper-y': `${5 * depth}px`, '--upper-sy': `${1 - 0.035 * depth}`, '--head-y': `${3 * depth}px`, '--eo': '0', '--ec': '1', duration: 0.45, ease: 'sine.inOut' })
+    .to(target, { '--upper-y': '0px', '--upper-sy': '1', '--head-y': '0px', '--eo': '1', '--ec': '0', duration: 0.5, ease: 'sine.inOut' }, '+=0.2')
 }
 
 /** Vẫy tay phải (giơ lên rồi lắc), mắt cười; cuối cùng về góc tay `restDeg`. */
 export function wave(el: Element, times = 2, restDeg = 6) {
-  const tl = gsap.timeline().to(el, { '--arm-r': '130deg', '--eo': '0', '--eh': '1', duration: 0.25, ease: 'paper' })
+  const tl = gsap.timeline().to(el, { '--arm-r': '128deg', '--eo': '0', '--eh': '1', duration: 0.6, ease: 'sine.inOut' })
   for (let i = 0; i < times; i++) {
-    tl.to(el, { '--arm-r': '112deg', duration: 0.18, ease: 'sine.inOut' }).to(el, { '--arm-r': '138deg', duration: 0.18, ease: 'sine.inOut' })
+    tl.to(el, { '--arm-r': '112deg', duration: 0.32, ease: 'sine.inOut' }).to(el, { '--arm-r': '132deg', duration: 0.32, ease: 'sine.inOut' })
   }
-  return tl.to(el, { '--arm-r': `${restDeg}deg`, duration: 0.3, ease: 'silk' })
+  return tl.to(el, { '--arm-r': `${restDeg}deg`, duration: 0.55, ease: 'sine.inOut' })
 }
 
 /** Tim / cánh hoa bay lên lệch nhẹ rồi tan (phần tử đích ở markup luôn ẩn). */

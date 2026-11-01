@@ -7,40 +7,40 @@ a light taupe groom suit and a white bridal gown/veil with a low bun and blossom
 
 ## 2D
 
-`ApprovedChibiFigure.tsx` splits the approved standing illustration at the original
-SVG joint pivots using clip paths. Each arm, leg, head, torso, skirt, veil and hair
-tuft reads the original CSS rig channels. Matched open/closed/happy painted face assets restore blinks and expressions;
-the entire face state switches at the midpoint, avoiding opaque eye-cover patches
-and ghost irises. The bride uses a skin-only arm contour sampled from the source
-art, corrected shoulder/palm pivots, and arms drawn above the head so waving hands
-remain visible. Her high wave angles are softened to keep the hand beside her face. Held envelopes/maps remain attached to the moving hands with
-counter-rotation. Opening walk/push/welcome, idle greetings and the complete closing
-story continue to use the unchanged scene timelines.
+`ApprovedChibiFigure.tsx` retains the approved painted faces, jacket, legs,
+gown and veil. `SeamlessArms.tsx` draws each limb as a continuous deforming contour,
+with a single skin surface through the bride's elbow, wrist and hand. Sleeves use
+soft shading and subtle fabric grain. Shoulder roots blend beneath the original
+clothing; no circular joint patches or cut image edges are exposed. The jacket
+also masks out the lowered-arm shadows baked into the original portrait.
 
-The previous static-pose implementation was a regression: retaining CSS variables
-on a single image did not preserve the original joint motions. Browser checks must
-measure actual child transforms/expressions changing, not just data attributes.
+`armGeometry.ts` owns the joint geometry. The heart transition uses two-bone
+inverse kinematics with a fixed elbow branch and constant bone lengths. The palm
+stays anchored to its wrist while it curls; the wrist base keeps its width instead
+of pinching. The index fingers and thumbs meet to frame a small rose heart before
+it pulses and releases three light particles. The cover clasp keeps the couple
+closer, with a relaxed bent elbow rather than a long horizontal reach.
 
-All 2D locations share two transparent standing WebPs (about 60 KB total)
-and six 240px face-state WebPs (about 95 KB total), plus about 40 KB for
-the clean dress/veil layers. Repeated
-SVG image references reuse the same browser resources; no atlas or video is shipped.
-Original vector source remains available as legacy artwork.
+The existing CSS rig variables still drive the poses and scene timelines. A
+MutationObserver batches host style changes before paint, updates SVG path geometry,
+and skips arm recomputation when only a heart pulse or particle changes. There is
+no second animation loop or per-frame React rendering. Held envelopes and maps
+stay upright at the moving palm. Reduced motion uses the final rendered pose;
+scene loops continue to pause offscreen and when the document is hidden.
 
-Static bridal clothing now uses separate arm-free dress and veil assets. The standing
-portrait is referenced only by the two animated arm groups; it must never be reused
-inside the torso/skirt/veil layers, where baked-in skin would create extra arms.
-The dress is split at the waist for upper-body/skirt motion and its hem is mapped
-to the visible shoe edge at y=195 (the legacy SVG ground is y=196, including
-its transparent fringe). A skin neck layer overlaps the
-chin and collar during head tilts and bows. Bridal upper-body/skirt pivots use the
-actual waist at y=125.
+Matched open/closed/happy painted face assets preserve blinks and expressions.
+The entire expression switches at the midpoint, avoiding opaque eye covers and
+ghost irises. Head tilts and bows retain a neck layer overlapping chin and collar.
+The bridal bodice blends into an overlapping skirt layer to soften the waist
+transition during bows, while the hem stays at the groom's visible foot baseline.
 
-Regression review checks paired rest/hold/wave/tilt/bow/heart poses: rasterized foot
-baselines agree within two pixels at 2x scale, the bride's crown stays lower, and
-the groom's neck has continuous opaque coverage. Hiding the two arms, head and
-shoulders must leave zero skin pixels in the static clothing. Asset tests also
-reject strong skin-colored pixels in both fabric layers.
+Browser review must check actual changing SVG path geometry and expressions,
+including complete raise/wave/lower and heart/hold/lower sequences. The unit suite
+checks bone lengths, elbow continuity, wrist anchoring, finger contact, rasterized
+surface connectivity and the cleaned jacket edges. Hiding all `[data-arm]` paths,
+head, neck, shoulders and heart must leave no skin in the static bridal clothing.
+The original vector rig remains available as legacy artwork; no animation video
+or extra raster arm assets are shipped.
 
 ## 3D
 

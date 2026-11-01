@@ -46,6 +46,8 @@ export const RIG_KEYS = [
   'ec',
   'eh',
   'heart',
+  'heart-pulse',
+  'heart-bloom',
 ] as const
 
 /**
@@ -61,8 +63,10 @@ export function chibiVars({ who, pose = 'stand', look = 'front', eyes, lean = fa
   let mood: ChibiEyes = 'open'
   if (pose === 'hold') {
     // Hai bàn tay gặp nhau ở giữa cặp đôi (khớp khoảng chồng trong .couple).
-    if (side === 'r') armR = 50
-    else armL = 50
+    // The painted bride has a higher shoulder and an outward-sloping arm.
+    const holdAngle = who === 'bride' ? 28 : 50
+    if (side === 'r') armR = holdAngle
+    else armL = holdAngle
   } else if (pose === 'carry') {
     if (side === 'r') armR = 70
     else armL = 70
@@ -70,8 +74,8 @@ export function chibiVars({ who, pose = 'stand', look = 'front', eyes, lean = fa
     if (side === 'r') armR = 95
     else armL = 95
   } else if (pose === 'heart') {
-    armL = -30
-    armR = -30
+    armL = REST
+    armR = REST
     mood = 'happy'
   } else if (pose === 'wave') {
     armR = 130
@@ -103,5 +107,7 @@ export function chibiVars({ who, pose = 'stand', look = 'front', eyes, lean = fa
     '--pose-ec': shown === 'closed' ? '1' : '0',
     '--pose-eh': shown === 'happy' ? '1' : '0',
     '--pose-heart': pose === 'heart' ? '1' : '0',
+    '--pose-heart-pulse': '0',
+    '--pose-heart-bloom': '0',
   } as CSSProperties
 }

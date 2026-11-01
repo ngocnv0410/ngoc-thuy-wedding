@@ -1,8 +1,8 @@
 import { gsap, ScrollTrigger } from '../../lib/gsap'
 import { blink, bow, rig } from '../../motion/chibi'
 
-const STANDING = { '--arm-l': '6deg', '--arm-r': '6deg', '--eo': '1', '--eh': '0', '--heart': '0', '--head-r': '0deg', '--face-x': '0px' }
-const HEART = { '--arm-l': '-30deg', '--arm-r': '-30deg', '--eo': '0', '--eh': '1', '--heart': '1' }
+const STANDING = { '--arm-l': '6deg', '--arm-r': '6deg', '--eo': '1', '--eh': '0', '--heart': '0', '--heart-pulse': '0', '--heart-bloom': '0', '--head-r': '0deg', '--face-x': '0px' }
+const HEART = { '--arm-l': '6deg', '--arm-r': '6deg', '--eo': '0', '--eh': '1', '--heart': '1' }
 
 /** A complete farewell repeats while visible: bow, wave, look at each other, share a heart. */
 export function closingMotion(root: HTMLElement) {
@@ -25,17 +25,19 @@ export function closingMotion(root: HTMLElement) {
     .add(blink(pair), 0.2)
     .add(bow(pair, 0.8), 0.8)
     // Wave with the outer hands, keeping the two silhouettes easy to read.
-    .to(groom, { '--arm-l': '128deg', '--head-r': '-5deg', '--eo': '0', '--eh': '1', duration: 0.4 }, 2.2)
-    .to(groom, { '--arm-l': '108deg', duration: 0.19, repeat: 3, yoyo: true }, 2.6)
-    .to(groom, { '--arm-l': '6deg', '--head-r': '0deg', duration: 0.4 }, 3.4)
-    .to(bride, { '--arm-r': '128deg', '--head-r': '5deg', '--eo': '0', '--eh': '1', duration: 0.4 }, 3.2)
-    .to(bride, { '--arm-r': '108deg', duration: 0.19, repeat: 3, yoyo: true }, 3.6)
-    .to(bride, { '--arm-r': '6deg', '--head-r': '0deg', duration: 0.4 }, 4.4)
-    .to(groom, { '--head-r': '7deg', '--face-x': '4px', duration: 0.6 }, 5.1)
-    .to(bride, { '--head-r': '-7deg', '--face-x': '-4px', duration: 0.6 }, 5.1)
-    .to(pair, { ...HEART, duration: 0.6, ease: 'back.out(1.3)' }, 5.9)
-    .to(pair, { '--head-r': '0deg', '--face-x': '0px', duration: 0.6 }, 7.4)
-    .to(pair, { ...STANDING, duration: 0.6 }, 9)
+    .to(groom, { '--arm-l': '128deg', '--head-r': '-5deg', '--eo': '0', '--eh': '1', duration: 0.65 }, 2.2)
+    .to(groom, { '--arm-l': '112deg', duration: 0.32, repeat: 3, yoyo: true }, 2.85)
+    .to(groom, { '--arm-l': '6deg', '--head-r': '0deg', duration: 0.55 }, 4.2)
+    .to(bride, { '--arm-r': '128deg', '--head-r': '5deg', '--eo': '0', '--eh': '1', duration: 0.65 }, 3.8)
+    .to(bride, { '--arm-r': '112deg', duration: 0.32, repeat: 3, yoyo: true }, 4.45)
+    .to(bride, { '--arm-r': '6deg', '--head-r': '0deg', duration: 0.55 }, 5.8)
+    .to(groom, { '--head-r': '7deg', '--face-x': '4px', duration: 0.6 }, 6.6)
+    .to(bride, { '--head-r': '-7deg', '--face-x': '-4px', duration: 0.6 }, 6.6)
+    .to(pair, { ...HEART, duration: 0.95 }, 7.4)
+    .to(pair, { '--heart-pulse': '1', duration: 0.34, repeat: 3, yoyo: true }, 8.35)
+    .to(pair, { '--heart-bloom': '1.4', duration: 2.3, ease: 'none' }, 8.4)
+    .to(pair, { '--head-r': '0deg', '--face-x': '0px', duration: 0.6 }, 9.8)
+    .to(pair, { ...STANDING, duration: 0.85 }, 11.2)
 
   const sync = (watcher: ScrollTrigger) => {
     const active = watcher.isActive && !document.hidden
