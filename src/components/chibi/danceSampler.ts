@@ -20,14 +20,18 @@ export function createDanceSampler(reference: DanceReference): DanceSampler {
     const row = frames[index].map((_, channel) => basis.reduce((sum, weight, offset) =>
       sum + weight * frames[Math.max(0, Math.min(frames.length - 1, index + offset - 1))][channel], 0))
     const [x, , torso, armL, elbowL, armR, elbowR, legL, kneeL, legR, kneeR, head, armUpperL, armLowerL, armUpperR, armLowerR, legUpperL, legLowerL, legUpperR, legLowerR] = row
+    const [hip = 0, scaleX = 1, scaleY = 1, skew = 0, faceY = 0] = row.slice(20)
     // Keep the lower foot grounded after filtering joint angles and lengths together.
     const radians = (angle: number) => angle * Math.PI / 180
     const footL = legUpperL * Math.cos(radians(legL)) + legLowerL * Math.cos(radians(legL + kneeL))
     const footR = legUpperR * Math.cos(radians(legR)) + legLowerR * Math.cos(radians(legR + kneeR))
-    const y = 39 - Math.max(footL, footR)
+    const xL = -7 - legUpperL * Math.sin(radians(legL)) - legLowerL * Math.sin(radians(legL + kneeL))
+    const xR = 7 - legUpperR * Math.sin(radians(legR)) - legLowerR * Math.sin(radians(legR + kneeR))
+    const foot = (x: number, y: number) => x * Math.sin(radians(hip)) + y * Math.cos(radians(hip))
+    const y = 39 - Math.max(foot(xL, footL), foot(xR, footR))
     return {
       '--lean-x': `${x}px`, '--body-y': `${y}px`,
-      '--upper-r': `${torso}deg`, '--upper-y': '0px', '--upper-sy': '1',
+      '--upper-r': `${torso}deg`, '--upper-y': '0px', '--upper-sy': `${scaleY}`,
       '--head-r': `${head}deg`, '--head-y': '0px',
       '--arm-l': `${armL}deg`, '--elbow-l': `${elbowL}deg`,
       '--arm-r': `${armR}deg`, '--elbow-r': `${elbowR}deg`,
@@ -38,6 +42,11 @@ export function createDanceSampler(reference: DanceReference): DanceSampler {
       '--arm-upper-r-length': `${armUpperR}px`, '--arm-lower-r-length': `${armLowerR}px`,
       '--leg-upper-l-length': `${legUpperL}px`, '--leg-lower-l-length': `${legLowerL}px`,
       '--leg-upper-r-length': `${legUpperR}px`, '--leg-lower-r-length': `${legLowerR}px`,
+      ...(row.length > 20 ? {
+        '--hip-r': `${hip}deg`, '--upper-sx': `${scaleX}`, '--upper-skew': `${skew}deg`,
+        '--head-sx': `${1 / scaleX}`, '--head-sy': `${1 / scaleY}`, '--head-skew': `${-skew}deg`,
+        '--face-y': `${faceY}px`,
+      } : {}),
       '--eo': '0', '--ec': '0', '--eh': '1', '--heart': '0',
     }
   }

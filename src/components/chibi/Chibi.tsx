@@ -38,6 +38,7 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
     <g className={styles.figure} data-articulated={articulated}>
       <ellipse {...SHARED.shadow} className={styles.shadow} />
       <g className={styles.body}>
+        <g className={articulated ? styles.hips : undefined} style={origin(PIVOT.upper)} data-dance-hips={articulated || undefined}>
         {!groom && <g className={styles.upper} style={origin(PIVOT.upper)}>
           <g className={styles.head} style={origin(PIVOT.head)}>
             <g className={styles.veil} style={origin(PIVOT.veil)}>
@@ -78,7 +79,7 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
           </g>
         )}
 
-        <g className={styles.upper} style={origin(PIVOT.upper)}>
+        <g className={styles.upper} style={origin(PIVOT.upper)} data-dance-torso={articulated || undefined}>
           {!groom && (
             <g className={styles.head} style={origin(PIVOT.head)}>
               <path d={BRIDE.hairBack} className={styles.hairBride} />
@@ -155,6 +156,7 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
             )}
           </g>
           {articulated && <><DanceArm side="l" groom={groom} /><DanceArm side="r" groom={groom} /></>}
+        </g>
         </g>
       </g>
     </g>
