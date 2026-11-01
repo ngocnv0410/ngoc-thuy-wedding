@@ -234,3 +234,22 @@
 .chestHeart {
   opacity: var(--heart, var(--pose-heart));
 }
+
+/* Articulated dance rig: rounded limb segments overlap at shoulder/elbow/hip/knee. */
+.figure [data-bone] { fill: none; stroke-linecap: round; }
+.figure [data-bone].suit { stroke: var(--chibi-suit); }
+.figure [data-bone].skin { stroke: var(--chibi-skin); }
+.figure [data-bone].cloth { stroke: var(--chibi-cloth); }
+.figure [data-bone='upper-arm'], .figure [data-bone='thigh'] { stroke-width: 10px; }
+.figure [data-bone='forearm'], .figure [data-bone='shin'] { stroke-width: 8px; }
+.figure [data-bone='cuff'] { stroke-width: 8px; }
+.danceArmL { transform: rotate(var(--arm-l, 6deg)); }
+.danceArmR { transform: rotate(var(--arm-r, -6deg)); }
+.elbowL { transform: rotate(var(--elbow-l, 0deg)); }
+.elbowR { transform: rotate(var(--elbow-r, 0deg)); }
+.danceLegL { transform: rotate(var(--leg-l, 0deg)); }
+.danceLegR { transform: rotate(var(--leg-r, 0deg)); }
+.kneeL { transform: rotate(var(--knee-l, 0deg)); }
+.kneeR { transform: rotate(var(--knee-r, 0deg)); }
+.danceArmL, .danceArmR, .elbowL, .elbowR,
+.danceLegL, .danceLegR, .kneeL, .kneeR { transform-origin: 0 0; }

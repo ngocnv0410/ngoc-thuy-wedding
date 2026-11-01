@@ -10,7 +10,7 @@ const origin = ([x, y]: readonly [number, number]): CSSProperties => ({ transfor
 const MIRROR = `matrix(-1 0 0 1 ${MIRROR_X} 0)`
 
 /** Rig một nhân vật (các `<g>` lồng nhau), dùng trong `<Chibi>` hoặc lồng thẳng vào SVG khác. */
-export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held' | 'hand'>) {
+export function ChibiFigure({ who, held, hand, articulated = false }: Pick<FigureProps, 'who' | 'held' | 'hand'> & { articulated?: boolean }) {
   const groom = who === 'groom'
   const side = hand ?? (groom ? 'r' : 'l')
   const holder = (at: Side) =>
@@ -44,7 +44,14 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
           </g>
         )}
 
-        {groom ? (
+        {articulated ? <>
+          <DanceLeg side="l" groom={groom} />
+          <DanceLeg side="r" groom={groom} />
+          {!groom && <g className={styles.skirt} style={origin(PIVOT.skirt)}>
+            <path d="M46 139L74 139Q81 160 88 177Q60 184 32 177Q39 160 46 139Z" className={styles.cloth} />
+            <path d="M54 146L49 179M66 146L71 179" className={styles.fold} />
+          </g>}
+        </> : groom ? (
           <>
             <g className={styles.legL} style={origin(PIVOT.hipL)}>
               <path d={GROOM.leg} className={styles.suit} />
@@ -92,6 +99,7 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
             </>
           )}
 
+          {!articulated && <>
           <g className={styles.armL} style={origin(PIVOT.shoulderL)}>
             {arm}
             {holder('l')}
@@ -100,6 +108,7 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
             <g transform={MIRROR}>{arm}</g>
             {holder('r')}
           </g>
+          </>}
           <path d={SHARED.chestHeart} className={styles.chestHeart} />
 
           <g className={styles.head} style={origin(PIVOT.head)}>
@@ -142,10 +151,43 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
               </>
             )}
           </g>
+          {articulated && <><DanceArm side="l" groom={groom} /><DanceArm side="r" groom={groom} /></>}
         </g>
       </g>
     </g>
   )
+}
+
+/** Each child starts exactly at its parent's endpoint; rounded overlaps close the joints. */
+function DanceArm({ side, groom }: { side: Side; groom: boolean }) {
+  const x = side === 'l' ? 45 : 75
+  return <g transform={`translate(${x} 114)`}>
+    <g className={side === 'l' ? styles.danceArmL : styles.danceArmR}>
+      <path d="M0 0L0 17" className={groom ? styles.suit : styles.skin} strokeWidth={groom ? 11 : 8} data-bone="upper-arm" />
+      <g transform="translate(0 17)">
+        <g className={side === 'l' ? styles.elbowL : styles.elbowR}>
+          <path d="M0 0L0 13" className={groom ? styles.suit : styles.skin} strokeWidth={groom ? 10 : 7} data-bone="forearm" />
+          {groom && <path d="M0 11L0 14" className={styles.cloth} strokeWidth="9" data-bone="cuff" />}
+          <ellipse cx="0" cy="17" rx="4.5" ry="5" className={styles.skin} />
+        </g>
+      </g>
+    </g>
+  </g>
+}
+
+function DanceLeg({ side, groom }: { side: Side; groom: boolean }) {
+  const x = side === 'l' ? 53 : 67
+  return <g transform={`translate(${x} 150)`}>
+    <g className={side === 'l' ? styles.danceLegL : styles.danceLegR}>
+      <path d="M0 0L0 20" className={groom ? styles.suit : styles.skin} strokeWidth="11" data-bone="thigh" />
+      <g transform="translate(0 20)">
+        <g className={side === 'l' ? styles.kneeL : styles.kneeR}>
+          <path d="M0 0L0 19" className={groom ? styles.suit : styles.skin} strokeWidth="10" data-bone="shin" />
+          <path d="M-4 17Q-7 23 0 23L6 23L5 17Z" className={groom ? styles.shoe : styles.cloth} />
+        </g>
+      </g>
+    </g>
+  </g>
 }
 
 function Eyes({ bride }: { bride: boolean }) {
@@ -200,7 +242,7 @@ export function Chibi({ size = 'md', headOnly = false, dance = false, className,
   return (
     <span className={classes} style={chibiVars(figure)} data-chibi={figure.who} data-anim={anim} aria-hidden="true">
       <svg ref={danceRef} viewBox={headOnly ? HEAD_VIEWBOX : `0 0 ${VIEW_W} ${VIEW_H}`} focusable="false">
-        <ChibiFigure who={figure.who} held={figure.held} hand={figure.hand} />
+        <ChibiFigure articulated={dance} who={figure.who} held={figure.held} hand={figure.hand} />
       </svg>
     </span>
   )
