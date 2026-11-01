@@ -6,9 +6,11 @@ export function usesAlternateMusic(search: string): boolean {
 }
 
 export function selectMusic(defaultTrack: Music | undefined, search: string): Music | undefined {
-  if (new URLSearchParams(search).get('music') === 'original') return {
-    src: 'audio/forever-in-love-kenny-g.mp3', title: 'Forever in Love', artist: 'Kenny G',
-    artistUrl: 'https://www.kennyg.com/', sourceUrl: 'https://www.nhaccuatui.com/song/0zgSpVtFWT',
+  if (new URLSearchParams(search).get('music') === 'bangbangbang') return {
+    src: 'audio/bang-bang-bang-chorus.mp3',
+    title: 'BANG BANG BANG · Điệp khúc',
+    artist: 'BIGBANG',
+    dance: 'bang-bang-bang',
   }
   if (!usesAlternateMusic(search)) return defaultTrack
   return {
