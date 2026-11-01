@@ -1,37 +1,47 @@
-# Reference dance — draft review
+# Slow-reference dance review
 
-This branch repairs limb articulation and replaces the procedural beat loop with
-854 pose samples extracted from 00:00–00:28.444 of the supplied video.
+This revision replaces all multi-person tracking data with poses extracted from
+one unobstructed performer in the lower panel of the new 576×1024 mirrored tutorial.
 
-## Verified
+## Timing and data
 
-- Nested upper-arm/forearm and thigh/shin chains share endpoints, with rounded
-  overlapping geometry at each joint. The measured elbow gap in Chromium is
-  below 0.01 CSS pixels at eight sampled timestamps.
-- Cubic interpolation samples the persistent audio clock; pause, seeks and
-  reduced-motion preferences retain their existing behavior.
-- The default soundtrack remains Forever in Love. Dance is opt-in through
-  `?music=bangbangbang`.
+The existing soundtrack is 00:00–00:28.444 of the original reference.
+Audio chroma alignment against the slow tutorial gives:
 
-## Not accepted as a faithful reproduction
+    tutorialSeconds = 0.989405 + audioSeconds × 1.333821
 
-The source has five overlapping dancers. A single-view pose detector sometimes
-switches from the front-center performer to the dancer behind, including around
-4, 8, 12 and 20 seconds. Missing detections are interpolated, with median filtering,
-anatomical angle bounds and smoothing. This avoids disconnected limbs, but does
-not recover the true hidden movement. Depth, body turns, hand/finger poses and
-foot contact are not reconstructed. The clip repeats at its existing 28.444s
-boundary, which does not establish a seamless motion loop.
+The 95th percentile residual against the audio alignment is 0.058 seconds.
+854 samples at 30 fps cover the selected choreography, corresponding to roughly
+00:00.989–00:38.96 in the slow tutorial. No detections are missing in that interval.
+The source ends with a later full-speed demonstration; it is not used here.
 
-Keep this PR as a draft. Meeting the exact-choreography request requires manual
-frame-by-frame correction against the reference, including the occluded joints,
-and visual acceptance of the full sequence. Passing code tests is not evidence
-that those movements match.
+## Rig
 
-## Extraction provenance
+Shoulder/elbow and hip/knee child joints share the endpoints of their parent
+segments. Projected bone lengths also come from the reference, so a forward-
+pointing arm shortens instead of sticking out at its full length. The same
+length drives both the drawn segment and child attachment. Rounded segments
+close the joints; cuff and hand positions follow the forearm endpoint.
 
-MediaPipe Pose Landmarker Full, float16 model; CPU video mode, one pose.
-The detector sees a crop x=180..405, y=395..750 of the 576×1024 source at 30 fps.
-Landmarks are mapped to 2D joint angles and local torso coordinates; missing
-samples are interpolated. The output is `referenceDance.json`. No pose-detection
-runtime, model downloads or webcam permissions are added to the website.
+The dance rig uses longer arms and a smaller head to leave space for crossed
+and overhead gestures. The lower foot anchors the stance to the ground rather
+than allowing the whole figure to float while bending its knees. Original
+(non-dancing) illustrations keep their existing proportions.
+
+Joint tracks use filtering and continuous interpolation. Ambiguous projected
+rotations are velocity-limited to avoid full turns when the arm points toward
+the camera. Nodes are cached once; the frame loop performs no DOM searches.
+
+## Checks and limits
+
+Checked cross-body arms, overhead gestures, hand at hip and stance changes
+against the source. Tests cover media timestamps, finite values, interpolation,
+positive bone lengths and ground contact. Chromium checks actual elbow endpoint
+coincidence at eight timestamps, pause, reduced motion and page errors.
+
+This is a 2D retarget onto illustrated characters, not a pixel-identical copy:
+it does not reproduce finger articulation, body depth or clothing physics.
+The source is mirrored and the displayed directions are preserved. The existing
+28.444-second soundtrack loop boundary is retained.
+
+Default music remains Forever in Love; only `?music=bangbangbang` enables dance.

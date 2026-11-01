@@ -253,3 +253,8 @@
 .kneeR { transform: rotate(var(--knee-r, 0deg)); }
 .danceArmL, .danceArmR, .elbowL, .elbowR,
 .danceLegL, .danceLegR, .kneeL, .kneeR { transform-origin: 0 0; }
+
+/* Give the dance rig room to lift its hands around the oversized chibi head. */
+.figure[data-articulated='true'] .head {
+  transform: translateY(var(--head-y, 0px)) rotate(var(--head-r, 0deg)) scale(0.7);
+}

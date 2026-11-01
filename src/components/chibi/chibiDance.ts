@@ -11,7 +11,7 @@ export function dancePose(seconds: number): Record<string, string> {
     const a = value(-1), b = value(0), c = value(1), d = value(2)
     return 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t)
   })
-  const [x, y, torso, armL, elbowL, armR, elbowR, legL, kneeL, legR, kneeR, head] = row
+  const [x, y, torso, armL, elbowL, armR, elbowR, legL, kneeL, legR, kneeR, head, armUpperL, armLowerL, armUpperR, armLowerR, legUpperL, legLowerL, legUpperR, legLowerR] = row
   return {
     '--lean-x': `${x}px`, '--body-y': `${y}px`,
     '--upper-r': `${torso}deg`, '--upper-y': '0px', '--upper-sy': '1',
@@ -21,6 +21,10 @@ export function dancePose(seconds: number): Record<string, string> {
     '--leg-l': `${legL}deg`, '--knee-l': `${kneeL}deg`,
     '--leg-r': `${legR}deg`, '--knee-r': `${kneeR}deg`,
     '--skirt': `${-torso * 0.3}deg`, '--veil': `${-torso * 0.25}deg`, '--tuft': '0deg',
+    '--arm-upper-l-length': `${armUpperL}px`, '--arm-lower-l-length': `${armLowerL}px`,
+    '--arm-upper-r-length': `${armUpperR}px`, '--arm-lower-r-length': `${armLowerR}px`,
+    '--leg-upper-l-length': `${legUpperL}px`, '--leg-lower-l-length': `${legLowerL}px`,
+    '--leg-upper-r-length': `${legUpperR}px`, '--leg-lower-r-length': `${legLowerR}px`,
     '--eo': '0', '--ec': '0', '--eh': '1', '--heart': '0',
   }
 }

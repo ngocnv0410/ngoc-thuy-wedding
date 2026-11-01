@@ -26,3 +26,13 @@ describe('reference-video choreography', () => {
     expect(dancePose(1000)).toEqual(dancePose((reference.frames.length - 1) / 30))
   })
 })
+
+it('keeps articulated bone lengths positive and supports a grounded stance', () => {
+  for (const row of reference.frames) {
+    for (const length of row.slice(12)) expect(length).toBeGreaterThan(0)
+    const radians = (angle: number) => angle * Math.PI / 180
+    const left = row[16] * Math.cos(radians(row[7])) + row[17] * Math.cos(radians(row[7] + row[8]))
+    const right = row[18] * Math.cos(radians(row[9])) + row[19] * Math.cos(radians(row[9] + row[10]))
+    expect(150 + row[1] + Math.max(left, right)).toBeCloseTo(189, 1)
+  }
+})
