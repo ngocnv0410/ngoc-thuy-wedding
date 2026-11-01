@@ -260,6 +260,19 @@ describe('background piano', () => {
     expect(player.getSnapshot()).toMatchObject({ wanted: true, playing: true, error: false })
   })
 
+  it('notifies renderers after a paused seek without changing playback intent', () => {
+    player.mountControls({ append: vi.fn() } as unknown as HTMLElement, 'Original')
+    const listener = vi.fn()
+    player.subscribe(listener)
+    const state = player.getSnapshot()
+    audio.currentTime = 8
+    audio.dispatchEvent(new Event('seeked'))
+    expect(listener).toHaveBeenCalledOnce()
+    expect(player.getSnapshot()).toBe(state)
+    expect(player.currentTime).toBe(8)
+    expect(audio.play).not.toHaveBeenCalled()
+  })
+
   it('keeps snapshots stable until an actual playback-state change', () => {
     const snapshot = player.getSnapshot()
     player.configure('audio/canon-in-d-piano.mp3')
