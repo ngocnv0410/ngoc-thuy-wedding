@@ -9,7 +9,8 @@ export function invitationShareUrl(currentUrl: string, basePath: string, preferr
   const fallback = new URL(basePath, currentUrl)
   fallback.search = ''; fallback.hash = ''
   const finish = (url: URL) => {
-    if (musicModeFromSearch(new URL(currentUrl).search) === 'bangbangbang') url.searchParams.set('music', 'bangbangbang')
+    const mode = musicModeFromSearch(new URL(currentUrl).search)
+    if (mode !== 'original') url.searchParams.set('music', mode)
     return url.href
   }
   if (!preferredUrl) return finish(fallback)

@@ -25,6 +25,11 @@ describe('invitation sharing', () => {
     expect(invitationShareUrl('https://wedding.example/?music=unknown&guest=private', '/'))
       .toBe('https://wedding.example/')
   })
+  it('preserves BAD and the preview version while stripping private query data', () => {
+    expect(invitationShareUrl('https://wedding.example/?music=bad&guest=private#bia', '/', 'https://wedding.example/?v=abc'))
+      .toBe('https://wedding.example/?v=abc&music=bad')
+    expect(invitationShareUrl('https://wedding.example/?music=bad', '/')).toBe('https://wedding.example/?music=bad')
+  })
   it('does not forward the removed Nhạc cưới mode', () => {
     expect(invitationShareUrl('https://wedding.example/?music=youtube&guest=private', '/')).toBe('https://wedding.example/')
   })

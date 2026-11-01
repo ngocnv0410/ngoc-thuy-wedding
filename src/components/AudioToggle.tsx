@@ -8,6 +8,7 @@ import { MusicModePicker, type MusicModeControl } from './MusicModePicker'
 export function AudioToggle({ track, opening, modes, mode, onModeChange }: { track: Music; opening: boolean } & MusicModeControl) {
   const state = useSyncExternalStore(music.subscribe, music.getSnapshot)
   const [expanded, setExpanded] = useState(false)
+  const [controlsReady, setControlsReady] = useState(false)
   const dockRef = useRef<HTMLDivElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
   const detailsRef = useRef<HTMLButtonElement>(null)
@@ -15,13 +16,14 @@ export function AudioToggle({ track, opening, modes, mode, onModeChange }: { tra
   const initialTitle = useRef(track.title)
   const visible = expanded && !opening
 
+  // Mount once on first open: removing native controls when hiding the panel can pause audio.
   useEffect(() => {
-    if (visible && controlsRef.current) return music.mountControls(controlsRef.current, initialTitle.current)
-  }, [visible])
+    if (controlsReady && controlsRef.current) return music.mountControls(controlsRef.current, initialTitle.current)
+  }, [controlsReady])
 
   useEffect(() => {
     controlsRef.current?.querySelector('audio')?.setAttribute('aria-label', track.title)
-  }, [track.title, visible])
+  }, [track.title, controlsReady])
 
   useEffect(() => {
     if (!visible) return
@@ -41,12 +43,17 @@ export function AudioToggle({ track, opening, modes, mode, onModeChange }: { tra
     }
   }, [visible])
 
+  const openPanel = () => {
+    setControlsReady(true)
+    setExpanded(true)
+  }
+
   return (
     <div ref={dockRef} className={styles.dock} data-opening={opening}>
       <div className={styles.controls}>
         <button type="button" className={styles.toggle} aria-pressed={state.wanted}
           aria-label={state.wanted ? 'Tắt nhạc nền' : 'Bật nhạc nền'} onClick={() => {
-            if (state.error) setExpanded(true)
+            if (state.error) openPanel()
             music.toggle()
           }}>
           <span className={styles.bars} data-playing={state.playing} aria-hidden="true">
@@ -54,14 +61,17 @@ export function AudioToggle({ track, opening, modes, mode, onModeChange }: { tra
           </span>
         </button>
         <button ref={detailsRef} type="button" className={styles.details} aria-label="Chọn chế độ thiệp"
-          aria-expanded={visible} aria-controls={panelId} onClick={() => setExpanded((value) => !value)}>
+          aria-expanded={visible} aria-controls={panelId} onClick={() => {
+            setControlsReady(true)
+            setExpanded((value) => !value)
+          }}>
           <span>Chế độ</span>
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="m6 8 4 4 4-4" /></svg>
         </button>
       </div>
       {state.error && !visible && !opening && (
         <button type="button" className={styles.retryHint} aria-label="Thử phát lại nhạc" onClick={() => {
-          setExpanded(true)
+          openPanel()
           music.play()
         }}>Chưa tải được nhạc · Thử lại</button>
       )}
