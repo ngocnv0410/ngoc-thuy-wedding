@@ -17,8 +17,10 @@ handler, including on iPhone.
 
 ## Optional online MP3 sources
 
-Dance data loads on demand for the selected mode, shared by both characters.
-The default invitation does not download either dance recording or pose track.
+The invitation paints first, then idle tasks warm the 3D renderer and both dance
+tracks in the background. The MP3 recordings are not prefetched. Slow 2G and
+Save-Data connections load 3D only when a dance is selected. See
+[3D dance](3d-dance.md) for model, animation and loading details.
 
 Set these build variables (locally in `.env.local`, or as GitHub Actions
 repository variables for the Pages workflow):

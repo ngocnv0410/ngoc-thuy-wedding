@@ -84,6 +84,8 @@ export class MusicPlayer {
       this.positionStart()
       if (!this.state.wanted) this.update({ loading: false })
     })
+    // Renderers also need a paused seek to update the displayed pose.
+    audio.addEventListener('seeked', () => this.listeners.forEach((listener) => listener()))
     audio.addEventListener('ended', () => {
       if (!this.startSeconds || !this.state.wanted) return
       this.positioned = false

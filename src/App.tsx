@@ -1,4 +1,5 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { scheduleDancePreload } from './components/dance3d/preload'
 import { AudioToggle } from './components/AudioToggle'
 import { ChapterNav, type Chapter } from './components/ChapterNav'
 import { LightLayer } from './components/LightLayer'
@@ -39,6 +40,7 @@ function shouldShowOpening(): boolean {
 }
 
 function App() {
+  useEffect(() => scheduleDancePreload(), [])
   const [mode, setMode] = useState<MusicModeId>(initialMode)
   const track = modes.find((item) => item.id === mode)?.track
   const wedding = { ...weddingContent, music: track }

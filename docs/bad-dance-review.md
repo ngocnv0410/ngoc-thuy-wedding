@@ -1,5 +1,9 @@
 # BAD · ATEEZ challenge
 
+The active dance renderer is now volumetric 3D, using the world-landmark track
+described in [3D dance](3d-dance.md). The SVG projection below documents the
+earlier 2D rig and remains available as legacy data.
+
 The owner supplied a 720×1280, 30 fps single-performer MP4, 27.421315 seconds long.
 SHA-256: `43ccdf9d997774a6c18ea028f20cdcf1b5de7c67d202210d91108e85db50db5b`.
 
