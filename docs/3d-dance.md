@@ -2,12 +2,14 @@
 
 BAD and BANG BANG now render actual volumetric bride/groom meshes with a Three.js
 humanoid bone hierarchy in the selected dance on the invitation cover.
-The opening and closing keep the original SVG chibi illustrations. The model
-uses the original chibi head/body proportions and exact front hair/jacket
-Bezier silhouettes, with rounded 3D heads, expressive brown eyes, ivory clothing,
-a low bridal bun and a small side blossom pin. Hair is beveled and wrapped
-around the head; limbs and the full-length skirt remain volumetric. It is generated in code: no remote model service, texture pack or video is
-needed. The ordinary invitation and other illustrations retain their existing layout.
+The opening and all other 2D illustrations now use the same owner-approved
+character artwork; see [approved design](approved-character-design.md).
+
+The model uses the owner-approved head artwork on rounded, textured 3D geometry,
+with a neutral bright taupe/white outfit and a real articulated bone hierarchy.
+Standing, envelope-carrying and heart-gesture illustrations use the same family
+throughout the 2D invitation. See [approved design](approved-character-design.md)
+for artwork, geometry and profile limitations.
 
 ## Animation source
 
@@ -43,8 +45,12 @@ finger movement, face expressions or cloth physics exactly.
 
 Production build: the shared Three.js module is about 187 KB gzip; the renderer
 and procedural models about 5 KB; both motion tracks together about 98 KB gzip.
-That is approximately **290 KB of background downloads after the first paint**.
-The first-page JS grows by only a few KB and no large model/video asset is added.
+Head and clothing detail maps add about 170 KB. Together that is approximately
+**460 KB of background downloads after the first paint** for the dance renderer,
+art and both motion tracks. The two opening illustrations add about 60 KB; other
+2D pose images load lazily.
+First-page JS stays around 324 KB before gzip, with renderer and maps in separate
+chunks. No large model/video asset is added.
 Existing 3D doors share the Three.js chunk.
 
 Each scene renders at most 30 fps with DPR capped at 1.25, without shadow maps or

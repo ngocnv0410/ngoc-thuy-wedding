@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Box3, Quaternion, ShapeGeometry, Vector3 } from 'three'
-import { GROOM } from '../chibi/chibiArt'
-import { chibiShapes } from './svgShapes'
+import { Box3, Quaternion, Texture, Vector3 } from 'three'
 import bad from './badMotion.json'
 import bang from './bangMotion.json'
 import { CHIBI_BONES, createWeddingCharacter } from './character'
@@ -57,20 +55,23 @@ it('warms all animation data on normal networks while respecting data saving', (
   expect(shouldPreloadDance({ effectiveType: '2g' })).toBe(false)
 })
 
-it('retains the original large-head chibi silhouette and recognizable art details', () => {
-  const actor = createWeddingCharacter(false), bride = createWeddingCharacter(true)
+it('uses the approved portrait on rounded heads and bright full-length clothing', () => {
+  const groomTexture = new Texture(), brideTexture = new Texture()
+  const art = { groom: groomTexture, bride: brideTexture }
+  const actor = createWeddingCharacter(false, art), bride = createWeddingCharacter(true, art)
   try {
     actor.group.updateMatrixWorld(true)
-    const face = actor.head.getObjectByName('original-chibi-face')!
-    const jacket = actor.spine.getObjectByName('original-groom-jacket')!
-    const headSize = new Box3().setFromObject(face).getSize(new Vector3())
-    const jacketSize = new Box3().setFromObject(jacket).getSize(new Vector3())
-    expect(headSize.x / jacketSize.x).toBeGreaterThan(1.8)
-    expect(headSize.y).toBeGreaterThan(jacketSize.y * 1.3)
-    expect(actor.head.getObjectByName('original-groom-tuft')).toBeDefined()
+    const head = actor.head.getObjectByName('approved-portrait-head') as import('three').Mesh
+    const jacket = actor.spine.getObjectByName('approved-taupe-jacket')!
+    const size = new Box3().setFromObject(head).getSize(new Vector3())
+    const body = new Box3().setFromObject(jacket).getSize(new Vector3())
+    expect(size.x / body.x).toBeGreaterThan(1.8)
+    expect(size.z).toBeGreaterThan(.15)
+    expect((head.material as import('three').MeshBasicMaterial).map).toBe(groomTexture)
     expect(bride.head.getObjectByName('low-nape-bun')).toBeDefined()
-    expect(bride.group.getObjectByName('full-length-bridal-skirt')).toBeDefined()
-  } finally { actor.dispose(); bride.dispose() }
+    expect(bride.group.getObjectByName('approved-white-gown')).toBeDefined()
+    expect(bride.group.getObjectByName('approved-white-veil')).toBeDefined()
+  } finally { actor.dispose(); bride.dispose(); groomTexture.dispose(); brideTexture.dispose() }
 })
 it('removes estimator-driven full-turn snaps from the complete BAD animation', () => {
   const target: number[] = [], previous: number[] = []
@@ -89,18 +90,4 @@ it('removes estimator-driven full-turn snaps from the complete BAD animation', (
     }
     previous.splice(0, previous.length, ...target)
   }
-})
-
-it('keeps the original groom hair silhouette when adding rounded 3D depth', () => {
-  const actor = createWeddingCharacter(false)
-  const original = new ShapeGeometry(chibiShapes(GROOM.hair, 60, 106))
-  try {
-    original.computeBoundingBox()
-    const hair = actor.head.getObjectByName('original-chibi-hair') as import('three').Mesh
-    hair.geometry.computeBoundingBox()
-    for (const axis of ['x', 'y'] as const) {
-      expect(Math.abs(hair.geometry.boundingBox!.min[axis] - original.boundingBox!.min[axis])).toBeLessThan(.02)
-      expect(Math.abs(hair.geometry.boundingBox!.max[axis] - original.boundingBox!.max[axis])).toBeLessThan(.02)
-    }
-  } finally { original.dispose(); actor.dispose() }
 })

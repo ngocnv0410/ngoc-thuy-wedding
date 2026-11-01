@@ -1,21 +1,17 @@
-# Chibi likeness and animation review
+# Chibi artwork review
 
-The opening was restored to the original `Chibi` SVG components, including their
-existing host animation hooks. It never replaces them with a 3D stage, regardless
-of soundtrack. The original cover and closing illustrations are also retained
-unless a dance is selected on the cover. No original SVG artwork was redrawn.
+All active 2D illustrations follow the owner-approved bright wedding couple,
+including the opening, normal cover, map figures, envelope-carrying gift cards,
+QR dialogs, guestbook and closing heart gesture. The 3D dancers use portraits
+and garment details derived from the same approved design. The original vector
+source remains in the repository as legacy artwork.
 
-The cover’s 3D dancers use the original head/body proportions: a large round face,
-small torso, short arms and legs, warm brown suit/hair, ivory bridal dress and
-soft brown facial lines. Front hair, jacket, bow tie and bodice contours come
-from `chibiArt.ts`. Rounded geometry adds depth; it does not replace the hairstyle
-with the prior generic clay head. The bride has a low nape bun, side blossom pin
-and full-length gown, matching the original design rather than a crown.
+See [approved character design](approved-character-design.md) for assets, loading
+behavior, geometry and the limitations of reconstructing from one approved view.
 
-Visual checks include the original opening, front and side views, bent postures,
-raised arms and stance changes on both tracks at 1, 5, 10, 15, 18, 22 and 26 seconds.
-Both tracks are also run in real time, with video captured, through the loop
-boundary. Browser checks verify media synchronization, pause/resume, switching
-songs, reduced motion, WebGL fallback and no mobile overflow. Unit checks cover
-original hair silhouette bounds, chibi proportions, fixed bone lengths, contact
-with the ground and rotation limits throughout the BAD recording.
+Visual review covers the opening, bright/dark backgrounds, QR dialogs and
+full real-time playback of BAD and BANG BANG through the loop boundary. Captured
+frames at 1/5/10/15/18/22/26 seconds check the face, clothing, bowing, raised arms
+and stance changes. Automated checks cover asset loading, SVG-map embedding,
+carry/heart poses, media synchronization, context loss, reduced motion, pausing,
+offscreen rendering, bone lengths, grounding and whole-track rotation limits.
