@@ -1,164 +1,169 @@
 import {
-  BackSide, Bone, BufferGeometry, CylinderGeometry, DataTexture, DoubleSide, ExtrudeGeometry,
-  Group, LatheGeometry, Line, LineBasicMaterial, LineLoop, Mesh, MeshBasicMaterial, MeshToonMaterial,
-  NearestFilter, Quaternion, RedFormat, SphereGeometry, TorusGeometry, Vector2, Vector3,
-  type Material, type Object3D,
+  Bone, BufferGeometry, CylinderGeometry, DoubleSide, Group, LatheGeometry, Mesh,
+  MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, Quaternion, SphereGeometry,
+  TorusGeometry, Vector2, Vector3, type Material, type Object3D,
 } from 'three'
-import { BRIDE, GROOM } from '../chibi/chibiArt'
-import { chibiShapes } from './svgShapes'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
+import { approvedHeadSize, type CharacterArt } from './approvedArt'
 
 export interface WeddingCharacter {
   group: Group; pelvis: Bone; spine: Bone; head: Bone; limbs: Bone[]; ankles: Bone[]
   skirt?: Mesh; apply: (pose: number[]) => void; dispose: () => void
 }
 const DOWN = new Vector3(0, -1, 0)
-// Original artwork is 120 × 200: large head, a short jacket/bodice and short legs.
 export const CHIBI_BONES = { upperArm: .18, forearm: .17, thigh: .20, shin: .19, neck: .44 } as const
 
-export function createWeddingCharacter(bride: boolean): WeddingCharacter {
+/** The approved portrait is a painted surface on a rounded, articulated 3D head, never a billboard. */
+export function approvedHeadGeometry(bride: boolean): PlaneGeometry {
+  const { width, height } = approvedHeadSize(bride)
+  const geometry = new PlaneGeometry(width, height, 48, 48)
+  geometry.translate(0, height / 2 - .025, 0)
+  const positions = geometry.getAttribute('position')
+  for (let i = 0; i < positions.count; i++) {
+    const x = positions.getX(i), y = positions.getY(i)
+    const volume = .10 + .28 * Math.sqrt(Math.max(0, 1 - (x / .52) ** 2 - ((y - .46) / .58) ** 2))
+    const nose = .035 * Math.exp(-((x / .045) ** 2) - ((y - .17) / .06) ** 2)
+    positions.setZ(i, volume + nose)
+  }
+  geometry.computeVertexNormals()
+  return geometry
+}
+
+export function createWeddingCharacter(bride: boolean, art?: CharacterArt): WeddingCharacter {
   const group = new Group(); group.name = bride ? 'bride-3d' : 'groom-3d'
   const geometries: BufferGeometry[] = [], materials: Material[] = []
   const keep = <T extends BufferGeometry>(item: T): T => { geometries.push(item); return item }
   const ball = keep(new SphereGeometry(1, 24, 18)), tube = keep(new CylinderGeometry(1, 1, 1, 16))
-  const gradient = new DataTexture(new Uint8Array([165, 205, 235, 255]), 4, 1, RedFormat)
-  gradient.minFilter = NearestFilter; gradient.magFilter = NearestFilter; gradient.needsUpdate = true
-  const toon = (color: string) => {
-    const material = new MeshToonMaterial({ color, gradientMap: gradient }); materials.push(material); return material
+  const material = (color: string, roughness = .8, glow = 0) => {
+    const result = new MeshStandardMaterial({ color, roughness, emissive: color, emissiveIntensity: glow })
+    materials.push(result); return result
   }
-  const basic = (color: string) => { const m = new MeshBasicMaterial({ color }); materials.push(m); return m }
-  const skin = toon('#f7e1cc'), hair = toon(bride ? '#48352c' : '#3e3029')
-  const cloth = toon('#fffaf3'), suit = toon('#6e5a4b'), shoes = toon('#3b2c22'), gold = toon('#c6a66b')
-  cloth.emissive.set('#fffaf3'); cloth.emissiveIntensity = .15
-  const hairSurface = (x: number, y: number) => .03 + .28 * Math.sqrt(Math.max(0, 1 - (x / .435) ** 2 - ((y - .52) / .445) ** 2))
-  const iris = basic('#8a5a34'), pupil = basic('#3b2c22'), white = basic('#fffaf3'), blush = basic('#e9b4a6')
-  const outline = new MeshBasicMaterial({ color: '#3b2c22', side: BackSide }); materials.push(outline)
-  const ink = new LineBasicMaterial({ color: '#49382c' }), foldInk = new LineBasicMaterial({ color: '#c6b89e' })
-  materials.push(ink, foldInk)
-  function mesh(parent: Object3D, geometry: BufferGeometry, material: Material, pos: number[], scale = [1, 1, 1], name?: string) {
-    const item = new Mesh(geometry, material); item.position.fromArray(pos); item.scale.fromArray(scale)
+  const skin = new MeshBasicMaterial({ color: '#fae3d7', toneMapped: false }); materials.push(skin)
+  const hair = material('#705342', .72, .04)
+  const cloth = material('#ffffff', .86, .25), suit = material('#7d6658', .86, .02)
+  const gownWhite = new MeshBasicMaterial({ color: '#fffefd', toneMapped: false }); materials.push(gownWhite)
+  const lapel = material('#a38c7c', .9, .02), shoes = material('#705347', .45, .03)
+  const gold = material('#d6bb8c', .55, .08)
+  const faceMaterial = new MeshBasicMaterial({ map: art?.[bride ? 'bride' : 'groom'], color: '#ffffff', alphaTest: .32, side: DoubleSide, toneMapped: false })
+  materials.push(faceMaterial)
+  function mesh(parent: Object3D, geometry: BufferGeometry, mat: Material | Material[], pos: number[], scale = [1, 1, 1], name?: string) {
+    const item = new Mesh(geometry, mat); item.position.fromArray(pos); item.scale.fromArray(scale)
     if (name) item.name = name
     parent.add(item); return item
   }
-  const sphere = (parent: Object3D, material: Material, pos: number[], scale: number[], name?: string) => mesh(parent, ball, material, pos, scale, name)
-  const trace = (parent: Object3D, path: string, ox: number, oy: number, z: number, material = ink, closed = false, roundedHead = false) => {
-    for (const shape of chibiShapes(path, ox, oy)) {
-      const points = shape.getPoints(32).map(p => new Vector3(p.x, p.y, roundedHead ? hairSurface(p.x, p.y) + .008 : z))
-      const geometry = keep(new BufferGeometry().setFromPoints(points))
-      parent.add(closed ? new LineLoop(geometry, material) : new Line(geometry, material))
-    }
-  }
-  const relief = (parent: Object3D, path: string, ox: number, oy: number, z: number, depth: number, material: Material, name?: string, roundedHead = false) => {
-    const geometry = keep(new ExtrudeGeometry(chibiShapes(path, ox, oy), {
-      depth, bevelEnabled: true, bevelThickness: .008, bevelSize: .007, bevelSegments: 3, curveSegments: 16, steps: 1,
-    }))
-    if (roundedHead) {
-      const positions = geometry.getAttribute('position')
-      for (let i = 0; i < positions.count; i++) {
-        positions.setZ(i, hairSurface(positions.getX(i), positions.getY(i)) - z - depth - .008 + positions.getZ(i))
-      }
-      geometry.computeVertexNormals()
-    }
-    const item = mesh(parent, geometry, material, [0, 0, z], [1, 1, 1], name)
-    trace(parent, path, ox, oy, z + depth + .009, ink, true, roundedHead)
-    return item
-  }
+  const sphere = (parent: Object3D, mat: Material | Material[], pos: number[], scale: number[], name?: string) => mesh(parent, ball, mat, pos, scale, name)
+  const rounded = (parent: Object3D, mat: Material | Material[], pos: number[], size: number[], radius = .02) => mesh(parent,
+    keep(new RoundedBoxGeometry(size[0], size[1], size[2], 3, radius)), mat, pos)
   const bone = (parent: Object3D, name: string, pos: number[]) => {
-    const joint = new Bone(); joint.name = name; joint.position.fromArray(pos); parent.add(joint); return joint
+    const result = new Bone(); result.name = name; result.position.fromArray(pos); parent.add(result); return result
   }
   const pelvis = bone(group, 'pelvis', [0, .45, 0]), spine = bone(pelvis, 'spine', [0, 0, 0])
   const head = bone(spine, 'head', [0, CHIBI_BONES.neck, 0])
-  mesh(spine, tube, skin, [0, .45, 0], [.05, .14, .05])
-  // The face, front hair, side curls and tuft retain the existing SVG's exact front proportions.
-  sphere(head, outline, [0, .38, .03], [.407, .377, .247])
-  sphere(head, skin, [0, .38, .03], [.40, .37, .24], 'original-chibi-face')
-  sphere(head, hair, [0, .52, -.11], [.415, .435, .25])
-  if (bride) {
-    relief(head, BRIDE.hairBack, 60, 106, -.21, .10, hair, 'original-bridal-hair-back')
-    sphere(head, hair, [.20, -.025, -.19], [.14, .13, .12], 'low-nape-bun')
-  } else {
-    for (const side of [-1, 1]) sphere(head, skin, [side * .39, .33, .02], [.05, .07, .045])
-  }
-  relief(head, bride ? BRIDE.hair : GROOM.hair, 60, 106, .185, .07, hair, 'original-chibi-hair', true)
-  if (bride) {
-    relief(head, BRIDE.lockL, 60, 106, .19, .06, hair, undefined, true)
-    relief(head, BRIDE.lockR, 60, 106, .19, .06, hair, undefined, true)
-    trace(head, BRIDE.strands, 60, 106, .272, foldInk, false, true)
-  } else {
-    relief(head, GROOM.tuft, 60, 106, .045, .10, hair, 'original-groom-tuft', true)
-    trace(head, GROOM.strands, 60, 106, .272, foldInk, false, true)
-  }
-  for (const side of [-1, 1]) {
-    const x = side * .15
-    sphere(head, iris, [x, .32, .257], [.075, .09, .014])
-    sphere(head, pupil, [x, .30, .271], [.042, .055, .010])
-    sphere(head, white, [x - .026, .355, .283], [.024, .025, .008])
-    sphere(head, white, [x + .026, .275, .281], [.010, .011, .006])
-    sphere(head, blush, [side * .25, .19, .194], [.060, .032, .007])
-    const svgX = 60 + side * 15
-    trace(head, `M${svgX - 8.5} 71Q${svgX} 62 ${svgX + 8.5} 71`, 60, 106, .283)
-    trace(head, `M${svgX - 6} 59Q${svgX} 56 ${svgX + 6} 59`, 60, 106, .257)
-  }
-  trace(head, 'M60 82q1.2 1.4-0.2 2.4', 60, 106, .278)
-  trace(head, 'M55.5 90Q60 93.6 64.5 90', 60, 106, .241)
+  mesh(spine, tube, skin, [0, .45, 0], [.045, .14, .045])
+  const backHair = art?.hair ? new MeshBasicMaterial({ map: art.hair, toneMapped: false }) : hair
+  if (backHair !== hair) materials.push(backHair)
+  sphere(head, backHair, [0, .50, -.07], [.35, .355, .15], 'approved-hair-volume')
+  if (bride) sphere(head, backHair, [.255, .065, -.18], [.14, .13, .13], 'low-nape-bun')
+  const portrait = mesh(head, keep(approvedHeadGeometry(bride)), faceMaterial, [0, 0, 0], [1, 1, 1], 'approved-portrait-head')
+  portrait.userData.design = 'approved-2026-11-01'
   let skirt: Mesh | undefined, veil: Mesh | undefined
   if (bride) {
-    relief(spine, BRIDE.shoulders, 60, 150, -.04, .10, skin)
-    relief(spine, BRIDE.bodice, 60, 150, -.04, .14, cloth, 'original-bridal-bodice')
-    trace(spine, BRIDE.straps, 60, 150, .115)
-    const profile = [[.38, -.55], [.34, -.47], [.24, -.28], [.17, -.11], [.14, 0]].map(([r, y]) => new Vector2(r, y))
-    skirt = mesh(group, keep(new LatheGeometry(profile, 32)), cloth, [0, .55, 0], [1, 1, .70], 'full-length-bridal-skirt')
-    for (const ratio of [-.4, 0, .4]) {
-      const points = profile.map(([x, y]) => new Vector3(x * ratio, y, Math.sqrt(x * x * (1 - ratio * ratio)) * .70 + .007))
-      skirt.add(new Line(keep(new BufferGeometry().setFromPoints(points)), foldInk))
+    sphere(spine, skin, [0, .36, 0], [.16, .07, .105])
+    rounded(spine, gownWhite, [0, .225, .015], [.285, .27, .18], .045)
+    for (const side of [-1, 1]) {
+      const strap = rounded(spine, gownWhite, [side * .12, .36, .086], [.025, .12, .015], .006)
+      strap.rotation.z = -side * .10
     }
-    const hem = mesh(skirt, keep(new TorusGeometry(.375, .004, 6, 40)), cloth, [0, -.548, 0], [1, .70, 1])
-    hem.rotation.x = Math.PI / 2
-    const veilMat = new MeshToonMaterial({ color: '#fffaf3', transparent: true, opacity: .23, side: DoubleSide, depthWrite: false })
-    materials.push(veilMat)
-    veil = mesh(head, keep(new ExtrudeGeometry(chibiShapes(BRIDE.veil, 60, 95), { depth: .006, bevelEnabled: false, curveSegments: 18 })), veilMat, [0, .11, -.29])
-    // Small pearl/blossom pin against the side of the hair, matching the original; no crown.
-    trace(head, 'M25 49C26 41 32 32 42 29', 60, 106, .285, foldInk, false, true)
-    for (const [x, y, size] of [[28, 43, .026], [34, 35, .021], [41, 30, .016]]) {
-      for (let petal = 0; petal < 5; petal++) {
-        const a = petal * Math.PI * 2 / 5
-        sphere(head, cloth, [(x - 60) / 100 + Math.cos(a) * size, (106 - y) / 100 + Math.sin(a) * size, hairSurface((x - 60) / 100, (106 - y) / 100) + .018], [size * .65, size * .65, .009])
+    const profile = [[.52, -.55], [.46, -.48], [.33, -.30], [.18, -.12], [.12, 0]].map(([r, y]) => new Vector2(r, y))
+    const gown = keep(new LatheGeometry(profile, 48))
+    const vertices = gown.getAttribute('position')
+    for (let i = 0; i < vertices.count; i++) {
+      const x = vertices.getX(i), y = vertices.getY(i), z = vertices.getZ(i)
+      const pleat = 1 + .018 * Math.sin(Math.atan2(z, x) * 16) * Math.min(1, -y / .3)
+      vertices.setXYZ(i, x * pleat, y, z * pleat)
+    }
+    gown.computeVertexNormals()
+    skirt = mesh(group, gown, gownWhite, [0, .55, 0], [1, 1, .78], 'approved-white-gown')
+    if (art?.gown) {
+      const printed = keep(gown.clone()), uv = printed.getAttribute('uv'), p = printed.getAttribute('position'), normals = printed.getAttribute('normal')
+      for (let i = 0; i < p.count; i++) {
+        uv.setXY(i, (p.getX(i) / .52 + 1) / 2, (p.getY(i) + .55) / .55)
+        p.setXYZ(i, p.getX(i) + normals.getX(i) * .002, p.getY(i) + normals.getY(i) * .002, p.getZ(i) + normals.getZ(i) * .002)
       }
-      sphere(head, gold, [(x - 60) / 100, (106 - y) / 100, hairSurface((x - 60) / 100, (106 - y) / 100) + .027], [.009, .009, .009])
+      const source = printed.index!, front: number[] = []
+      for (let i = 0; i < source.count; i += 3) {
+        const a = source.getX(i), b = source.getX(i + 1), c = source.getX(i + 2)
+        if (p.getZ(a) + p.getZ(b) + p.getZ(c) >= 0) front.push(a, b, c)
+      }
+      printed.setIndex(front)
+      const fabric = new MeshBasicMaterial({ map: art.gown, alphaTest: .15, toneMapped: false }); materials.push(fabric)
+      mesh(skirt, printed, fabric, [0, 0, 0])
     }
+    const hem = mesh(skirt, keep(new TorusGeometry(.515, .003, 6, 48)), gownWhite, [0, -.548, 0], [1, .78, 1])
+    hem.rotation.x = Math.PI / 2
+    const veilMaterial = new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .23, side: DoubleSide, depthWrite: false })
+    materials.push(veilMaterial)
+    const veilShape = keep(new PlaneGeometry(1, 1, 16, 18)), v = veilShape.getAttribute('position')
+    for (let i = 0; i < v.count; i++) {
+      const x = v.getX(i), y = v.getY(i), progress = .5 - y
+      v.setXYZ(i, x * (.45 + .55 * progress), -progress, -.24 - .06 * Math.cos(x * 12) * progress)
+    }
+    veilShape.computeVertexNormals()
+    veil = mesh(group, veilShape, veilMaterial, [0, .95, 0], [1, 1, 1], 'approved-white-veil')
   } else {
-    relief(spine, GROOM.jacket, 60, 150, -.09, .18, suit, 'original-groom-jacket')
-    relief(spine, GROOM.shirt, 60, 150, .103, .01, cloth)
-    relief(spine, GROOM.tie, 60, 150, .121, .012, cloth)
-    trace(spine, GROOM.lapels, 60, 150, .116)
-    for (const y of [.13, .06]) sphere(spine, gold, [0, y, .108], [.013, .013, .009])
-    sphere(spine, cloth, [.12, .30, .113], [.030, .025, .018])
+    const jacket = rounded(spine, suit, [0, .205, 0], [.44, .48, .235], .035)
+    if (art?.coat) {
+      const front = new MeshBasicMaterial({ map: art.coat, alphaTest: .15, toneMapped: false }); materials.push(front)
+      jacket.material = [suit, suit, suit, suit, front, suit]
+    }
+    jacket.name = 'approved-taupe-jacket'
+    if (!art?.coat) {
+    rounded(spine, cloth, [0, .32, .12], [.12, .19, .014], .012)
+    for (const side of [-1, 1]) {
+      const collar = rounded(spine, cloth, [side * .042, .385, .137], [.07, .065, .016], .010)
+      collar.rotation.z = side * .35
+      const edge = rounded(spine, lapel, [side * .092, .30, .134], [.075, .23, .019], .013)
+      edge.rotation.z = -side * .24
+      sphere(spine, cloth, [side * .032, .37, .156], [.040, .022, .022])
+      rounded(spine, lapel, [side * .113, .09, .132], [.065, .012, .009], .004)
+    }
+    sphere(spine, cloth, [0, .37, .170], [.014, .022, .010])
+    for (const y of [.16, .065]) sphere(spine, lapel, [0, y, .132], [.014, .014, .010])
+    for (let i = 0; i < 5; i++) {
+      const angle = i * Math.PI * 2 / 5
+      sphere(spine, cloth, [.13 + .022 * Math.cos(angle), .32 + .022 * Math.sin(angle), .153], [.018, .018, .010])
+    }
+    sphere(spine, gold, [.13, .32, .166], [.009, .009, .008])
+    }
   }
   const limbs: Bone[] = [], ankles: Bone[] = []
-  for (const [name, x] of [['L', -.15], ['R', .15]] as const) {
-    const upper = bone(spine, `upperArm${name}`, [x, .36, 0])
-    const lower = bone(upper, `forearm${name}`, [0, -CHIBI_BONES.upperArm, 0])
-    sphere(upper, bride ? skin : suit, [0, -.09, 0], [bride ? .032 : .047, .105, .042])
-    sphere(lower, bride ? skin : suit, [0, -.075, 0], [bride ? .028 : .040, .09, .037])
-    sphere(upper, bride ? skin : suit, [0, 0, 0], [.045, .045, .043])
-    sphere(lower, bride ? skin : suit, [0, 0, 0], [.036, .036, .035])
-    if (!bride) mesh(lower, tube, cloth, [0, -.144, 0], [.041, .026, .038])
-    sphere(lower, skin, [0, -.185, .006], [bride ? .040 : .045, .048, .033])
-    sphere(lower, skin, [-.030, -.174, .020], [.014, .025, .014])
+  for (const [name, sign] of [['L', -1], ['R', 1]] as const) {
+    const upper = bone(spine, `upperArm${name}`, [sign * (bride ? .18 : .235), .36, 0]), lower = bone(upper, `forearm${name}`, [0, -CHIBI_BONES.upperArm, 0])
+    sphere(upper, bride ? skin : suit, [0, -.09, 0], [bride ? .038 : .052, .105, .045])
+    sphere(lower, bride ? skin : suit, [0, -.075, 0], [bride ? .033 : .045, .09, .040])
+    sphere(upper, bride ? skin : suit, [0, 0, 0], [.048, .048, .044])
+    sphere(lower, bride ? skin : suit, [0, 0, 0], [.040, .040, .037])
+    if (!bride) mesh(lower, tube, cloth, [0, -.145, 0], [.045, .025, .041])
+    sphere(lower, skin, [0, -.185, .006], [.044, .049, .034])
+    sphere(lower, skin, [-.030, -.17, .023], [.014, .027, .014])
     limbs.push(upper, lower)
   }
-  for (const [name, x] of [['L', -.07], ['R', .07]] as const) {
-    const upper = bone(pelvis, `thigh${name}`, [x, 0, 0])
-    const lower = bone(upper, `shin${name}`, [0, -CHIBI_BONES.thigh, 0])
+  for (const [name, x] of [['L', -.115], ['R', .115]] as const) {
+    const upper = bone(pelvis, `thigh${name}`, [x, 0, 0]), lower = bone(upper, `shin${name}`, [0, -CHIBI_BONES.thigh, 0])
     const ankle = bone(lower, `ankle${name}`, [0, -CHIBI_BONES.shin, 0])
-    sphere(upper, bride ? skin : suit, [0, -.10, 0], [.050, .115, .050])
-    sphere(lower, bride ? skin : suit, [0, -.095, 0], [.045, .110, .045])
-    sphere(ankle, bride ? cloth : shoes, [0, -.026, .035], [.059, .036, .088])
+    if (bride) {
+      sphere(upper, skin, [0, -.10, 0], [.05, .115, .05]); sphere(lower, skin, [0, -.095, 0], [.045, .11, .045])
+    } else {
+      mesh(upper, tube, suit, [0, -.10, 0], [.075, .22, .070])
+      mesh(lower, tube, suit, [0, -.095, 0], [.071, .21, .067])
+      sphere(lower, suit, [0, 0, 0], [.074, .035, .070])
+    }
+    sphere(ankle, bride ? cloth : shoes, [0, -.026, .035], [.075, .036, .105])
     limbs.push(upper, lower); ankles.push(ankle)
   }
   const worldQ = new Quaternion(), parentQ = new Quaternion(), direction = new Vector3(), foot = new Vector3()
   const orient = (joint: Bone, target: Quaternion) => {
-    joint.parent!.getWorldQuaternion(parentQ); joint.quaternion.copy(parentQ.invert().multiply(target))
-    joint.updateWorldMatrix(false, true)
+    joint.parent!.getWorldQuaternion(parentQ); joint.quaternion.copy(parentQ.invert().multiply(target)); joint.updateWorldMatrix(false, true)
   }
   const apply = (pose: number[]) => {
     pelvis.position.set(pose[0], 0, 0); pelvis.quaternion.fromArray(pose, 1).normalize(); group.updateMatrixWorld(true)
@@ -168,14 +173,13 @@ export function createWeddingCharacter(bride: boolean): WeddingCharacter {
     for (const ankle of ankles) { ankle.getWorldPosition(foot); lowest = Math.min(lowest, foot.y) }
     pelvis.position.y = .067 - lowest; group.updateMatrixWorld(true)
     if (skirt) {
-      const height = Math.max(.26, Math.min(.62, pelvis.position.y + .09))
-      skirt.scale.y = height / .55
+      skirt.scale.y = Math.max(.26, Math.min(.62, pelvis.position.y + .09)) / .55
       skirt.position.set(pelvis.position.x, pelvis.position.y + .11, 0)
       skirt.rotation.y = Math.atan2(2 * (pelvis.quaternion.w * pelvis.quaternion.y + pelvis.quaternion.x * pelvis.quaternion.z), 1 - 2 * (pelvis.quaternion.y ** 2 + pelvis.quaternion.x ** 2))
     }
-    if (veil) veil.scale.y = Math.max(.45, Math.min(1, (pelvis.position.y + .50) / .98))
+    if (veil) { veil.position.set(pelvis.position.x, pelvis.position.y + .50, 0); veil.scale.y = Math.max(.45, Math.min(1, pelvis.position.y + .46)) }
   }
   return { group, pelvis, spine, head, limbs, ankles, skirt, apply, dispose: () => {
-    geometries.forEach(item => item.dispose()); materials.forEach(item => item.dispose()); gradient.dispose()
+    geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose())
   } }
 }

@@ -1,7 +1,7 @@
 import { loadMotion3D } from './motion'
 
 let runtime: ReturnType<typeof importScene> | undefined
-function importScene() { return import('./DanceScene') }
+function importScene() { return import('./DanceScene').then(async scene => { await scene.preloadCharacterArt(); return scene }) }
 export function loadDanceScene() {
   return runtime ??= importScene().catch(error => { runtime = undefined; throw error })
 }

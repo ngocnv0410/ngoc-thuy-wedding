@@ -1,7 +1,7 @@
-import { useRef, type CSSProperties, type ReactNode } from 'react'
+import { type CSSProperties, type ReactNode } from 'react'
 import type { DanceId } from '../../content/types'
-import { useChibiDance } from './useChibiDance'
-import { BRIDE, EYE_X, EYE_Y, GROOM, HAND_L, HAND_R, HEAD_VIEWBOX, MIRROR_X, PIVOT, SHARED, VIEW_H, VIEW_W, eye } from './chibiArt'
+import { approvedChibiArt } from './approvedArt'
+import { BRIDE, EYE_X, EYE_Y, GROOM, HAND_L, HAND_R, MIRROR_X, PIVOT, SHARED, VIEW_H, VIEW_W, eye } from './chibiArt'
 import styles from './Chibi.module.css'
 import { type ChibiLook, type ChibiPose, type ChibiSize, type FigureProps, type Side, chibiVars } from './chibiPose'
 
@@ -11,7 +11,7 @@ const origin = ([x, y]: readonly [number, number]): CSSProperties => ({ transfor
 const MIRROR = `matrix(-1 0 0 1 ${MIRROR_X} 0)`
 
 /** Rig một nhân vật (các `<g>` lồng nhau), dùng trong `<Chibi>` hoặc lồng thẳng vào SVG khác. */
-export function ChibiFigure({ who, held, hand, articulated = false }: Pick<FigureProps, 'who' | 'held' | 'hand'> & { articulated?: boolean }) {
+export function LegacyChibiFigure({ who, held, hand, articulated = false }: Pick<FigureProps, 'who' | 'held' | 'hand'> & { articulated?: boolean }) {
   const groom = who === 'groom'
   const side = hand ?? (groom ? 'r' : 'l')
   const holder = (at: Side) =>
@@ -253,6 +253,14 @@ function Eyes({ bride }: { bride: boolean }) {
   )
 }
 
+/** SVG embedding for the map: use the same approved art as the rest of the invitation. */
+export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held' | 'hand'> & { articulated?: boolean }) {
+  return <g className={styles.approvedFigure} data-chibi-style="approved">
+    <image href={approvedChibiArt(who)} x="0" y="0" width={VIEW_W} height={VIEW_H} preserveAspectRatio="xMidYMax meet" />
+    {held && <g transform={`translate(${hand === 'r' ? 79 : 41} 145) scale(.65)`}>{held}</g>}
+  </g>
+}
+
 interface ChibiProps extends FigureProps {
   size?: ChibiSize
   /** Chỉ hiện phần đầu (ló ra sau cánh cửa). */
@@ -267,16 +275,15 @@ interface ChibiProps extends FigureProps {
  * tin nào chỉ nằm trong hình.
  */
 export function Chibi({ size = 'md', headOnly = false, dance, className, anim, ...figure }: ChibiProps) {
-  const danceRef = useRef<SVGSVGElement>(null)
-  useChibiDance(danceRef, dance)
   const classes = [styles.chibi, headOnly ? styles.headOnly : styles[size], className].filter(Boolean).join(' ')
-  return (
-    <span className={classes} style={chibiVars(figure)} data-chibi={figure.who} data-anim={anim} aria-hidden="true">
-      <svg ref={danceRef} viewBox={headOnly ? HEAD_VIEWBOX : `0 0 ${VIEW_W} ${VIEW_H}`} focusable="false">
-        <ChibiFigure articulated={Boolean(dance)} who={figure.who} held={figure.held} hand={figure.hand} />
-      </svg>
+  return <span className={classes} style={chibiVars(figure)} data-chibi={figure.who} data-anim={anim}
+    data-chibi-style="approved" data-dance={dance} aria-hidden="true">
+    <span className={styles.approvedBody}>
+      <img src={approvedChibiArt(figure.who, figure.pose, headOnly)} className={styles.approvedImage}
+        alt="" width={headOnly ? 500 : 300} height={500} decoding="async"
+        loading={anim?.startsWith('host-') ? 'eager' : 'lazy'} draggable={false} />
     </span>
-  )
+  </span>
 }
 
 interface CoupleProps {

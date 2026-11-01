@@ -1,9 +1,11 @@
 import {
-  AmbientLight, CircleGeometry, DirectionalLight, HemisphereLight, Mesh, MeshBasicMaterial,
+  ACESFilmicToneMapping, AmbientLight, CircleGeometry, DirectionalLight, HemisphereLight, Mesh, MeshBasicMaterial,
   OrthographicCamera, Scene, SRGBColorSpace, WebGLRenderer,
 } from 'three'
 import { music } from '../../lib/music'
 import { createWeddingCharacter } from './character'
+import { characterArt } from './approvedArt'
+export { preloadCharacterArt } from './approvedArt'
 import { sampleMotion, type MotionClip } from './motion'
 
 export interface DanceSceneApi { setClip: (clip: MotionClip) => void; dispose: () => void }
@@ -14,6 +16,8 @@ export function createDanceScene(host: HTMLElement, options: {
   const renderer = new WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' })
   renderer.setClearColor(0x000000, 0)
   renderer.outputColorSpace = SRGBColorSpace
+  renderer.toneMapping = ACESFilmicToneMapping
+  renderer.toneMappingExposure = .95
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25))
   renderer.domElement.dataset.renderer = 'wedding-threejs'
   host.append(renderer.domElement)
@@ -21,11 +25,11 @@ export function createDanceScene(host: HTMLElement, options: {
   const camera = new OrthographicCamera(-1.3, 1.3, 2.15, -.12, .1, 30)
   camera.position.set(0, 1.20, 8)
   camera.lookAt(0, 1.12, 0)
-  scene.add(new HemisphereLight('#fff7eb', '#b8a28d', .75), new AmbientLight('#fff9f0', .20))
-  const key = new DirectionalLight('#fff3de', .9); key.position.set(-3, 5, 6); scene.add(key)
-  const rim = new DirectionalLight('#fff8ef', .35); rim.position.set(3, 3, -3); scene.add(rim)
-  const fill = new DirectionalLight('#ead7c1', .25); fill.position.set(3, 2, 4); scene.add(fill)
-  const actors = [createWeddingCharacter(options.brideFirst), createWeddingCharacter(!options.brideFirst)]
+  scene.add(new HemisphereLight('#ffffff', '#eee8e4', 1.25), new AmbientLight('#ffffff', .45))
+  const key = new DirectionalLight('#ffffff', 1.8); key.position.set(-3, 5, 6); scene.add(key)
+  const rim = new DirectionalLight('#ffffff', .6); rim.position.set(3, 3, -3); scene.add(rim)
+  const fill = new DirectionalLight('#f5f7ff', .5); fill.position.set(3, 2, 4); scene.add(fill)
+  const actors = [createWeddingCharacter(options.brideFirst, characterArt()), createWeddingCharacter(!options.brideFirst, characterArt())]
   const shadowGeometry = new CircleGeometry(.32, 24)
   const shadowMaterial = new MeshBasicMaterial({ color: '#6f5140', transparent: true, opacity: .13, depthWrite: false })
   const shadows = actors.map(() => {
