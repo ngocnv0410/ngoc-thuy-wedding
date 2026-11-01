@@ -9,8 +9,11 @@ a light taupe groom suit and a white bridal gown/veil with a low bun and blossom
 
 `ApprovedChibiFigure.tsx` splits the approved standing illustration at the original
 SVG joint pivots using clip paths. Each arm, leg, head, torso, skirt, veil and hair
-tuft reads the original CSS rig channels. Closed/happy eye overlays restore blinks
-and expressions. Held envelopes/maps remain attached to the moving hands with
+tuft reads the original CSS rig channels. Matched open/closed/happy painted face assets restore blinks and expressions;
+the entire face state switches at the midpoint, avoiding opaque eye-cover patches
+and ghost irises. The bride uses a skin-only arm contour sampled from the source
+art, corrected shoulder/palm pivots, and arms drawn above the head so waving hands
+remain visible. Her high wave angles are softened to keep the hand beside her face. Held envelopes/maps remain attached to the moving hands with
 counter-rotation. Opening walk/push/welcome, idle greetings and the complete closing
 story continue to use the unchanged scene timelines.
 
@@ -18,7 +21,8 @@ The previous static-pose implementation was a regression: retaining CSS variable
 on a single image did not preserve the original joint motions. Browser checks must
 measure actual child transforms/expressions changing, not just data attributes.
 
-All 2D locations share two transparent standing WebPs (about 60 KB total). Repeated
+All 2D locations share two transparent standing WebPs (about 60 KB total)
+and six 240px face-state WebPs (about 95 KB total). Repeated
 SVG image references reuse the same browser resources; no atlas or video is shipped.
 Original vector source remains available as legacy artwork.
 
