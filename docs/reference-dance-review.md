@@ -23,7 +23,10 @@ pointing arm shortens instead of sticking out at its full length. The same
 length drives both the drawn segment and child attachment. Rounded segments
 close the joints; cuff and hand positions follow the forearm endpoint.
 
-The dance rig retains the original head, hair, veil and full-length bridal gown.
+The dance rig retains the original head proportions, veil and full-length bridal
+gown. Bridal hair is redrawn with a swept part, soft waves and two face-framing
+locks. A side comb of ivory blossoms, pearls and fine champagne sprigs replaces
+the previous flower band; all ornament geometry stays inside the head rig.
 Limbs use filled, tapered curves with thin outlines and soft joints; the hands
 have a thumb contour and a subtle palm crease. Costume-specific widths keep
 the bridal arms slender and the suit sleeves slightly fuller. The lower foot

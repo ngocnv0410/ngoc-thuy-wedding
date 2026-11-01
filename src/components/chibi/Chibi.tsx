@@ -137,17 +137,10 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
             ) : (
               <>
                 <path d={BRIDE.hair} className={styles.hairBride} />
-                <path d={BRIDE.strands} className={styles.strand} />
-                <path d={BRIDE.lock} className={styles.hairBride} />
-                <path d={BRIDE.lock} className={styles.hairBride} transform={MIRROR} />
-                {BRIDE.flowers.map(([cx, cy]) => (
-                  <g key={cx}>
-                    {[0, 72, 144, 216, 288].map((angle) => (
-                      <ellipse key={angle} cx={cx} cy={cy - 2.6} rx="1.6" ry="2.6" transform={`rotate(${angle} ${cx} ${cy})`} className={styles.flower} />
-                    ))}
-                    <circle cx={cx} cy={cy} r={1.4} className={styles.accent} />
-                  </g>
-                ))}
+                <path d={BRIDE.strands} className={styles.bridalStrands} />
+                <path d={BRIDE.lockL} className={styles.hairBride} />
+                <path d={BRIDE.lockR} className={styles.hairBride} />
+                <BridalHeadpiece />
               </>
             )}
           </g>
@@ -156,6 +149,31 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
       </g>
     </g>
   )
+}
+
+/** Ivory blossoms, fine champagne sprigs and pearls pinned along one side. */
+function BridalHeadpiece() {
+  return <g className={styles.headpiece}>
+    <path d="M24 52Q28 32 51 24M30 40Q23 34 25 29M38 31Q36 23 40 20M44 28Q51 20 57 23" className={styles.headpieceStem} />
+    {[[27, 45, -35], [32, 37, -50], [41, 29, -45], [48, 25, 55]].map(([x, y, angle]) => (
+      <path key={`${x}-${y}`} d="M0 0Q-5-4 0-7Q5-4 0 0Z" transform={`translate(${x} ${y}) rotate(${angle})`} className={styles.headpieceLeaf} />
+    ))}
+    {[[28, 45, 1], [36, 35, .85], [45, 28, .65]].map(([x, y, scale]) => (
+      <g key={x} transform={`translate(${x} ${y}) scale(${scale})`}>
+        {[0, 72, 144, 216, 288].map((angle) => (
+          <path key={angle} d="M0 0C-3-1-3.3-4.5-1.4-5.1C.8-5.8 2.8-3.5 0 0Z" transform={`rotate(${angle})`} className={styles.headpiecePetal} />
+        ))}
+        <circle r="1.2" className={styles.headpieceGold} />
+        <circle cx="-.35" cy="-.35" r=".35" className={styles.headpieceGlint} />
+      </g>
+    ))}
+    {[[24.8, 28.5, 1.6], [39.8, 20.3, 1.5], [56.8, 23, 1.4], [24.2, 53.5, 1.2], [50.3, 21.8, .85]].map(([cx, cy, r]) => (
+      <g key={cx}>
+        <circle cx={cx} cy={cy} r={r} className={styles.headpiecePearl} />
+        <circle cx={cx - r * .3} cy={cy - r * .3} r={r * .3} className={styles.headpieceGlint} />
+      </g>
+    ))}
+  </g>
 }
 
 /** Each child starts exactly at its parent's endpoint; rounded overlaps close the joints. */
