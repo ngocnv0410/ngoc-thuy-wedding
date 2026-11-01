@@ -13,7 +13,14 @@ Shoulder/elbow/wrist and hip/knee/ankle tracks are projected onto the existing
 illustrated rig, preserving the displayed screen directions. Segment lengths
 retain projected shortening, normalized to the character proportions. Median
 filtering and capped angular steps limit tracking jitter and ambiguous turns.
-Torso/head rotation and sideways travel are bounded for the illustrated rig.
+The initial screen-plane-only torso track has been replaced with depth-aware
+posture channels: world-coordinate torso pitch, shoulder yaw, projected trunk
+length and independent pelvis roll. The rig now shows forward folds, backward
+leans, shoulder turns and hip sway. The torso uses horizontal/vertical projection
+and shear; the head compensates for that projection to retain its proportions.
+Arm vectors are inverse-projected into the torso's local coordinates, so a body
+turn does not arbitrarily stretch the hands. Thigh rotations compensate for the
+pelvis angle, and foot grounding includes the rotated hip attachment offsets.
 The final six source frames (about 0.2 seconds) had no pose detection and hold
 the last detected pose; low-confidence individual landmarks are interpolated.
 

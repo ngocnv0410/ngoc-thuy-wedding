@@ -169,12 +169,16 @@
   transform: translate(var(--lean-x, var(--pose-lean-x)), var(--body-y, var(--pose-body-y)));
 }
 
+.hips {
+  transform: rotate(var(--hip-r, 0deg));
+}
+
 .upper {
-  transform: translateY(var(--upper-y, var(--pose-upper-y))) rotate(var(--upper-r, var(--pose-upper-r))) scaleY(var(--upper-sy, var(--pose-upper-sy)));
+  transform: translateY(var(--upper-y, var(--pose-upper-y))) rotate(var(--upper-r, var(--pose-upper-r))) skewX(var(--upper-skew, 0deg)) scale(var(--upper-sx, 1), var(--upper-sy, var(--pose-upper-sy)));
 }
 
 .head {
-  transform: translateY(var(--head-y, var(--pose-head-y))) rotate(var(--head-r, var(--pose-head-r)));
+  transform: translateY(var(--head-y, var(--pose-head-y))) scale(var(--head-sx, 1), var(--head-sy, 1)) skewX(var(--head-skew, 0deg)) rotate(var(--head-r, var(--pose-head-r)));
 }
 
 .face {
