@@ -166,7 +166,8 @@
 }
 
 .body {
-  transform: translate(var(--lean-x, var(--pose-lean-x)), var(--body-y, var(--pose-body-y)));
+  transform: translate(var(--lean-x, var(--pose-lean-x)), var(--body-y, var(--pose-body-y))) rotate(var(--body-r, 0deg));
+  transform-origin: 60px 150px;
 }
 
 .upper {
@@ -274,3 +275,6 @@
 .veilEdge { fill: none; stroke: #fffaf0 !important; stroke-width: 0.85 !important; opacity: 0.9; }
 .veilFolds { fill: none; stroke: #cbbda7 !important; stroke-width: 0.55 !important; opacity: 0.38; }
 .hairLight { fill: #927157; stroke: none !important; opacity: 0.18; }
+
+/* A small fabric bridge keeps the bodice attached to the skirt during side bends. */
+.waistBridge { fill: var(--chibi-cloth); stroke: none !important; }

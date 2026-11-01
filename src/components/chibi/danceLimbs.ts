@@ -1,6 +1,7 @@
 import { limbOutline } from './limbOutline'
 
 export function bindDanceLimbs(svg: SVGSVGElement) {
+  const waist = svg.querySelector('[data-waist-bridge]')
   const limbs = ['arm-l', 'arm-r', 'leg-l', 'leg-r'].flatMap((name) => {
     const root = svg.querySelector(`[data-limb="${name}"]`)
     if (!root) return []
@@ -15,6 +16,11 @@ export function bindDanceLimbs(svg: SVGSVGElement) {
     }]
   })
   const apply = (pose?: Record<string, string>) => {
+    if (waist) {
+      const angle = (parseFloat(pose?.['--upper-r'] ?? '') || 0) * Math.PI / 180
+      const dx = 14 * Math.cos(angle), dy = 14 * Math.sin(angle)
+      waist.setAttribute('d', `M${60 - dx} ${140 - dy}L${60 + dx} ${140 + dy}L74 146L46 146Z`)
+    }
     for (const limb of limbs) {
       const upper = parseFloat(pose?.[`--${limb.kind}-upper-${limb.side}-length`] ?? '') || (limb.arm ? 17 : 20)
       const lower = parseFloat(pose?.[`--${limb.kind}-lower-${limb.side}-length`] ?? '') || (limb.arm ? 17 : 19)

@@ -37,7 +37,7 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
     <g className={styles.figure} data-articulated={articulated}>
       <ellipse {...SHARED.shadow} className={styles.shadow} />
       <g className={styles.body}>
-        {!groom && <g className={styles.upper} style={origin(PIVOT.upper)}>
+        {!groom && <g className={styles.upper} style={origin(articulated && !groom ? [60, 140] : PIVOT.upper)}>
           <g className={styles.head} style={origin(PIVOT.head)}>
             <g className={styles.veil} style={origin(PIVOT.veil)}>
               <path d={BRIDE.veil} className={styles.bridalVeil} />
@@ -57,6 +57,7 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
             <path d={BRIDE.skirt} className={styles.cloth} />
             <path d={BRIDE.folds} className={styles.fold} />
           </g>}
+          {!groom && <path data-waist-bridge className={styles.waistBridge} d="M46 140L74 140L74 146L46 146Z" />}
         </> : groom ? (
           <>
             <g className={styles.legL} style={origin(PIVOT.hipL)}>
@@ -77,7 +78,7 @@ export function ChibiFigure({ who, held, hand, articulated = false }: Pick<Figur
           </g>
         )}
 
-        <g className={styles.upper} style={origin(PIVOT.upper)}>
+        <g data-torso className={styles.upper} style={origin(articulated && !groom ? [60, 140] : PIVOT.upper)}>
           {!groom && (
             <g className={styles.head} style={origin(PIVOT.head)}>
               <path d={BRIDE.hairBack} className={styles.hairBride} />

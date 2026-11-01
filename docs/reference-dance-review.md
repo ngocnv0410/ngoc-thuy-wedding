@@ -17,6 +17,18 @@ The source ends with a later full-speed demonstration; it is not used here.
 
 ## Rig
 
+The shoulder-line and hip-line roll are sampled separately from the same tutorial
+landmarks as the limb tracks. Previously only the hip-to-shoulder center axis was
+used, leaving the waist and skirt upright. The whole rig now rolls around the
+pelvis; the upper body bends relative to it using the shoulder line. Arm/head
+angles are converted into that local frame so their world directions are retained,
+and legs are counter-rotated to preserve the source step directions.
+
+Grounding includes the vertical offset of each hip under the new pelvis rotation.
+The bridal upper-body pivot is at the waist; a fabric bridge keeps its bodice
+connected to the skirt during relative side bending. The veil inherits the same
+head/upper-body transforms and remains attached at the nape.
+
 Shoulder/elbow and hip/knee child joints share the endpoints of their parent
 segments. Projected bone lengths also come from the reference, so a forward-
 pointing arm shortens instead of sticking out at its full length. The same

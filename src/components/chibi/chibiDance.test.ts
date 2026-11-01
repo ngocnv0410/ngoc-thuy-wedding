@@ -7,7 +7,9 @@ describe('reference-video choreography', () => {
     for (let index = 0; index < reference.frames.length; index += 3) {
       const pose = dancePose(index / reference.fps)
       for (const [key, channel] of [['--arm-l', 3], ['--elbow-l', 4], ['--arm-r', 5], ['--elbow-r', 6]] as const) {
-        expect(Math.abs(parseFloat(pose[key]) - reference.frames[index][channel])).toBeLessThan(18)
+        const world = parseFloat(pose[key]) + (channel === 3 || channel === 5 ? parseFloat(pose['--body-r']) + parseFloat(pose['--upper-r']) : 0)
+        const source = reference.frames[index][channel] + (channel === 3 || channel === 5 ? reference.frames[index][2] : 0)
+        expect(Math.abs(world - source)).toBeLessThan(18)
       }
       expect(dancePose(index / reference.fps)).toEqual(pose)
     }
@@ -15,9 +17,13 @@ describe('reference-video choreography', () => {
   it('reduces high-frequency acceleration changes in the tracked joints', () => {
     let raw = 0, filtered = 0
     for (const [key, channel] of [['--arm-l', 3], ['--elbow-l', 4], ['--arm-r', 5], ['--elbow-r', 6]] as const) {
-      const sample = (index: number) => parseFloat(dancePose(index / 30)[key])
+      const sample = (index: number) => {
+        const pose = dancePose(index / 30)
+        return parseFloat(pose[key]) + (channel === 3 || channel === 5 ? parseFloat(pose['--body-r']) + parseFloat(pose['--upper-r']) : 0)
+      }
+      const rawSample = (index: number) => reference.frames[index][channel] + (channel === 3 || channel === 5 ? reference.frames[index][2] : 0)
       for (let i = 2; i < reference.frames.length - 2; i++) {
-        raw += (reference.frames[i - 1][channel] - 2 * reference.frames[i][channel] + reference.frames[i + 1][channel]) ** 2
+        raw += (rawSample(i - 1) - 2 * rawSample(i) + rawSample(i + 1)) ** 2
         filtered += (sample(i - 1) - 2 * sample(i) + sample(i + 1)) ** 2
       }
     }
@@ -48,10 +54,32 @@ describe('reference-video choreography', () => {
 
 it('keeps articulated bone lengths positive and supports a grounded stance', () => {
   for (const row of reference.frames) {
-    for (const length of row.slice(12)) expect(length).toBeGreaterThan(0)
+    for (const length of row.slice(12, 20)) expect(length).toBeGreaterThan(0)
     const radians = (angle: number) => angle * Math.PI / 180
     const left = row[16] * Math.cos(radians(row[7])) + row[17] * Math.cos(radians(row[7] + row[8]))
     const right = row[18] * Math.cos(radians(row[9])) + row[19] * Math.cos(radians(row[9] + row[10]))
     expect(150 + row[1] + Math.max(left, right)).toBeCloseTo(189, 1)
+  }
+})
+
+
+it('leans the pelvis in both directions at the corresponding tutorial gestures', () => {
+  expect(parseFloat(dancePose(4)['--body-r'])).toBeLessThan(-6)
+  expect(parseFloat(dancePose(6)['--body-r'])).toBeGreaterThan(6)
+})
+
+it('keeps world shoulder angles faithful and the supporting foot grounded while leaning', () => {
+  const radians = (angle: number) => angle * Math.PI / 180
+  for (let i = 0; i < reference.frames.length; i += 3) {
+    const pose = dancePose(i / reference.fps)
+    const value = (key: string) => parseFloat(pose[key])
+    const roll = value('--body-r')
+    expect(Math.abs(roll + value('--upper-r') - reference.frames[i][21])).toBeLessThan(4)
+    const hipY = 7 * Math.sin(radians(roll))
+    const foot = (side: string) => {
+      const thigh = roll + value(`--leg-${side}`), shin = thigh + value(`--knee-${side}`)
+      return value(`--leg-upper-${side}-length`) * Math.cos(radians(thigh)) + value(`--leg-lower-${side}-length`) * Math.cos(radians(shin))
+    }
+    expect(150 + value('--body-y') + Math.max(-hipY + foot('l'), hipY + foot('r'))).toBeCloseTo(189, 5)
   }
 })
