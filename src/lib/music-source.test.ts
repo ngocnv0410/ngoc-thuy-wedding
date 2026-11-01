@@ -1,36 +1,41 @@
 import { describe, expect, it } from 'vitest'
-import { getMusicModes, musicModeFromSearch, searchWithMusicMode, selectMusic } from './music-source'
+import { getMusicModes, musicModeFromSearch, onlineMusicSource, searchWithMusicMode, selectMusic } from './music-source'
 
 const original = { src: 'audio/forever-in-love-kenny-g.mp3', title: 'Forever in Love' }
 describe('invitation soundtrack', () => {
-  it('preserves the original track for ordinary links and unknown options', () => {
-    for (const search of ['', '?v=abc', '?music=other', '?music=', '?music=original']) expect(selectMusic(original, search)).toBe(original)
+  it('falls back to the original for removed Nhạc cưới links and unknown options', () => {
+    for (const search of ['', '?v=abc', '?music=other', '?music=', '?music=original', '?music=youtube']) {
+      expect(musicModeFromSearch(search)).toBe('original')
+      expect(selectMusic(original, search)).toBe(original)
+    }
   })
-  it('selects the project MP3 at 15 seconds only for music=youtube', () => {
-    expect(selectMusic(original, '?v=abc&music=youtube')).toMatchObject({ src: 'audio/youtube-hGu7BVQy5G0.mp3', startSeconds: 15 })
+
+  it('offers only the original and the matching dance excerpt', () => {
+    const modes = getMusicModes(original)
+    expect(modes.map((mode) => mode.id)).toEqual(['original', 'bangbangbang'])
+    for (const mode of modes) expect(selectMusic(original, `?music=${mode.id}`)).toEqual(mode.track)
+    expect(selectMusic(original, '?music=bangbangbang')).toMatchObject({
+      src: 'audio/bang-bang-bang-chorus.mp3', dance: 'bang-bang-bang',
+    })
+    expect(selectMusic(original, '?music=youtube')?.dance).toBeUndefined()
   })
-})
 
-it('keeps dance metadata only on the matching track', () => {
-  expect(selectMusic(original, '?music=bangbangbang')).toMatchObject({
-    src: 'audio/bang-bang-bang-chorus.mp3', dance: 'bang-bang-bang',
+  it('accepts configured HTTPS sources and keeps local fallbacks for invalid sources', () => {
+    const remote = 'https://media.example.com/forever.mp3'
+    expect(onlineMusicSource(`  ${remote}  `, original.src)).toBe(remote)
+    for (const value of [undefined, '', '/audio/other.mp3', 'not a URL', 'http://media.example.com/song.mp3', 'javascript:alert(1)', 'https://user:pass@media.example.com/song.mp3']) {
+      expect(onlineMusicSource(value, original.src)).toBe(original.src)
+    }
+    const modes = getMusicModes(original, { original: remote, bangbangbang: 'https://media.example.com/excerpt.mp3' })
+    expect(modes[0].track.src).toBe(remote)
+    expect(modes[1].track).toMatchObject({ src: 'https://media.example.com/excerpt.mp3', dance: 'bang-bang-bang' })
+    expect(original.src).toBe('audio/forever-in-love-kenny-g.mp3')
   })
-  for (const search of ['', '?music=original', '?music=youtube']) {
-    expect(selectMusic(original, search)?.dance).toBeUndefined()
-  }
-})
 
-
-it('has a single registry for labels, recordings and matching choreography', () => {
-  const modes = getMusicModes(original)
-  expect(modes.map((mode) => mode.id)).toEqual(['original', 'bangbangbang', 'youtube'])
-  for (const mode of modes) expect(selectMusic(original, `?music=${mode.id}`)).toEqual(mode.track)
-  expect(modes.filter((mode) => mode.track.dance).map((mode) => mode.id)).toEqual(['bangbangbang'])
-})
-
-it('updates a mode URL while preserving guest and other query parameters', () => {
-  expect(searchWithMusicMode('?guest=Ngoc&v=abc', 'bangbangbang')).toBe('?guest=Ngoc&v=abc&music=bangbangbang')
-  expect(searchWithMusicMode('?guest=Ngoc&music=bangbangbang', 'original')).toBe('?guest=Ngoc')
-  expect(searchWithMusicMode('?music=youtube', 'original')).toBe('')
-  expect(musicModeFromSearch('?music=https://example.com/other.mp3')).toBe('original')
+  it('preserves guest and other query parameters when changing mode', () => {
+    expect(searchWithMusicMode('?guest=Ngoc&v=abc', 'bangbangbang')).toBe('?guest=Ngoc&v=abc&music=bangbangbang')
+    expect(searchWithMusicMode('?guest=Ngoc&music=bangbangbang', 'original')).toBe('?guest=Ngoc')
+    expect(searchWithMusicMode('?music=youtube', 'original')).toBe('')
+    expect(musicModeFromSearch('?music=https://example.com/other.mp3')).toBe('original')
+  })
 })

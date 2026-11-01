@@ -73,10 +73,13 @@ describe('background piano', () => {
   it('prepares music once after the guest selects the music option, without playing', () => {
     player.prepare()
     player.prepare()
-    expect(audio.preload).toBe('auto')
+    expect(audio.preload).toBe('metadata')
     expect(audio.load).toHaveBeenCalledOnce()
     expect(audio.play).not.toHaveBeenCalled()
-    expect(player.getSnapshot()).toMatchObject({ wanted: false, playing: false, requested: true })
+    expect(player.getSnapshot()).toMatchObject({ wanted: false, playing: false, requested: true, loading: true })
+    audio.readyState = 1
+    audio.dispatchEvent(new Event('loadedmetadata'))
+    expect(player.getSnapshot().loading).toBe(false)
   })
 
   it('only marks playback active after the media starts, fading to a quiet volume', () => {

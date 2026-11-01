@@ -1,4 +1,4 @@
-import { usesAlternateMusic } from './music-source'
+import { musicModeFromSearch } from './music-source'
 import { copyText } from './clipboard'
 
 export interface InvitationShareData { title: string; text: string; url: string }
@@ -9,7 +9,7 @@ export function invitationShareUrl(currentUrl: string, basePath: string, preferr
   const fallback = new URL(basePath, currentUrl)
   fallback.search = ''; fallback.hash = ''
   const finish = (url: URL) => {
-    if (usesAlternateMusic(new URL(currentUrl).search)) url.searchParams.set('music', 'youtube')
+    if (musicModeFromSearch(new URL(currentUrl).search) === 'bangbangbang') url.searchParams.set('music', 'bangbangbang')
     return url.href
   }
   if (!preferredUrl) return finish(fallback)

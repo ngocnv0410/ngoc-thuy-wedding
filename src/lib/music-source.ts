@@ -1,6 +1,6 @@
 import type { Music } from '../content/types'
 
-export type MusicModeId = 'original' | 'bangbangbang' | 'youtube'
+export type MusicModeId = 'original' | 'bangbangbang'
 export interface MusicMode {
   id: MusicModeId
   label: string
@@ -8,29 +8,42 @@ export interface MusicMode {
   track: Music
 }
 
-/** Add future invitation modes here, with an approved local recording and optional choreography. */
-export function getMusicModes(original: Music | undefined): MusicMode[] {
+interface OnlineMusicSources {
+  original?: string
+  bangbangbang?: string
+}
+
+/** Configured HTTPS recordings may replace bundled files; guest URLs never select a recording. */
+export function onlineMusicSource(value: string | undefined, fallback: string): string {
+  if (!value?.trim()) return fallback
+  try {
+    const url = new URL(value.trim())
+    if (url.protocol === 'https:' && !url.username && !url.password) return url.href
+  } catch { /* Invalid configuration keeps the working local recording. */ }
+  return fallback
+}
+
+/** Both pickers share two modes; the dance stays paired with its matching excerpt. */
+export function getMusicModes(original: Music | undefined, online: OnlineMusicSources = {
+  original: import.meta.env?.VITE_MUSIC_ORIGINAL_URL,
+  bangbangbang: import.meta.env?.VITE_MUSIC_BANGBANGBANG_URL,
+}): MusicMode[] {
+  const originalSrc = original && onlineMusicSource(online.original, original.src)
+  const originalTrack = original && originalSrc && originalSrc !== original.src ? { ...original, src: originalSrc } : original
   return [
-    ...(original ? [{ id: 'original' as const, label: 'Original', description: 'Dịu dàng · Forever in Love', track: original }] : []),
-    { id: 'bangbangbang', label: 'BANG BANG BANG', description: 'Sôi động · Cùng cô dâu chú rể nhảy', track: {
-      src: 'audio/bang-bang-bang-chorus.mp3', title: 'BANG BANG BANG · Điệp khúc', artist: 'BIGBANG', dance: 'bang-bang-bang',
-    } },
-    { id: 'youtube', label: 'Nhạc cưới', description: 'Một giai điệu khác cho ngày vui', track: {
-      src: 'audio/youtube-hGu7BVQy5G0.mp3', title: 'Nhạc cưới', sourceUrl: 'https://www.youtube.com/watch?v=hGu7BVQy5G0&t=15s', startSeconds: 15,
+    ...(originalTrack ? [{ id: 'original' as const, label: 'Nguyên bản', description: 'Dịu dàng · Forever in Love', track: originalTrack }] : []),
+    { id: 'bangbangbang', label: 'Sôi động', description: 'BANG BANG BANG · Cùng cô dâu chú rể nhảy', track: {
+      src: onlineMusicSource(online.bangbangbang, 'audio/bang-bang-bang-chorus.mp3'),
+      title: 'BANG BANG BANG · Điệp khúc', artist: 'BIGBANG', dance: 'bang-bang-bang',
     } },
   ]
 }
 
+/** Old Nhạc cưới links and unknown values fall back to the original invitation. */
 export function musicModeFromSearch(search: string): MusicModeId {
-  const value = new URLSearchParams(search).get('music')
-  return value === 'bangbangbang' || value === 'youtube' ? value : 'original'
+  return new URLSearchParams(search).get('music') === 'bangbangbang' ? 'bangbangbang' : 'original'
 }
 
-export function usesAlternateMusic(search: string): boolean {
-  return musicModeFromSearch(search) === 'youtube'
-}
-
-/** Only modes registered above may select a recording; query strings cannot inject audio URLs. */
 export function selectMusic(original: Music | undefined, search: string): Music | undefined {
   return getMusicModes(original).find((mode) => mode.id === musicModeFromSearch(search))?.track
 }

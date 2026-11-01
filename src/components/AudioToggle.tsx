@@ -16,12 +16,12 @@ export function AudioToggle({ track, opening, modes, mode, onModeChange }: { tra
   const visible = expanded && !opening
 
   useEffect(() => {
-    if (controlsRef.current) return music.mountControls(controlsRef.current, initialTitle.current)
-  }, [])
+    if (visible && controlsRef.current) return music.mountControls(controlsRef.current, initialTitle.current)
+  }, [visible])
 
   useEffect(() => {
     controlsRef.current?.querySelector('audio')?.setAttribute('aria-label', track.title)
-  }, [track.title])
+  }, [track.title, visible])
 
   useEffect(() => {
     if (!visible) return
