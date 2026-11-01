@@ -283,3 +283,15 @@
 /* The approved illustration is split at the original joint pivots. */
 .approvedRig g { transform-box: view-box; }
 .portraitGaze { transform: translate(calc(var(--face-x, var(--pose-face-x)) * .18), calc(var(--face-y, var(--pose-face-y)) * .2)); }
+
+/* Switch complete painted expressions; never fade eye covers over a visible iris. */
+.approvedRig {
+  --face-closed: clamp(0, calc((var(--ec, var(--pose-ec)) - .5) * 1000), 1);
+  --face-happy: clamp(0, calc((var(--eh, var(--pose-eh)) - .5) * 1000), 1);
+}
+.openFace { opacity: calc(1 - max(var(--face-closed), var(--face-happy))); }
+.closedFace { opacity: max(0, calc(var(--face-closed) - var(--face-happy))); }
+.happyFace { opacity: var(--face-happy); }
+
+/* The bride's shoulder is higher and her relaxed arm already points outward. */
+.brideArm { transform: rotate(calc((min(var(--bride-angle), calc(45deg + var(--bride-angle) * .5)) + min(0deg, var(--bride-angle)) * .4) * var(--arm-sign))); }

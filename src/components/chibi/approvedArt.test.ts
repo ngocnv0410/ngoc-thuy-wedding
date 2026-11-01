@@ -27,4 +27,16 @@ describe('approved artwork with the original animation rig', () => {
     expect(figure).toContain('<image')
     expect(figure).toContain('<path')
   })
+  it('uses painted eye states and keeps raised bridal hands above the head layer', () => {
+    const bride = renderToStaticMarkup(createElement(ChibiFigure, { who: 'bride', held: createElement(PropArt, { kind: 'envelope' }) }))
+    expect(bride).toContain('bride-open-face.webp')
+    expect(bride).toContain('bride-closed-face.webp')
+    expect(bride).toContain('bride-happy-face.webp')
+    expect(bride).not.toContain('<radialGradient')
+    expect(bride).toContain('transform-origin:45.5px 102px')
+    expect(bride).toContain('transform-origin:73.5px 102px')
+    expect(bride).toContain('translate(30 126)')
+    expect(bride.indexOf('data-part="arm-r"')).toBeGreaterThan(bride.indexOf('data-part="head"'))
+  })
+
 })
