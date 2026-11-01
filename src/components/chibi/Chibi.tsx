@@ -186,11 +186,10 @@ function DanceArm({ side, groom }: { side: Side; groom: boolean }) {
   const x = side === 'l' ? 45 : 75
   return <g transform={`translate(${x} 114)`} data-limb={`arm-${side}`} data-costume={groom ? 'suit' : 'bridal'}>
     <g className={side === 'l' ? styles.danceArmL : styles.danceArmR}>
-      <path data-shape="upper" d="M-4 0Q0-4 4 0L3 17Q0 20-3 17Z" className={groom ? styles.suit : styles.skin} />
+      <path data-shape="upper" data-limb-outline d="M-4 0Q0-4 4 0L3 17Q0 20-3 17Z" className={groom ? styles.suit : styles.skin} />
       <path d="M0 0L0 17" className={groom ? styles.suit : styles.skin} strokeWidth={groom ? 11 : 8} data-bone="upper-arm" />
       <g transform="translate(0 17)" data-joint="elbow">
         <g className={side === 'l' ? styles.elbowL : styles.elbowR}>
-          <path data-shape="lower" d="M-3 0Q0-3 3 0L2.5 13Q0 16-2.5 13Z" className={groom ? styles.suit : styles.skin} />
           <path d="M0 0L0 13" className={groom ? styles.suit : styles.skin} strokeWidth={groom ? 10 : 7} data-bone="forearm" />
           {groom && <path d="M-3.5 11L3.5 11L3.5 14L-3.5 14Z" className={styles.cloth} data-cuff /> }
           <g data-hand transform="translate(0 17)">
@@ -207,11 +206,10 @@ function DanceLeg({ side, groom }: { side: Side; groom: boolean }) {
   const x = side === 'l' ? 53 : 67
   return <g transform={`translate(${x} 150)`} data-limb={`leg-${side}`} data-costume={groom ? 'suit' : 'bridal'}>
     <g className={side === 'l' ? styles.danceLegL : styles.danceLegR}>
-      <path data-shape="upper" d="M-5 0Q0-4 5 0L4 20Q0 23-4 20Z" className={groom ? styles.suit : styles.skin} />
+      <path data-shape="upper" data-limb-outline d="M-5 0Q0-4 5 0L4 20Q0 23-4 20Z" className={groom ? styles.suit : styles.skin} />
       <path d="M0 0L0 20" className={groom ? styles.suit : styles.skin} strokeWidth="11" data-bone="thigh" />
       <g transform="translate(0 20)" data-joint="knee">
         <g className={side === 'l' ? styles.kneeL : styles.kneeR}>
-          <path data-shape="lower" d="M-4 0Q0-3 4 0L3.5 19Q0 21-3.5 19Z" className={groom ? styles.suit : styles.skin} />
           <path d="M0 0L0 19" className={groom ? styles.suit : styles.skin} strokeWidth="10" data-bone="shin" />
           <path data-foot d="M-4 17Q-7 23 0 23L6 23L5 17Z" className={groom ? styles.shoe : styles.cloth} />
         </g>

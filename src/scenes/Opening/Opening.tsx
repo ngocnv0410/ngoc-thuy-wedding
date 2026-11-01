@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { MusicModePicker, type MusicModeControl } from '../../components/MusicModePicker'
 import { Chibi } from '../../components/chibi/Chibi'
 import { CoupleNames } from '../../components/CoupleNames'
 import { Seal } from '../../components/Seal'
@@ -10,7 +11,7 @@ import styles from './Opening.module.css'
 import { Door } from './Door'
 import { useDoors3D } from './useDoors3D'
 
-interface OpeningProps {
+interface OpeningProps extends MusicModeControl {
   content: WeddingContent
   /** Cửa đã mở xong (hoặc được bỏ qua): gỡ overlay. */
   onDone: () => void
@@ -31,7 +32,7 @@ const FADE_MS = 420
  * DOM phía sau; cửa mở ra là thấy bìa thật. Overlay luôn có lối ra ("Bỏ qua", hoặc tự mờ đi nếu
  * animation không tải được).
  */
-export function Opening({ content, onDone }: OpeningProps) {
+export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [closing, setClosing] = useState(false)
   const [withMusic, setWithMusic] = useState(() => Boolean(content.music))
@@ -81,7 +82,7 @@ export function Opening({ content, onDone }: OpeningProps) {
         return
       }
       if (event.key !== 'Tab') return
-      const buttons = [...dialog.querySelectorAll<HTMLButtonElement>('button')].filter((button) => !button.disabled && getComputedStyle(button).visibility !== 'hidden')
+      const buttons = [...dialog.querySelectorAll<HTMLElement>('button, select')].filter((button) => !button.hasAttribute('disabled') && getComputedStyle(button).visibility !== 'hidden')
       const firstButton = buttons[0]
       const lastButton = buttons.at(-1)
       if (event.shiftKey && (document.activeElement === firstButton || document.activeElement === dialog)) {
@@ -275,6 +276,7 @@ export function Opening({ content, onDone }: OpeningProps) {
             <span className={styles.musicSwitch} aria-hidden="true" />
           </button>
         )}
+        {track && <MusicModePicker compact modes={modes} mode={mode} onModeChange={onModeChange} />}
       </div>
     </div>
   )

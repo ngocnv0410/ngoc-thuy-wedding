@@ -35,7 +35,11 @@ the bridal arms slender and the suit sleeves slightly fuller. The lower foot
 anchors the stance to the ground while bending the knees. The longer dance
 arms leave room for cross-body and overhead gestures.
 
-Joint tracks use filtering and continuous interpolation. Ambiguous projected
+Each limb is drawn as one tapered ribbon around a rounded elbow/knee, removing
+the internal outline between two separately drawn segments. Joint tracks use
+a symmetric five-sample filter and a cubic B-spline with continuous acceleration.
+Positive spline weights prevent bone-length overshoot; the lower foot is grounded
+again after interpolation. Ambiguous projected
 rotations are velocity-limited to avoid full turns when the arm points toward
 the camera. Nodes are cached once; the frame loop performs no DOM searches.
 
@@ -52,3 +56,10 @@ The source is mirrored and the displayed directions are preserved. The existing
 28.444-second soundtrack loop boundary is retained.
 
 Default music remains Forever in Love; only `?music=bangbangbang` enables dance.
+
+
+Playback pauses freeze the current pose after the media fade-out finishes instead
+of clearing the rig back to rest. A queued playing event from a seek or loop
+cannot cancel a guest-requested fade-out. Reduced motion still resets to a static
+pose. Tests check acceleration continuity, reduced joint acceleration variation,
+source-gesture bounds and the late playing-event regression.

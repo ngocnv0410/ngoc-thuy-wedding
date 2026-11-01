@@ -4,7 +4,7 @@ import { ChapterNav, type Chapter } from './components/ChapterNav'
 import { LightLayer } from './components/LightLayer'
 import { ToastProvider } from './components/ToastProvider'
 import { wedding as weddingContent } from './content/wedding'
-import { selectMusic } from './lib/music-source'
+import { getMusicModes, musicModeFromSearch, searchWithMusicMode, type MusicModeId } from './lib/music-source'
 import { music } from './lib/music'
 import { guestbookEnabled } from './lib/firebase-config'
 import { prefersMotion, loadMotion } from './motion/useMotion'
@@ -20,8 +20,10 @@ import { Wishes } from './scenes/Wishes/Wishes'
 const SHOW_EMPTY = import.meta.env.DEV
 const OPENED_KEY = 'thiep-da-mo'
 
-const wedding = { ...weddingContent, music: selectMusic(weddingContent.music, window.location.search) }
-if (wedding.music) music.configure(wedding.music.src, wedding.music.startSeconds)
+const modes = getMusicModes(weddingContent.music)
+const initialMode = musicModeFromSearch(window.location.search)
+const initialTrack = modes.find((mode) => mode.id === initialMode)?.track
+if (initialTrack) music.configure(initialTrack.src, initialTrack.startSeconds)
 // Bắt đầu tải chunk motion ngay, song song với lần render đầu.
 if (prefersMotion()) loadMotion().catch(() => {})
 
@@ -37,6 +39,23 @@ function shouldShowOpening(): boolean {
 }
 
 function App() {
+  const [mode, setMode] = useState<MusicModeId>(initialMode)
+  const track = modes.find((item) => item.id === mode)?.track
+  const wedding = { ...weddingContent, music: track }
+  const onModeChange = (next: MusicModeId) => {
+    const selected = modes.find((item) => item.id === next)
+    if (!selected || next === mode) return
+    const resume = music.getSnapshot().wanted
+    music.configure(selected.track.src, selected.track.startSeconds)
+    setMode(next)
+    // Keep this synchronous inside the selection gesture, including on iPhone.
+    if (resume) music.play()
+    try {
+      window.history.replaceState(window.history.state, '', `${window.location.pathname}${searchWithMusicMode(window.location.search, next)}${window.location.hash}`)
+    } catch { /* The current selection still works if history is unavailable. */ }
+  }
+  const modeControl = { modes, mode, onModeChange }
+
   const [opening, setOpening] = useState(shouldShowOpening)
   const [invitationVersion, setInvitationVersion] = useState(0)
   const focusHero = useRef(false)
@@ -86,11 +105,11 @@ function App() {
   return (
     <ToastProvider>
       <LightLayer />
-      {opening && <Opening content={wedding} onDone={handleOpened} />}
+      {opening && <Opening {...modeControl} content={wedding} onDone={handleOpened} />}
       {/* Khi màn mở cửa đang hiện, phần thiệp phía sau không nhận focus/thao tác. */}
       <div className="app-shell" inert={opening}>
         <ChapterNav chapters={chapters} />
-        {wedding.music && <AudioToggle track={wedding.music} opening={opening} />}
+        {wedding.music && <AudioToggle {...modeControl} track={wedding.music} opening={opening} />}
         <main key={invitationVersion}>
           <Hero content={wedding} onReplay={opening ? undefined : replayOpening} />
           <Details content={wedding} />
