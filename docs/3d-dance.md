@@ -1,16 +1,21 @@
 # Wedding dance in 3D
 
 BAD and BANG BANG now render actual volumetric bride/groom meshes with a Three.js
-humanoid bone hierarchy in both the opening and the invitation cover. The model
-has modeled heads, faces, hair, jacket, bridal bodice, skirt, veil and articulated
-limbs. It is generated in code: no remote model service, texture pack or video is
+humanoid bone hierarchy in the selected dance on the invitation cover.
+The opening and closing keep the original SVG chibi illustrations. The model
+uses the original chibi head/body proportions and exact front hair/jacket
+Bezier silhouettes, with rounded 3D heads, expressive brown eyes, ivory clothing,
+a low bridal bun and a small side blossom pin. Hair is beveled and wrapped
+around the head; limbs and the full-length skirt remain volumetric. It is generated in code: no remote model service, texture pack or video is
 needed. The ordinary invitation and other illustrations retain their existing layout.
 
 ## Animation source
 
 - BAD: the existing user-supplied MP4, using MediaPipe **world landmarks** in 3D.
   The track contains root travel, pelvis/spine/head world quaternions and eight
-  limb directions, sampled at 30 fps. Missing final frames hold the last pose.
+  limb directions, sampled at 30 fps. Estimator axis flips are resolved, head/body
+  articulation is bounded and bidirectional geodesic filtering limits isolated
+  joint snaps without changing the audio timestamps. Missing final frames hold the last pose.
 - BANG BANG: the existing choreography is retargeted to the 3D rig. Source data is
   2D, so depth is inferred from segment shortening; this is not a recovered 3D
   motion capture of the original performer.
@@ -37,7 +42,7 @@ finger movement, face expressions or cloth physics exactly.
    background warming; selecting a dance still loads it explicitly.
 
 Production build: the shared Three.js module is about 187 KB gzip; the renderer
-and procedural models about 3 KB; both motion tracks together about 98 KB gzip.
+and procedural models about 5 KB; both motion tracks together about 98 KB gzip.
 That is approximately **290 KB of background downloads after the first paint**.
 The first-page JS grows by only a few KB and no large model/video asset is added.
 Existing 3D doors share the Three.js chunk.

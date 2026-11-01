@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { MusicModePicker, type MusicModeControl } from '../../components/MusicModePicker'
-import { DanceStage } from '../../components/dance3d/DanceStage'
 import { Chibi } from '../../components/chibi/Chibi'
 import { CoupleNames } from '../../components/CoupleNames'
 import { Seal } from '../../components/Seal'
@@ -244,13 +243,8 @@ export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningP
        * canvas). Bấm mở: đi tới đẩy cửa rồi đứng sang hai bên mời khách vào.
        */}
       <div className={styles.hosts} aria-hidden="true">
-        {track?.dance ? <DanceStage dance={track.dance} layout="hosts" brideFirst={leftWho === 'bride'} fallback={<>
-          <Chibi who={leftWho} hand="r" look="front" />
-          <Chibi who={leftWho === 'groom' ? 'bride' : 'groom'} hand="l" look="front" />
-        </>} /> : <>
-          <Chibi who={leftWho} hand="r" look="front" anim="host-left" />
-          <Chibi who={leftWho === 'groom' ? 'bride' : 'groom'} hand="l" look="front" anim="host-right" />
-        </>}
+        <Chibi dance={track?.dance} who={leftWho} hand="r" look="front" anim="host-left" />
+        <Chibi dance={track?.dance} who={leftWho === 'groom' ? 'bride' : 'groom'} hand="l" look="front" anim="host-right" />
       </div>
 
       <div className={styles.actions} data-anim="cta">
