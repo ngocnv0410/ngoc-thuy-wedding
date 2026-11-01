@@ -2,19 +2,25 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
 import type { Music } from '../content/types'
 import { music } from '../lib/music'
 import styles from './AudioToggle.module.css'
+import { MusicModePicker, type MusicModeControl } from './MusicModePicker'
 
 /** The audio element stays mounted while the invitation scenes replay. */
-export function AudioToggle({ track, opening }: { track: Music; opening: boolean }) {
+export function AudioToggle({ track, opening, modes, mode, onModeChange }: { track: Music; opening: boolean } & MusicModeControl) {
   const state = useSyncExternalStore(music.subscribe, music.getSnapshot)
   const [expanded, setExpanded] = useState(false)
   const dockRef = useRef<HTMLDivElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
   const detailsRef = useRef<HTMLButtonElement>(null)
   const panelId = useId()
+  const initialTitle = useRef(track.title)
   const visible = expanded && !opening
 
   useEffect(() => {
-    if (controlsRef.current) return music.mountControls(controlsRef.current, track.title)
+    if (controlsRef.current) return music.mountControls(controlsRef.current, initialTitle.current)
+  }, [])
+
+  useEffect(() => {
+    controlsRef.current?.querySelector('audio')?.setAttribute('aria-label', track.title)
   }, [track.title])
 
   useEffect(() => {
@@ -47,8 +53,9 @@ export function AudioToggle({ track, opening }: { track: Music; opening: boolean
             <span /><span /><span /><span />
           </span>
         </button>
-        <button ref={detailsRef} type="button" className={styles.details} aria-label="Mở trình phát nhạc"
+        <button ref={detailsRef} type="button" className={styles.details} aria-label="Chọn chế độ thiệp"
           aria-expanded={visible} aria-controls={panelId} onClick={() => setExpanded((value) => !value)}>
+          <span>Chế độ</span>
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="m6 8 4 4 4-4" /></svg>
         </button>
       </div>
@@ -58,14 +65,15 @@ export function AudioToggle({ track, opening }: { track: Music; opening: boolean
           music.play()
         }}>Chưa tải được nhạc · Thử lại</button>
       )}
-      <section id={panelId} className={styles.panel} data-open={visible} inert={!visible} aria-label="Trình phát nhạc nền">
+      <section id={panelId} className={styles.panel} data-open={visible} inert={!visible} aria-label="Chế độ thiệp và nhạc nền">
         <header className={styles.panelHeader}>
-          <span>Nhạc nền</span>
+          <span>Chế độ thiệp</span>
           <button type="button" aria-label="Đóng trình phát nhạc" onClick={() => {
             setExpanded(false)
             detailsRef.current?.focus()
           }}>×</button>
         </header>
+        <MusicModePicker modes={modes} mode={mode} onModeChange={onModeChange} />
         <p className={styles.trackTitle}>{track.title}</p>
         {track.artist && <p className={styles.artist}>{track.artist}</p>}
         <div ref={controlsRef} className={styles.audio} />

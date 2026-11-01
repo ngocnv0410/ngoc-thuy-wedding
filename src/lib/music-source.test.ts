@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { selectMusic } from './music-source'
+import { getMusicModes, musicModeFromSearch, searchWithMusicMode, selectMusic } from './music-source'
 
 const original = { src: 'audio/forever-in-love-kenny-g.mp3', title: 'Forever in Love' }
 describe('invitation soundtrack', () => {
@@ -18,4 +18,19 @@ it('keeps dance metadata only on the matching track', () => {
   for (const search of ['', '?music=original', '?music=youtube']) {
     expect(selectMusic(original, search)?.dance).toBeUndefined()
   }
+})
+
+
+it('has a single registry for labels, recordings and matching choreography', () => {
+  const modes = getMusicModes(original)
+  expect(modes.map((mode) => mode.id)).toEqual(['original', 'bangbangbang', 'youtube'])
+  for (const mode of modes) expect(selectMusic(original, `?music=${mode.id}`)).toEqual(mode.track)
+  expect(modes.filter((mode) => mode.track.dance).map((mode) => mode.id)).toEqual(['bangbangbang'])
+})
+
+it('updates a mode URL while preserving guest and other query parameters', () => {
+  expect(searchWithMusicMode('?guest=Ngoc&v=abc', 'bangbangbang')).toBe('?guest=Ngoc&v=abc&music=bangbangbang')
+  expect(searchWithMusicMode('?guest=Ngoc&music=bangbangbang', 'original')).toBe('?guest=Ngoc')
+  expect(searchWithMusicMode('?music=youtube', 'original')).toBe('')
+  expect(musicModeFromSearch('?music=https://example.com/other.mp3')).toBe('original')
 })

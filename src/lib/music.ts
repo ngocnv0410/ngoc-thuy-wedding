@@ -23,8 +23,24 @@ export class MusicPlayer {
   private state: MusicState = { playing: false, wanted: false, requested: false, loading: false, error: false }
 
   configure(src: string, startSeconds = 0) {
+    const start = Number.isFinite(startSeconds) ? Math.max(0, startSeconds) : 0
+    if (src === this.src && start === this.startSeconds) return
+    ++this.intent
+    cancelAnimationFrame(this.fadeFrame)
+    this.audio?.pause()
     this.src = src
-    this.startSeconds = Number.isFinite(startSeconds) ? Math.max(0, startSeconds) : 0
+    this.startSeconds = start
+    this.positioned = false
+    this.suspended = false
+    if (this.audio) {
+      // Reuse the mounted element so native controls and user-gesture playback stay connected.
+      this.audio.volume = 0
+      this.audio.preload = 'none'
+      this.audio.loop = start === 0
+      this.audio.src = src
+      this.audio.load()
+    }
+    this.update({ playing: false, wanted: false, requested: false, loading: false, error: false })
   }
 
   private positionStart() {
@@ -80,6 +96,8 @@ export class MusicPlayer {
       this.fade(TARGET_VOLUME, FADE_IN_MS)
     })
     audio.addEventListener('pause', () => {
+      // Ignore a queued pause from the previous source if the new track already started.
+      if (!audio.paused && !audio.ended) return
       // An offset track loops from its chosen start, unless the guest paused it.
       if (audio.ended && this.startSeconds > 0 && this.state.wanted) return
       ++this.intent

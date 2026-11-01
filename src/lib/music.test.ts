@@ -218,6 +218,45 @@ describe('background piano', () => {
     expect(audio.play).toHaveBeenCalledTimes(2)
   })
 
+  it('switches the mounted track without creating another audio element or autoplaying', () => {
+    player.mountControls({ append: vi.fn() } as unknown as HTMLElement, 'Original')
+    player.play()
+    audio.start()
+    const calls = audio.play.mock.calls.length
+    audio.load.mockImplementation(() => { audio.currentTime = 0; audio.readyState = 0; audio.ended = false })
+    player.configure('audio/alternate.mp3', 15)
+    expect(constructor).toHaveBeenCalledOnce()
+    expect(audio.src).toBe('audio/alternate.mp3')
+    expect(audio.paused).toBe(true)
+    expect(audio.loop).toBe(false)
+    expect(player.getSnapshot()).toMatchObject({ playing: false, wanted: false, requested: false, error: false })
+    expect(audio.play).toHaveBeenCalledTimes(calls)
+    player.play()
+    audio.readyState = 1
+    audio.dispatchEvent(new Event('loadedmetadata'))
+    expect(audio.currentTime).toBe(15)
+    audio.start()
+    expect(player.getPlaying()).toBe(true)
+    // Same selection is idempotent, including the seek position.
+    audio.currentTime = 22
+    player.configure('audio/alternate.mp3', 15)
+    expect(audio.currentTime).toBe(22)
+    expect(player.getPlaying()).toBe(true)
+  })
+
+  it('ignores old play rejections and queued pause events after a track switch', async () => {
+    let rejectOld: (error: Error) => void = () => {}
+    audio.play.mockImplementationOnce(() => new Promise<void>((_, reject) => { rejectOld = reject }))
+    player.play()
+    player.configure('audio/bang-bang-bang-chorus.mp3')
+    player.play()
+    audio.start()
+    audio.dispatchEvent(new Event('pause')) // Old source's queued pause; new source is playing.
+    rejectOld(new Error('AbortError'))
+    await Promise.resolve()
+    expect(player.getSnapshot()).toMatchObject({ wanted: true, playing: true, error: false })
+  })
+
   it('keeps snapshots stable until an actual playback-state change', () => {
     const snapshot = player.getSnapshot()
     player.configure('audio/canon-in-d-piano.mp3')
