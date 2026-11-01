@@ -10,7 +10,7 @@ const origin = ([x, y]: readonly [number, number]): CSSProperties => ({ transfor
 const MIRROR = `matrix(-1 0 0 1 ${MIRROR_X} 0)`
 
 /** Rig một nhân vật (các `<g>` lồng nhau), dùng trong `<Chibi>` hoặc lồng thẳng vào SVG khác. */
-export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held' | 'hand'>) {
+export function ChibiFigure({ who, held, hand, articulated = false }: Pick<FigureProps, 'who' | 'held' | 'hand'> & { articulated?: boolean }) {
   const groom = who === 'groom'
   const side = hand ?? (groom ? 'r' : 'l')
   const holder = (at: Side) =>
@@ -34,17 +34,28 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
   )
 
   return (
-    <g className={styles.figure}>
+    <g className={styles.figure} data-articulated={articulated}>
       <ellipse {...SHARED.shadow} className={styles.shadow} />
       <g className={styles.body}>
-        {!groom && (
-          <g className={styles.veil} style={origin(PIVOT.veil)}>
-            <path d={BRIDE.veilL} className={styles.veilFill} />
-            <path d={BRIDE.veilR} className={styles.veilFill} />
+        {!groom && <g className={styles.upper} style={origin(PIVOT.upper)}>
+          <g className={styles.head} style={origin(PIVOT.head)}>
+            <g className={styles.veil} style={origin(PIVOT.veil)}>
+              <path d={BRIDE.veil} className={styles.bridalVeil} />
+              <path d={BRIDE.veilFolds} className={styles.veilFolds} />
+            </g>
           </g>
-        )}
+        </g>}
 
-        {groom ? (
+
+
+        {articulated ? <>
+          <DanceLeg side="l" groom={groom} />
+          <DanceLeg side="r" groom={groom} />
+          {!groom && <g className={styles.skirt} style={origin(PIVOT.skirt)}>
+            <path d={BRIDE.skirt} className={styles.cloth} />
+            <path d={BRIDE.folds} className={styles.fold} />
+          </g>}
+        </> : groom ? (
           <>
             <g className={styles.legL} style={origin(PIVOT.hipL)}>
               <path d={GROOM.leg} className={styles.suit} />
@@ -92,6 +103,7 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
             </>
           )}
 
+          {!articulated && <>
           <g className={styles.armL} style={origin(PIVOT.shoulderL)}>
             {arm}
             {holder('l')}
@@ -100,6 +112,7 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
             <g transform={MIRROR}>{arm}</g>
             {holder('r')}
           </g>
+          </>}
           <path d={SHARED.chestHeart} className={styles.chestHeart} />
 
           <g className={styles.head} style={origin(PIVOT.head)}>
@@ -128,24 +141,78 @@ export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held
             ) : (
               <>
                 <path d={BRIDE.hair} className={styles.hairBride} />
-                <path d={BRIDE.strands} className={styles.strand} />
-                <path d={BRIDE.lock} className={styles.hairBride} />
-                <path d={BRIDE.lock} className={styles.hairBride} transform={MIRROR} />
-                {BRIDE.flowers.map(([cx, cy]) => (
-                  <g key={cx}>
-                    {[0, 72, 144, 216, 288].map((angle) => (
-                      <ellipse key={angle} cx={cx} cy={cy - 2.6} rx="1.6" ry="2.6" transform={`rotate(${angle} ${cx} ${cy})`} className={styles.flower} />
-                    ))}
-                    <circle cx={cx} cy={cy} r={1.4} className={styles.accent} />
-                  </g>
-                ))}
+                <path d={BRIDE.strands} className={styles.bridalStrands} />
+                <path d={BRIDE.lockL} className={styles.hairBride} />
+                <path d={BRIDE.lockR} className={styles.hairBride} />
+                <BridalHeadpiece />
               </>
             )}
           </g>
+          {articulated && <><DanceArm side="l" groom={groom} /><DanceArm side="r" groom={groom} /></>}
         </g>
       </g>
     </g>
   )
+}
+
+/** A small pearl-and-blossom pin lies against the hair, without floating sprigs. */
+function BridalHeadpiece() {
+  return <g className={styles.headpiece}>
+    <path d="M25 49Q28 37 41 31" className={styles.headpieceStem} />
+    {[[28, 43, .85], [36, 34, .6]].map(([x, y, scale]) => (
+      <g key={x} transform={`translate(${x} ${y}) scale(${scale})`}>
+        {[0, 72, 144, 216, 288].map((angle) => (
+          <path key={angle} d="M0 0C-3-1-3.3-4.5-1.4-5.1C.8-5.8 2.8-3.5 0 0Z" transform={`rotate(${angle})`} className={styles.headpiecePetal} />
+        ))}
+        <circle r="1.2" className={styles.headpieceGold} />
+      </g>
+    ))}
+    {[[25, 49, 1.15], [32, 38, 1.25], [41, 31, 1.3]].map(([cx, cy, r]) => (
+      <g key={cx}>
+        <circle cx={cx} cy={cy} r={r} className={styles.headpiecePearl} />
+        <circle cx={cx - r * .3} cy={cy - r * .3} r={r * .3} className={styles.headpieceGlint} />
+      </g>
+    ))}
+  </g>
+}
+
+/** Each child starts exactly at its parent's endpoint; rounded overlaps close the joints. */
+function DanceArm({ side, groom }: { side: Side; groom: boolean }) {
+  const x = side === 'l' ? 45 : 75
+  return <g transform={`translate(${x} 114)`} data-limb={`arm-${side}`} data-costume={groom ? 'suit' : 'bridal'}>
+    <g className={side === 'l' ? styles.danceArmL : styles.danceArmR}>
+      <path data-shape="upper" d="M-4 0Q0-4 4 0L3 17Q0 20-3 17Z" className={groom ? styles.suit : styles.skin} />
+      <path d="M0 0L0 17" className={groom ? styles.suit : styles.skin} strokeWidth={groom ? 11 : 8} data-bone="upper-arm" />
+      <g transform="translate(0 17)" data-joint="elbow">
+        <g className={side === 'l' ? styles.elbowL : styles.elbowR}>
+          <path data-shape="lower" d="M-3 0Q0-3 3 0L2.5 13Q0 16-2.5 13Z" className={groom ? styles.suit : styles.skin} />
+          <path d="M0 0L0 13" className={groom ? styles.suit : styles.skin} strokeWidth={groom ? 10 : 7} data-bone="forearm" />
+          {groom && <path d="M-3.5 11L3.5 11L3.5 14L-3.5 14Z" className={styles.cloth} data-cuff /> }
+          <g data-hand transform="translate(0 17)">
+            <path d="M-3-3Q-4-1-3.3 2.5Q-2.5 5 0 5Q3 5 3.3 2L3.2-1Q5-3 3.8-4Q2.6-5 1.7-2L1-3Z" className={styles.skin} />
+            <path d="M-1.5 1Q0 2 1.5 1" className={styles.palmLine} />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+}
+
+function DanceLeg({ side, groom }: { side: Side; groom: boolean }) {
+  const x = side === 'l' ? 53 : 67
+  return <g transform={`translate(${x} 150)`} data-limb={`leg-${side}`} data-costume={groom ? 'suit' : 'bridal'}>
+    <g className={side === 'l' ? styles.danceLegL : styles.danceLegR}>
+      <path data-shape="upper" d="M-5 0Q0-4 5 0L4 20Q0 23-4 20Z" className={groom ? styles.suit : styles.skin} />
+      <path d="M0 0L0 20" className={groom ? styles.suit : styles.skin} strokeWidth="11" data-bone="thigh" />
+      <g transform="translate(0 20)" data-joint="knee">
+        <g className={side === 'l' ? styles.kneeL : styles.kneeR}>
+          <path data-shape="lower" d="M-4 0Q0-3 4 0L3.5 19Q0 21-3.5 19Z" className={groom ? styles.suit : styles.skin} />
+          <path d="M0 0L0 19" className={groom ? styles.suit : styles.skin} strokeWidth="10" data-bone="shin" />
+          <path data-foot d="M-4 17Q-7 23 0 23L6 23L5 17Z" className={groom ? styles.shoe : styles.cloth} />
+        </g>
+      </g>
+    </g>
+  </g>
 }
 
 function Eyes({ bride }: { bride: boolean }) {
@@ -200,7 +267,7 @@ export function Chibi({ size = 'md', headOnly = false, dance = false, className,
   return (
     <span className={classes} style={chibiVars(figure)} data-chibi={figure.who} data-anim={anim} aria-hidden="true">
       <svg ref={danceRef} viewBox={headOnly ? HEAD_VIEWBOX : `0 0 ${VIEW_W} ${VIEW_H}`} focusable="false">
-        <ChibiFigure who={figure.who} held={figure.held} hand={figure.hand} />
+        <ChibiFigure articulated={dance} who={figure.who} held={figure.held} hand={figure.hand} />
       </svg>
     </span>
   )

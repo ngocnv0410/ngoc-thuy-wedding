@@ -234,3 +234,40 @@
 .chestHeart {
   opacity: var(--heart, var(--pose-heart));
 }
+
+/* Articulated dance rig: rounded limb segments overlap at shoulder/elbow/hip/knee. */
+.figure [data-bone] { fill: none; stroke-linecap: round; }
+.figure [data-bone].suit { stroke: var(--chibi-suit); }
+.figure [data-bone].skin { stroke: var(--chibi-skin); }
+.figure [data-bone].cloth { stroke: var(--chibi-cloth); }
+.figure [data-bone='upper-arm'], .figure [data-bone='thigh'] { stroke-width: 10px; }
+.figure [data-bone='forearm'], .figure [data-bone='shin'] { stroke-width: 8px; }
+.figure [data-bone='cuff'] { stroke-width: 8px; }
+.danceArmL { transform: rotate(var(--arm-l, 6deg)); }
+.danceArmR { transform: rotate(var(--arm-r, -6deg)); }
+.elbowL { transform: rotate(var(--elbow-l, 0deg)); }
+.elbowR { transform: rotate(var(--elbow-r, 0deg)); }
+.danceLegL { transform: rotate(var(--leg-l, 0deg)); }
+.danceLegR { transform: rotate(var(--leg-r, 0deg)); }
+.kneeL { transform: rotate(var(--knee-l, 0deg)); }
+.kneeR { transform: rotate(var(--knee-r, 0deg)); }
+.danceArmL, .danceArmR, .elbowL, .elbowR,
+.danceLegL, .danceLegR, .kneeL, .kneeR { transform-origin: 0 0; }
+
+/* Keep original head, hair, veil and full-length bridal gown proportions. */
+.figure [data-bone] { opacity: 0; }
+.figure [data-shape] { stroke-width: 0.85; }
+.figure [data-costume='bridal'] [data-shape] { stroke-width: 0.7; }
+.palmLine { fill: none; stroke: var(--chibi-ink); stroke-width: 0.55 !important; opacity: 0.45; }
+
+/* Bridal hair and a light floral pearl comb, drawn inside the same head rig. */
+.bridalStrands { fill: none; stroke: #a27e62 !important; stroke-width: 0.8 !important; opacity: 0.52; }
+.headpieceStem { fill: none; stroke: #c5a46a !important; stroke-width: 0.85 !important; }
+.headpiecePetal { fill: #fffaf0; stroke: #d5bd94 !important; stroke-width: 0.55 !important; }
+.headpieceGold { fill: #c9a35f; stroke: none !important; }
+.headpiecePearl { fill: #fffdf7; stroke: #cfb78e !important; stroke-width: 0.55 !important; }
+.headpieceGlint { fill: #fff; stroke: none !important; }
+
+/* One sheer veil pinned at the nape; thin warm edges avoid a stiff curtain silhouette. */
+.bridalVeil { fill: rgb(255 253 248 / 0.34); stroke: #d3c5ae !important; stroke-width: 0.65 !important; }
+.veilFolds { fill: none; stroke: #d4c8b5 !important; stroke-width: 0.65 !important; opacity: 0.45; }

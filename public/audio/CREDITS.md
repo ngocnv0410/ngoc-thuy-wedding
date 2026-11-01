@@ -6,9 +6,11 @@
 - Local file: `bang-bang-bang-chorus.mp3`, MP3 128 kbps (~456 KB).
 - Excerpt: 00:00–00:28.444 of the supplied clip (64 beats at 135 BPM).
 - Tiny 15 ms / 30 ms edge fades avoid clicks on the loop boundary.
-- Chibi choreography is a stylized interpretation of the reference, sampled from
-  the audio playback clock. It stops when paused, buffering, offscreen, or when
-  reduced motion is requested.
+- Choreography uses the new single-performer slow tutorial, sampled at 30 fps
+  and aligned to this recording (tutorial time = 0.989405 + audio time × 1.333821).
+  The rig retains the displayed mirrored directions and projected limb lengths.
+  No missing detections occur in the used tutorial interval. This is 2D retargeting,
+  not an exact reproduction of finger articulation or clothing movement.
 - Only `?music=bangbangbang` selects this excerpt and dance. Ordinary links and
   `?music=original` use Kenny G; `?music=youtube` keeps its existing soundtrack.
 

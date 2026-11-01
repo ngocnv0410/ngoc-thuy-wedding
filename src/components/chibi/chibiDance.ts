@@ -1,27 +1,30 @@
-/** 135 BPM, inspired by the supplied dance: punches, side steps, then overhead pumps.
- * Sample from media time, never from elapsed animation time (seeking/looping is deterministic).
- */
+import reference from './referenceDance.json'
+
+/** Recorded video frames, interpolated on the audio clock. No invented beat loop. */
 export function dancePose(seconds: number): Record<string, string> {
-  const beat = Math.max(0, seconds) * 135 / 60
-  const phrase = beat % 16
-  const swing = Math.sin(beat * Math.PI)
-  const bounce = Math.sin((beat % 1) * Math.PI)
-  const overhead = phrase >= 8
+  const position = Math.max(0, Math.min(reference.frames.length - 1, seconds * reference.fps))
+  const index = Math.floor(position)
+  const t = position - index
+  // Cubic interpolation retains smooth velocity between 30fps source samples.
+  const row = reference.frames[index].map((_, channel) => {
+    const value = (offset: number) => reference.frames[Math.max(0, Math.min(reference.frames.length - 1, index + offset))][channel]
+    const a = value(-1), b = value(0), c = value(1), d = value(2)
+    return 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t)
+  })
+  const [x, y, torso, armL, elbowL, armR, elbowR, legL, kneeL, legR, kneeR, head, armUpperL, armLowerL, armUpperR, armLowerR, legUpperL, legLowerL, legUpperR, legLowerR] = row
   return {
-    '--body-y': `${-7 * bounce}px`,
-    '--lean-x': `${7 * swing}px`,
-    '--upper-r': `${-8 * swing}deg`,
-    '--upper-y': `${3 * (1 - bounce)}px`,
-    '--upper-sy': `${1 - 0.035 * (1 - bounce)}`,
-    '--head-r': `${5 * swing}deg`,
-    '--head-y': `${-2 * bounce}px`,
-    '--arm-l': `${overhead ? 145 + 22 * bounce : 65 + 65 * swing}deg`,
-    '--arm-r': `${overhead ? 145 + 22 * bounce : 65 - 65 * swing}deg`,
-    '--leg-l': `${-10 - 13 * swing}deg`,
-    '--leg-r': `${10 - 13 * swing}deg`,
-    '--skirt': `${-6 * swing}deg`,
-    '--veil': `${8 * swing}deg`,
-    '--tuft': `${-10 * swing}deg`,
+    '--lean-x': `${x}px`, '--body-y': `${y}px`,
+    '--upper-r': `${torso}deg`, '--upper-y': '0px', '--upper-sy': '1',
+    '--head-r': `${head}deg`, '--head-y': '0px',
+    '--arm-l': `${armL}deg`, '--elbow-l': `${elbowL}deg`,
+    '--arm-r': `${armR}deg`, '--elbow-r': `${elbowR}deg`,
+    '--leg-l': `${legL}deg`, '--knee-l': `${kneeL}deg`,
+    '--leg-r': `${legR}deg`, '--knee-r': `${kneeR}deg`,
+    '--skirt': `${-torso * 0.3}deg`, '--veil': `${-torso * 0.25}deg`, '--tuft': '0deg',
+    '--arm-upper-l-length': `${armUpperL}px`, '--arm-lower-l-length': `${armLowerL}px`,
+    '--arm-upper-r-length': `${armUpperR}px`, '--arm-lower-r-length': `${armLowerR}px`,
+    '--leg-upper-l-length': `${legUpperL}px`, '--leg-lower-l-length': `${legLowerL}px`,
+    '--leg-upper-r-length': `${legUpperR}px`, '--leg-lower-r-length': `${legLowerR}px`,
     '--eo': '0', '--ec': '0', '--eh': '1', '--heart': '0',
   }
 }
