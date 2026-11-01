@@ -7,7 +7,7 @@ character artwork; see [approved design](approved-character-design.md).
 
 The model uses the owner-approved head artwork on rounded, textured 3D geometry,
 with a neutral bright taupe/white outfit and a real articulated bone hierarchy.
-Standing, envelope-carrying and heart-gesture illustrations use the same family
+Jointed 2D figures, including envelope-carrying and heart gestures, use the same family
 throughout the 2D invitation. See [approved design](approved-character-design.md)
 for artwork, geometry and profile limitations.
 
@@ -45,10 +45,10 @@ finger movement, face expressions or cloth physics exactly.
 
 Production build: the shared Three.js module is about 187 KB gzip; the renderer
 and procedural models about 5 KB; both motion tracks together about 98 KB gzip.
-Head and clothing detail maps add about 170 KB. Together that is approximately
+Head and gown detail maps add about 164 KB. Together that is approximately
 **460 KB of background downloads after the first paint** for the dance renderer,
 art and both motion tracks. The two opening illustrations add about 60 KB; other
-2D pose images load lazily.
+2D figures reuse those same two cached illustrations.
 First-page JS stays around 324 KB before gzip, with renderer and maps in separate
 chunks. No large model/video asset is added.
 Existing 3D doors share the Three.js chunk.

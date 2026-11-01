@@ -280,10 +280,6 @@
 .veilFolds { fill: none; stroke: #cbbda7 !important; stroke-width: 0.55 !important; opacity: 0.38; }
 .hairLight { fill: #927157; stroke: none !important; opacity: 0.18; }
 
-/* Approved portrait artwork: preserve its luminous skin and white fabric in every scene. */
-.approvedBody { display: block; width: 100%; height: 100%; transform-origin: 50% 80%;
-  transform: translate(var(--lean-x, var(--pose-lean-x)), var(--body-y, var(--pose-body-y)))
-    rotate(var(--upper-r, var(--pose-upper-r))) scaleY(var(--upper-sy, var(--pose-upper-sy))); }
-.approvedImage { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
-.headOnly .approvedImage { object-position: center bottom; }
-.approvedFigure { transform: translate(var(--lean-x, var(--pose-lean-x, 0px)), var(--body-y, var(--pose-body-y, 0px))); }
+/* The approved illustration is split at the original joint pivots. */
+.approvedRig g { transform-box: view-box; }
+.portraitGaze { transform: translate(calc(var(--face-x, var(--pose-face-x)) * .18), calc(var(--face-y, var(--pose-face-y)) * .2)); }

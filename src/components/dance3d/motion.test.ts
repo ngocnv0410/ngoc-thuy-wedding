@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { Box3, Quaternion, Texture, Vector3 } from 'three'
+import { Box3, Euler, Quaternion, Texture, Vector3 } from 'three'
 import bad from './badMotion.json'
 import bang from './bangMotion.json'
-import { CHIBI_BONES, createWeddingCharacter } from './character'
+import { CHIBI_BONES, approvedHeadGeometry, createWeddingCharacter } from './character'
 import { loadMotion3D, sampleMotion } from './motion'
 import { shouldPreloadDance } from './preload'
 
@@ -67,7 +67,7 @@ it('uses the approved portrait on rounded heads and bright full-length clothing'
     const body = new Box3().setFromObject(jacket).getSize(new Vector3())
     expect(size.x / body.x).toBeGreaterThan(1.8)
     expect(size.z).toBeGreaterThan(.15)
-    expect((head.material as import('three').MeshBasicMaterial).map).toBe(groomTexture)
+    expect((head.material as import('three').MeshBasicMaterial[])[0].map).toBe(groomTexture)
     expect(bride.head.getObjectByName('low-nape-bun')).toBeDefined()
     expect(bride.group.getObjectByName('approved-white-gown')).toBeDefined()
     expect(bride.group.getObjectByName('approved-white-veil')).toBeDefined()
@@ -90,4 +90,31 @@ it('removes estimator-driven full-turn snaps from the complete BAD animation', (
     }
     previous.splice(0, previous.length, ...target)
   }
+})
+
+it('closes both head surfaces and preserves gentle head angles through deep bows', () => {
+  for (const bride of [false, true]) {
+    const geometry = approvedHeadGeometry(bride)
+    expect(geometry.groups.map(group => group.materialIndex)).toEqual([0, 1])
+    const p = geometry.getAttribute('position'), uv = geometry.getAttribute('uv')
+    for (let row = 0; row < 81; row++) {
+      const first = row * 65, last = first + 64
+      expect(p.getX(first)).toBeCloseTo(p.getX(last), 6)
+      expect(p.getZ(first)).toBeCloseTo(p.getZ(last), 6)
+    }
+    for (let i = 0; i < p.count; i++) {
+      expect([p.getX(i), p.getY(i), p.getZ(i)].every(Number.isFinite)).toBe(true)
+      expect(uv.getX(i)).toBeGreaterThanOrEqual(0)
+      expect(uv.getX(i)).toBeLessThanOrEqual(1)
+    }
+    geometry.dispose()
+  }
+  const actor = createWeddingCharacter(false), world = new Quaternion(), angle = new Euler(0, 0, 0, 'YXZ')
+  try {
+    for (const clip of [bad, bang]) for (let t = 0; t < clip.duration; t += .25) {
+      actor.apply(sampleMotion(clip, t, [])); actor.head.getWorldQuaternion(world); angle.setFromQuaternion(world, 'YXZ')
+      expect(Math.abs(angle.x)).toBeLessThanOrEqual(.301)
+      expect(Math.abs(angle.y)).toBeLessThanOrEqual(.301)
+    }
+  } finally { actor.dispose() }
 })

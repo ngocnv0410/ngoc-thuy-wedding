@@ -1,6 +1,7 @@
 import { type CSSProperties, type ReactNode } from 'react'
 import type { DanceId } from '../../content/types'
-import { approvedChibiArt } from './approvedArt'
+import { ApprovedChibiFigure } from './ApprovedChibiFigure'
+import { HEAD_VIEWBOX } from './chibiArt'
 import { BRIDE, EYE_X, EYE_Y, GROOM, HAND_L, HAND_R, MIRROR_X, PIVOT, SHARED, VIEW_H, VIEW_W, eye } from './chibiArt'
 import styles from './Chibi.module.css'
 import { type ChibiLook, type ChibiPose, type ChibiSize, type FigureProps, type Side, chibiVars } from './chibiPose'
@@ -253,13 +254,7 @@ function Eyes({ bride }: { bride: boolean }) {
   )
 }
 
-/** SVG embedding for the map: use the same approved art as the rest of the invitation. */
-export function ChibiFigure({ who, held, hand }: Pick<FigureProps, 'who' | 'held' | 'hand'> & { articulated?: boolean }) {
-  return <g className={styles.approvedFigure} data-chibi-style="approved">
-    <image href={approvedChibiArt(who)} x="0" y="0" width={VIEW_W} height={VIEW_H} preserveAspectRatio="xMidYMax meet" />
-    {held && <g transform={`translate(${hand === 'r' ? 79 : 41} 145) scale(.65)`}>{held}</g>}
-  </g>
-}
+export const ChibiFigure = ApprovedChibiFigure
 
 interface ChibiProps extends FigureProps {
   size?: ChibiSize
@@ -278,11 +273,9 @@ export function Chibi({ size = 'md', headOnly = false, dance, className, anim, .
   const classes = [styles.chibi, headOnly ? styles.headOnly : styles[size], className].filter(Boolean).join(' ')
   return <span className={classes} style={chibiVars(figure)} data-chibi={figure.who} data-anim={anim}
     data-chibi-style="approved" data-dance={dance} aria-hidden="true">
-    <span className={styles.approvedBody}>
-      <img src={approvedChibiArt(figure.who, figure.pose, headOnly)} className={styles.approvedImage}
-        alt="" width={headOnly ? 500 : 300} height={500} decoding="async"
-        loading={anim?.startsWith('host-') ? 'eager' : 'lazy'} draggable={false} />
-    </span>
+    <svg viewBox={headOnly ? HEAD_VIEWBOX : `0 0 ${VIEW_W} ${VIEW_H}`} focusable="false">
+      <ApprovedChibiFigure {...figure} />
+    </svg>
   </span>
 }
 
