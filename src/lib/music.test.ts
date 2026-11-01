@@ -100,6 +100,18 @@ describe('background piano', () => {
     expect(audio.volume).toBe(0)
   })
 
+  it('finishes pausing if a queued seek/loop playing event arrives during fade-out', () => {
+    player.play()
+    audio.start()
+    vi.advanceTimersByTime(2100)
+    player.pause()
+    audio.start()
+    expect(player.getPlaying()).toBe(false)
+    vi.advanceTimersByTime(650)
+    expect(audio.paused).toBe(true)
+    expect(player.advancing).toBe(false)
+  })
+
   it('keeps volume valid when an already queued frame predates the fade', () => {
     let frame: FrameRequestCallback = () => {}
     vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {

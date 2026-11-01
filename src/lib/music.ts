@@ -36,6 +36,8 @@ export class MusicPlayer {
       this.positioned = true
     } catch { /* Metadata is not yet seekable; retry before playing. */ }
   }
+  /** True during the short fade-out too, until the media clock actually stops. */
+  get advancing() { return Boolean(this.audio && !this.audio.paused && !this.audio.ended) }
   /** Media time keeps choreography aligned across pauses, seeks and loops. */
   get currentTime() { return this.audio?.currentTime ?? 0 }
   get playing() { return this.state.playing }
@@ -71,6 +73,8 @@ export class MusicPlayer {
     })
     audio.addEventListener('play', () => this.update({ wanted: true, requested: true, error: false }))
     audio.addEventListener('playing', () => {
+      // A queued seek/loop event must not cancel a guest-requested fade-out.
+      if (!this.state.wanted) return
       this.positionStart()
       this.update({ playing: true, loading: false, error: false })
       this.fade(TARGET_VOLUME, FADE_IN_MS)

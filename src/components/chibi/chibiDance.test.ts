@@ -3,12 +3,31 @@ import { dancePose } from './chibiDance'
 import reference from './referenceDance.json'
 
 describe('reference-video choreography', () => {
-  it('uses the recorded poses at their media timestamps, including after seeking back', () => {
-    for (const index of [0, 60, 180, 420, 720]) {
+  it('keeps the source gestures and deterministically follows seeks', () => {
+    for (let index = 0; index < reference.frames.length; index += 3) {
       const pose = dancePose(index / reference.fps)
-      expect(parseFloat(pose['--arm-l'])).toBeCloseTo(reference.frames[index][3], 6)
-      expect(parseFloat(pose['--elbow-l'])).toBeCloseTo(reference.frames[index][4], 6)
+      for (const [key, channel] of [['--arm-l', 3], ['--elbow-l', 4], ['--arm-r', 5], ['--elbow-r', 6]] as const) {
+        expect(Math.abs(parseFloat(pose[key]) - reference.frames[index][channel])).toBeLessThan(18)
+      }
       expect(dancePose(index / reference.fps)).toEqual(pose)
+    }
+  })
+  it('reduces high-frequency acceleration changes in the tracked joints', () => {
+    let raw = 0, filtered = 0
+    for (const [key, channel] of [['--arm-l', 3], ['--elbow-l', 4], ['--arm-r', 5], ['--elbow-r', 6]] as const) {
+      const sample = (index: number) => parseFloat(dancePose(index / 30)[key])
+      for (let i = 2; i < reference.frames.length - 2; i++) {
+        raw += (reference.frames[i - 1][channel] - 2 * reference.frames[i][channel] + reference.frames[i + 1][channel]) ** 2
+        filtered += (sample(i - 1) - 2 * sample(i) + sample(i + 1)) ** 2
+      }
+    }
+    expect(filtered / raw).toBeLessThan(.85)
+  })
+  it('keeps acceleration continuous at animation sample boundaries', () => {
+    const h = .00001
+    const acceleration = (time: number) => (parseFloat(dancePose(time - h)['--elbow-r']) - 2 * parseFloat(dancePose(time)['--elbow-r']) + parseFloat(dancePose(time + h)['--elbow-r'])) / (h * h)
+    for (let i = 4; i < reference.frames.length - 4; i += 11) {
+      expect(Math.abs(acceleration(i / 30 - h) - acceleration(i / 30 + h))).toBeLessThan(5)
     }
   })
   it('keeps all interpolated channels finite across the entire recording', () => {
