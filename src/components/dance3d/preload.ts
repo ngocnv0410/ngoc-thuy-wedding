@@ -16,7 +16,8 @@ export function scheduleDancePreload(): () => void {
   const nav = navigator as Navigator & { connection?: NetworkHints }
   if (!shouldPreloadDance(nav.connection)) return () => {}
   let disposed = false, queued = false, busy = false, cancelIdle = () => {}, timer = 0
-  const tasks = [() => loadDanceScene(), () => loadMotion3D('ateez-bad'), () => loadMotion3D('bang-bang-bang')]
+  // [DANCE-SWAP] Warm code/tracks here; fetch the larger GLBs only when a dance requests the ready scene.
+  const tasks = [() => import('./DanceScene'), () => loadMotion3D('ateez-bad'), () => loadMotion3D('bang-bang-bang')]
   const next = () => {
     if (disposed || queued || busy || document.hidden || !tasks.length) return
     queued = true

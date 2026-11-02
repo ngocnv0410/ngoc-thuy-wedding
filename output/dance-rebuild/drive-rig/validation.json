@@ -1,0 +1,264 @@
+{
+  "_comment": "// [DANCE-SWAP] Validation and handoff for the actual owner-supplied Drive GLBs.",
+  "baseCommit": "7cea4ca17fac81a4c91f6685aae6beda5a04f039",
+  "scope": {
+    "changed": "3D source models, UV/color, rigging, retarget adapter, dance data/loading and animation crossfade",
+    "preserved": [
+      "Camera",
+      "Lighting",
+      "Layout and CSS",
+      "Background audio files and controller",
+      "Mode selection and DISPLAY_MODE",
+      "2D characters",
+      "Opening/doors logic",
+      "Original source GLBs"
+    ]
+  },
+  "models": {
+    "groom": {
+      "_comment": "// [DANCE-SWAP]",
+      "source": "gloom.glb",
+      "sourceSHA256": "d528e4ad3e0625875f5ee5c40dfe64feabb748c9fe6a05291d34e8ff623d651f",
+      "vertices": 17957,
+      "triangles": 35999,
+      "bones": [
+        "pelvis",
+        "spine",
+        "neck",
+        "head",
+        "clavicleL",
+        "upperArmL",
+        "forearmL",
+        "handL",
+        "thighL",
+        "shinL",
+        "ankleL",
+        "clavicleR",
+        "upperArmR",
+        "forearmR",
+        "handR",
+        "thighR",
+        "shinR",
+        "ankleR"
+      ],
+      "unweightedVertices": 0,
+      "maxInfluences": 4,
+      "bytes": 3949736,
+      "normalizedHeight": 1.6,
+      "portraitSource": "Existing approved artwork matching supplied reference; front projection onto actual source head",
+      "limitations": [
+        "Side/back detail projected from owner-provided four-view reference; projection is approximate",
+        "No individual finger tracking"
+      ]
+    },
+    "bride": {
+      "_comment": "// [DANCE-SWAP]",
+      "source": "bride.glb",
+      "sourceSHA256": "b03b4f62dd120bcbde5a66d456e4b981d44c72a37f7b5217dacee292f564ce6d",
+      "vertices": 17817,
+      "triangles": 35988,
+      "bones": [
+        "pelvis",
+        "spine",
+        "neck",
+        "head",
+        "clavicleL",
+        "upperArmL",
+        "forearmL",
+        "handL",
+        "thighL",
+        "shinL",
+        "ankleL",
+        "clavicleR",
+        "upperArmR",
+        "forearmR",
+        "handR",
+        "thighR",
+        "shinR",
+        "ankleR",
+        "skirtFront",
+        "skirtBack",
+        "skirtL",
+        "skirtR",
+        "veil"
+      ],
+      "unweightedVertices": 0,
+      "maxInfluences": 4,
+      "bytes": 3617140,
+      "normalizedHeight": 1.6,
+      "portraitSource": "Existing approved artwork matching supplied reference; front projection onto actual source head",
+      "limitations": [
+        "Side/back detail projected from owner-provided four-view reference; projection is approximate",
+        "No finger tracking or cloth simulation",
+        "Bride source contains gown but no visible leg/foot geometry; skeleton legs are retained for retargeting"
+      ]
+    }
+  },
+  "verification": {
+    "unitTestsPassed": 178,
+    "testFilesPassed": 25,
+    "build": "passed",
+    "lint": "passed with two existing warnings in unchanged 2D files",
+    "secretsCheck": "passed",
+    "crossFadeSeconds": 0.3,
+    "rigLoops": 10,
+    "rigSampleRateHz": 3,
+    "clipLoops": 10,
+    "clipSampleRateHz": 30
+  },
+  "browser": {
+    "bad": {
+      "mode": "bad",
+      "port": 4173,
+      "state": {
+        "loops": 10,
+        "previous": 0.362092,
+        "maxClockError": 0.9995070000000013,
+        "samples": 13265,
+        "time": 0.367134,
+        "paused": false,
+        "duration": 27.4,
+        "frames": 606
+      },
+      "renderLag": {
+        "p95": 0.6382380000000012,
+        "median": 0.2431139999999985
+      },
+      "errors": [],
+      "warnings": [
+        "GSAP target  not found. https://gsap.com",
+        "GSAP target [object NodeList] not found. https://gsap.com"
+      ],
+      "elapsed": 276.05
+    },
+    "bangbangbang": {
+      "mode": "bangbangbang",
+      "port": 4173,
+      "state": {
+        "loops": 10,
+        "previous": 0.534503,
+        "maxClockError": 0.9983339999999998,
+        "samples": 14278,
+        "time": 0.55065,
+        "paused": false,
+        "duration": 28.444444,
+        "frames": 675
+      },
+      "renderLag": {
+        "p95": 0.5770659999999985,
+        "median": 0.22601099999999974
+      },
+      "errors": [],
+      "warnings": [
+        "GSAP target  not found. https://gsap.com",
+        "GSAP target [object NodeList] not found. https://gsap.com"
+      ],
+      "elapsed": 286.3
+    },
+    "baselineWarnings": [
+      "GSAP target  not found. https://gsap.com",
+      "GSAP target [object NodeList] not found. https://gsap.com",
+      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+    ],
+    "newWarnings": [],
+    "ui": {
+      "original": {
+        "port": 4173,
+        "layout": {
+          "width": 390,
+          "documentWidth": 390,
+          "stages": []
+        },
+        "models": [],
+        "errors": [],
+        "warnings": [
+          "GSAP target  not found. https://gsap.com",
+          "GSAP target [object NodeList] not found. https://gsap.com",
+          "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+        ]
+      },
+      "bad": {
+        "port": 4173,
+        "layout": {
+          "width": 390,
+          "documentWidth": 390,
+          "stages": [
+            {
+              "ready": "true",
+              "width": 195
+            }
+          ]
+        },
+        "models": [
+          "http://localhost:4173/models/wedding/groom-rigged.glb",
+          "http://localhost:4173/models/wedding/bride-rigged.glb"
+        ],
+        "errors": [],
+        "warnings": [
+          "GSAP target  not found. https://gsap.com",
+          "GSAP target [object NodeList] not found. https://gsap.com",
+          "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+          "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+        ]
+      },
+      "bangbangbang": {
+        "port": 4174,
+        "layout": {
+          "width": 1024,
+          "documentWidth": 1024,
+          "stages": [
+            {
+              "ready": "true",
+              "width": 327.671875
+            }
+          ]
+        },
+        "models": [],
+        "errors": [],
+        "warnings": [
+          "GSAP target  not found. https://gsap.com",
+          "GSAP target [object NodeList] not found. https://gsap.com",
+          "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+          "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+        ]
+      }
+    }
+  },
+  "limits": [
+    "Image projections approximate the multiview reference; geometric surface is the supplied model",
+    "No individual finger animation or cloth simulation; gown/veil use helper bones",
+    "Bride source has no visible leg/foot geometry underneath the gown",
+    "The headless Chromium check uses software WebGL. Its low frame rate and render latency do not establish smooth hardware/mobile playback. Device FPS validation is still required."
+  ],
+  "nextDance": [
+    "Replace the corresponding 37-channel, 30-fps motion JSON while retaining the current duration/audio-time mapping",
+    "For a different schema, adapt only its motion loader/retarget mapping"
+  ],
+  "rollback": [
+    "Revert this feature commit/PR to restore the original rig and dance loader",
+    "Original character.ts, badMotion.json and bangMotion.json are retained unchanged"
+  ],
+  "clips": {
+    "bang-bang-bang": {
+      "previous": "bangMotion.json: projected 2D directions with inferred depth",
+      "replacement": "bangSourceMotion.json: world landmarks from supplied lower tutorial panel",
+      "duration": 28.444444,
+      "bpm": 135,
+      "playbackRate": 1,
+      "sourceOffset": 0.989405,
+      "sourceTimeScale": 1.333821,
+      "loopBlendAtEachEdgeSeconds": 0.6,
+      "lowConfidenceElbowSourceFrames": 47,
+      "lowConfidenceWristSourceFrames": 36
+    },
+    "ateez-bad": {
+      "previous": "badMotion.json: existing source-video world poses",
+      "replacement": "badInPlaceMotion.json: same interior poses/timestamps, zero root travel, closed loop edges",
+      "duration": 27.4,
+      "bpm": null,
+      "playbackRate": 1,
+      "loopBlendAtEachEdgeSeconds": 0.6,
+      "note": "No BPM is declared for BAD; direct media-clock sampling keeps the existing soundtrack timing"
+    }
+  }
+}
