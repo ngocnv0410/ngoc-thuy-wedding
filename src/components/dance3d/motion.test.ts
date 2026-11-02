@@ -1,10 +1,58 @@
 import { describe, expect, it } from 'vitest'
 import { Box3, Euler, Quaternion, Texture, Vector3 } from 'three'
-import bad from './badMotion.json'
-import bang from './bangMotion.json'
+// [DANCE-SWAP] Verify the actual replacement tracks selected by loadMotion3D.
+import bad from './badInPlaceMotion.json'
+import bang from './bangSourceMotion.json'
 import { CHIBI_BONES, approvedHeadGeometry, createWeddingCharacter } from './character'
 import { loadMotion3D, sampleMotion } from './motion'
 import { shouldPreloadDance } from './preload'
+
+// [DANCE-SWAP] Exercise every 30-fps pose for ten complete loops, including each media-clock reset.
+for (const [name, clip] of [['BAD', bad], ['BANG BANG BANG', bang]] as const) it(`${name} stays in place and joins smoothly for ten loops`, () => {
+  const texture = new Texture(), art = { groom: texture, bride: texture }
+  const actors = [createWeddingCharacter(false, art), createWeddingCharacter(true, art)]
+  const foot = new Vector3(), otherFoot = new Vector3(), pose: number[] = []
+  const start = sampleMotion(clip, 0, []), end = sampleMotion(clip, clip.duration, [])
+  expect(end).toEqual(start)
+  for (const time of [.001, clip.duration - .001]) {
+    const near = sampleMotion(clip, time, [])
+    for (let i = 0; i < start.length; i++) expect(near[i]).toBeCloseTo(start[i], 12)
+  }
+  try {
+    for (let loop = 0; loop < 10; loop++) for (let frame = 0; frame < clip.frames.length; frame++) {
+      sampleMotion(clip, frame / clip.fps, pose)
+      expect(pose.every(Number.isFinite)).toBe(true)
+      for (const actor of actors) {
+        actor.apply(pose)
+        expect(actor.pelvis.position.x).toBe(0)
+        expect(actor.pelvis.position.z).toBe(0)
+        actor.ankles[0].getWorldPosition(foot); actor.ankles[1].getWorldPosition(otherFoot)
+        expect(Math.min(foot.y, otherFoot.y)).toBeCloseTo(.067, 5)
+      }
+    }
+    const names = new Set<string>()
+    actors[0].group.traverse(node => { if (node.type === 'Bone') names.add(node.name) })
+    const unmatched = Object.values(clip.boneMap).filter(name => !names.has(name))
+    console.info(`[DANCE-SWAP] ${name}: ${Object.keys(clip.boneMap).length} mapped bones; unmatched: ${unmatched.join(', ') || 'none'}`)
+    expect(unmatched).toEqual([])
+  } finally { actors.forEach(actor => actor.dispose()); texture.dispose() }
+}, 20000)
+
+// [DANCE-SWAP] Both newly extracted sources follow their own native audio time; no tutorial retiming.
+it('keeps audio durations and uses the correctly assigned native-time videos', async () => {
+  const original = (await import('./badMotion.json')).default
+  expect(bad.duration).toBe(original.duration)
+  expect(bang.duration).toBe(28.444444)
+  expect(bang.bpm).toBe(135)
+  expect(bang.playbackRate).toBe(1)
+  expect(bang.sourceTimeScale).toBe(1)
+  expect(bang.sourceOffset).toBe(43.8)
+  expect(bad.sourceTimeScale).toBe(1)
+  expect(bang.source).toContain('video 2')
+  expect(bang.source).toContain('video 1 audio')
+  expect(bad.source).toContain('video 3')
+
+})
 
 for (const [name, clip] of [['BAD', bad], ['BANG BANG BANG', bang]] as const) describe(`${name} 3D rig`, () => {
   it('has a complete finite media-time track and continuous seeking', () => {

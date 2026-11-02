@@ -1,0 +1,206 @@
+{
+  "_comment": "// [DANCE-SWAP] Numerical continuity metrics, not a source-similarity percentage or hardware FPS claim.",
+  "baseCommit": "3d695c5d2394eb98e4a0ccb13d4af295f1cc0ece",
+  "modelsUnchanged": {
+    "public/models/wedding/groom-rigged.glb": "df17cfb52a3ea84a9bcc2b4f153253acde3b6aa3cf5d4391da01005dfe6a4c61",
+    "public/models/wedding/bride-rigged.glb": "f5741ffd397a59b25adbf65a426f8d0ecec33e2e83012346396d2413fa1c9c29"
+  },
+  "sourceChannelsUnchanged": {
+    "src/components/dance3d/badInPlaceMotion.json": {
+      "frames": 822,
+      "fps": 30,
+      "duration": 27.4,
+      "retargetedBones": {
+        "groom": 24,
+        "bride": 20
+      }
+    },
+    "src/components/dance3d/bangSourceMotion.json": {
+      "frames": 854,
+      "fps": 30,
+      "duration": 28.444444,
+      "retargetedBones": {
+        "groom": 24,
+        "bride": 20
+      }
+    }
+  },
+  "metrics30Hz": {
+    "bad-groom": {
+      "before": {
+        "maximumWristStep": 0.48546578838853827,
+        "p95WristStep": 0.11040561636477637,
+        "maximumWristSecondDifference": 0.9465280211601426,
+        "maximumBoneAngleDegrees": 169.26025364121938,
+        "contactCorrections": null
+      },
+      "after": {
+        "maximumWristStep": 0.06809011674209955,
+        "p95WristStep": 0.04628925863416591,
+        "maximumWristSecondDifference": 0.019667545731746817,
+        "maximumBoneAngleDegrees": 8.932810196826708,
+        "contactCorrections": 0
+      }
+    },
+    "bad-bride": {
+      "before": {
+        "maximumWristStep": 0.47171276556011,
+        "p95WristStep": 0.12138027087394757,
+        "maximumWristSecondDifference": 0.8693767300851265,
+        "maximumBoneAngleDegrees": 150.38555703105726,
+        "contactCorrections": null
+      },
+      "after": {
+        "maximumWristStep": 0.060525098523922426,
+        "p95WristStep": 0.03280204964801683,
+        "maximumWristSecondDifference": 0.015130332825656071,
+        "maximumBoneAngleDegrees": 8.857447728672781,
+        "contactCorrections": 0
+      }
+    },
+    "bang-groom": {
+      "before": {
+        "maximumWristStep": 0.4869672306865149,
+        "p95WristStep": 0.09155536385677128,
+        "maximumWristSecondDifference": 0.7935198254091039,
+        "maximumBoneAngleDegrees": 109.02380659132827,
+        "contactCorrections": null
+      },
+      "after": {
+        "maximumWristStep": 0.06032089458077585,
+        "p95WristStep": 0.041226928079400274,
+        "maximumWristSecondDifference": 0.01543698093549773,
+        "maximumBoneAngleDegrees": 8.786174182997362,
+        "contactCorrections": 0
+      }
+    },
+    "bang-bride": {
+      "before": {
+        "maximumWristStep": 0.14479489380126245,
+        "p95WristStep": 0.08301848031743411,
+        "maximumWristSecondDifference": 0.1823708879246643,
+        "maximumBoneAngleDegrees": 73.13949827481225,
+        "contactCorrections": null
+      },
+      "after": {
+        "maximumWristStep": 0.025550769405005353,
+        "p95WristStep": 0.016763743721657214,
+        "maximumWristSecondDifference": 0.00727221974072883,
+        "maximumBoneAngleDegrees": 7.132646642722077,
+        "contactCorrections": 0
+      }
+    }
+  },
+  "metrics60Hz": {
+    "bad-groom": {
+      "maximumWristStep": 0.03420013162705429,
+      "p95WristStep": 0.02309518225531122,
+      "maximumWristSecondDifference": 0.0059587759001409535,
+      "maximumBoneAngleDegrees": 4.469774035045205,
+      "contactCorrections": 0
+    },
+    "bad-bride": {
+      "maximumWristStep": 0.030363686456931795,
+      "p95WristStep": 0.01644681295054889,
+      "maximumWristSecondDifference": 0.0038550056273073175,
+      "maximumBoneAngleDegrees": 4.431454865399638,
+      "contactCorrections": 0
+    },
+    "bang-groom": {
+      "maximumWristStep": 0.030364322549283587,
+      "p95WristStep": 0.020731486030184303,
+      "maximumWristSecondDifference": 0.0039057143743882255,
+      "maximumBoneAngleDegrees": 4.397876648594383,
+      "contactCorrections": 0
+    },
+    "bang-bride": {
+      "maximumWristStep": 0.012797568713111109,
+      "p95WristStep": 0.008353809599167263,
+      "maximumWristSecondDifference": 0.0018726190658748475,
+      "maximumBoneAngleDegrees": 3.589799309494962,
+      "contactCorrections": 0
+    }
+  },
+  "checks": {
+    "testsPassed": 189,
+    "testFilesPassed": 25,
+    "build": "passed",
+    "lint": "exit 0, two unchanged warnings outside dance3d",
+    "secrets": "passed",
+    "browserContinuousLoops": {
+      "bad": {
+        "mode": "bad",
+        "port": 4182,
+        "state": {
+          "loops": 10,
+          "previous": 0.60449,
+          "maxClockError": 0.9996829999999974,
+          "samples": 13575,
+          "time": 0.60956,
+          "paused": false,
+          "duration": 27.4,
+          "frames": 454
+        },
+        "renderLag": {
+          "p95": 0.7647840000000006,
+          "median": 0.3169659999999994
+        },
+        "errors": [],
+        "warnings": [
+          "GSAP target  not found. https://gsap.com",
+          "GSAP target [object NodeList] not found. https://gsap.com"
+        ],
+        "elapsed": 276.71,
+        "_comment": "// [DANCE-SWAP] Ten continuous audio loops; CPU software-rendered browser, not a GPU performance benchmark."
+      },
+      "bangbangbang": {
+        "mode": "bangbangbang",
+        "port": 4182,
+        "state": {
+          "loops": 10,
+          "previous": 0.03861,
+          "maxClockError": 0.9991900000000005,
+          "samples": 13819,
+          "time": 0.045208,
+          "paused": false,
+          "duration": 28.444444,
+          "frames": 476
+        },
+        "renderLag": {
+          "p95": 0.7945960000000003,
+          "median": 0.31179699999999855
+        },
+        "errors": [],
+        "warnings": [
+          "GSAP target  not found. https://gsap.com",
+          "GSAP target [object NodeList] not found. https://gsap.com"
+        ],
+        "elapsed": 286.64,
+        "_comment": "// [DANCE-SWAP] Ten continuous audio loops; CPU software-rendered browser, not a GPU performance benchmark."
+      }
+    },
+    "newConsoleWarnings": [],
+    "javascriptErrors": []
+  },
+  "changedFiles": [
+    "src/components/dance3d/armReach.ts",
+    "src/components/dance3d/glbCharacter.ts",
+    "src/components/dance3d/motion.ts",
+    "src/components/dance3d/glbCharacter.test.ts",
+    "src/components/dance3d/badInPlaceMotion.json",
+    "src/components/dance3d/bangSourceMotion.json"
+  ],
+  "addedCode": [
+    "src/components/dance3d/bakedMotion.ts"
+  ],
+  "addedFiles": [
+    "src/components/dance3d/bakedMotion.ts",
+    "output/dance-rebuild/smooth-chibi/README.md",
+    "output/dance-rebuild/smooth-chibi/bad-browser-loops.json",
+    "output/dance-rebuild/smooth-chibi/bake-motion.mjs",
+    "output/dance-rebuild/smooth-chibi/bangbangbang-browser-loops.json",
+    "output/dance-rebuild/smooth-chibi/comparison-poster.jpg",
+    "output/dance-rebuild/smooth-chibi/smooth-tracks.py",
+    "output/dance-rebuild/smooth-chibi/validation.json"
+  ]
+}

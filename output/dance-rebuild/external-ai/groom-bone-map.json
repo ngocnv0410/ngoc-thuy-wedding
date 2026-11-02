@@ -1,0 +1,31 @@
+{
+  "boneMap": {
+    "AI_joint_0": "pelvis",
+    "AI_joint_1": "spine",
+    "AI_joint_4": "neck",
+    "AI_joint_5": "head",
+    "AI_joint_22": "clavicleL",
+    "AI_joint_23": "upperArmL",
+    "AI_joint_24": "forearmL",
+    "AI_joint_25": "handL",
+    "AI_joint_6": "clavicleR",
+    "AI_joint_7": "upperArmR",
+    "AI_joint_8": "forearmR",
+    "AI_joint_9": "handR",
+    "AI_joint_42": "thighL",
+    "AI_joint_43": "shinL",
+    "AI_joint_44": "ankleL",
+    "AI_joint_38": "thighR",
+    "AI_joint_39": "shinR",
+    "AI_joint_40": "ankleR"
+  },
+  "sideConvention": "Existing actor interface: L = negative model X, R = positive model X",
+  "cloth": {
+    "helpers": [],
+    "method": "existing cloth controls/weights transferred by source positions; body remains SkinTokens",
+    "verticesAdjusted": 0,
+    "nearestDistanceMax": 0
+  },
+  "unmatchedBodyBones": [],
+  "_comment": "// [DANCE-SWAP] External free AI run; raw AI audit precedes cloth/actor-interface assembly."
+}

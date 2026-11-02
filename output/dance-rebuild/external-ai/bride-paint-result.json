@@ -1,0 +1,12 @@
+{
+  "service": "Upsampler/hunyuan3d-paint",
+  "model": "Tencent Hunyuan3D-Paint 2.1",
+  "subject": "bride",
+  "operation": "retexture existing mesh",
+  "status": "completed",
+  "paid": false,
+  "output": "/workspace/scratch/external-ai/bride-ai-textured.glb",
+  "bytes": 1586004,
+  "seconds": 30.00500877900049,
+  "_comment": "// [DANCE-SWAP] External free AI run; raw AI audit precedes cloth/actor-interface assembly."
+}

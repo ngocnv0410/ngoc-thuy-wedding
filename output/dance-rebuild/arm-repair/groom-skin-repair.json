@@ -1,0 +1,29 @@
+{
+  "_comment": "// [DANCE-SWAP]",
+  "subject": "groom",
+  "changedArmWeights": 11378,
+  "headVerticesLocked": 55230,
+  "vertexPositionsTopologyUVChanged": false,
+  "armNormalsRefined": true,
+  "brideBlackSkinFacesPatched": 0,
+  "originalTextureImagesChanged": false,
+  "armPivotsZUp": {
+    "shoulder": [
+      0.178,
+      -0.042,
+      0.765
+    ],
+    "elbow": [
+      0.25,
+      -0.035,
+      0.62
+    ],
+    "wrist": [
+      0.334,
+      -0.052,
+      0.512
+    ]
+  },
+  "maxInfluences": 4,
+  "maxWeightSumError": 2.220446049250313e-16
+}

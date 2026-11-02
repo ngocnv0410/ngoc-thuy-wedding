@@ -1,0 +1,12 @@
+{
+  "service": "Upsampler/hunyuan3d-paint",
+  "model": "Tencent Hunyuan3D-Paint 2.1",
+  "subject": "groom",
+  "operation": "retexture existing mesh",
+  "status": "completed",
+  "paid": false,
+  "output": "/workspace/scratch/external-ai/groom-ai-textured.glb",
+  "bytes": 1529164,
+  "seconds": 30.006269288000112,
+  "_comment": "// [DANCE-SWAP] External free AI run; raw AI audit precedes cloth/actor-interface assembly."
+}

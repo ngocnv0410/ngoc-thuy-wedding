@@ -1,0 +1,104 @@
+{
+  "_comment": "// [DANCE-SWAP] Review candidate only; 95% visual-fidelity objective remains blocked by the model-proportion decision.",
+  "baseCommit": "0e2021fc801d8c0392e0e4b65f14485b2d3dcf32",
+  "target95Verified": false,
+  "status": "awaiting user preference: preserve chibi proportions vs permit head/arm proportion change",
+  "checks": {
+    "testsPassed": 185,
+    "build": "passed",
+    "lint": "exit 0; unchanged chibi warnings",
+    "continuousBrowserLoops": {
+      "bad": {
+        "mode": "bad",
+        "port": 4182,
+        "state": {
+          "loops": 10,
+          "previous": 0.387991,
+          "maxClockError": 0.9992940000000008,
+          "samples": 13360,
+          "time": 0.387991,
+          "paused": false,
+          "duration": 27.4,
+          "frames": 511
+        },
+        "renderLag": {
+          "p95": 0.7095960000000012,
+          "median": 0.27922200000000075
+        },
+        "errors": [],
+        "warnings": [
+          "GSAP target  not found. https://gsap.com",
+          "GSAP target [object NodeList] not found. https://gsap.com"
+        ],
+        "elapsed": 276.68,
+        "_comment": "// [DANCE-SWAP] Continuous playback of this candidate; CPU software rendering, not a mobile GPU benchmark."
+      },
+      "bangbangbang": {
+        "mode": "bangbangbang",
+        "port": 4182,
+        "state": {
+          "loops": 10,
+          "previous": 0.161564,
+          "maxClockError": 0.9997870000000004,
+          "samples": 14073,
+          "time": 0.171357,
+          "paused": false,
+          "duration": 28.444444,
+          "frames": 596
+        },
+        "renderLag": {
+          "p95": 0.6853079999999991,
+          "median": 0.2586839999999988
+        },
+        "errors": [],
+        "warnings": [
+          "GSAP target  not found. https://gsap.com",
+          "GSAP target [object NodeList] not found. https://gsap.com"
+        ],
+        "elapsed": 286.7,
+        "_comment": "// [DANCE-SWAP] Continuous playback of this candidate; CPU software rendering, not a mobile GPU benchmark."
+      }
+    }
+  },
+  "modelFilesUnchanged": true,
+  "preserved": [
+    "GLB geometry/materials/ratios",
+    "camera/lights",
+    "layout/CSS",
+    "audio/controller",
+    "DISPLAY_MODE",
+    "2D/3D logic"
+  ],
+  "remaining": [
+    "Overhead wrist poses geometrically unreachable at current arm/head proportions",
+    "Axilla skinning has shoulder sharing but no corrective sculpt/cloth model",
+    "Occluded source joints remain monocular estimates; no 95% visual certification"
+  ],
+  "modelSHA256": {
+    "groom-rigged.glb": "df17cfb52a3ea84a9bcc2b4f153253acde3b6aa3cf5d4391da01005dfe6a4c61",
+    "bride-rigged.glb": "f5741ffd397a59b25adbf65a426f8d0ecec33e2e83012346396d2413fa1c9c29"
+  },
+  "files": [
+    "output/dance-rebuild/source-correction/README.md",
+    "output/dance-rebuild/source-correction/bad-browser-loops.json",
+    "output/dance-rebuild/source-correction/bad-page-preview.png",
+    "output/dance-rebuild/source-correction/bad-reference.jpg",
+    "output/dance-rebuild/source-correction/bang-group-reference.jpg",
+    "output/dance-rebuild/source-correction/bang-normal-reference.jpg",
+    "output/dance-rebuild/source-correction/bangbangbang-browser-loops.json",
+    "output/dance-rebuild/source-correction/bangbangbang-page-preview.png",
+    "output/dance-rebuild/source-correction/build-motion.py",
+    "output/dance-rebuild/source-correction/comparison-poster.jpg",
+    "output/dance-rebuild/source-correction/extract-source.py",
+    "output/dance-rebuild/source-correction/reach-constraint.png",
+    "output/dance-rebuild/source-correction/sources.json",
+    "output/dance-rebuild/source-correction/validation.json",
+    "src/components/dance3d/armReach.ts",
+    "src/components/dance3d/badInPlaceMotion.json",
+    "src/components/dance3d/bangSourceMotion.json",
+    "src/components/dance3d/glbCharacter.test.ts",
+    "src/components/dance3d/glbCharacter.ts",
+    "src/components/dance3d/motion.test.ts",
+    "src/components/dance3d/motion.ts"
+  ]
+}
