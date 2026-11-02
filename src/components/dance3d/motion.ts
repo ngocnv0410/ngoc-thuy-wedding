@@ -4,8 +4,9 @@ import type { DanceId } from '../../content/types'
 export interface MotionClip { fps: number; duration: number; scale: number; source: string; frames: number[][] }
 const loading: Partial<Record<DanceId, Promise<MotionClip>>> = {}
 const loaders = {
-  'ateez-bad': () => import('./badMotion.json'),
-  'bang-bang-bang': () => import('./bangMotion.json'),
+  // [DANCE-SWAP] Keep the existing IDs/cache/media-clock interface; retain old tracks for rollback.
+  'ateez-bad': () => import('./badInPlaceMotion.json'),
+  'bang-bang-bang': () => import('./bangSourceMotion.json'),
 }
 export function loadMotion3D(id: DanceId): Promise<MotionClip> {
   return loading[id] ??= loaders[id]().then(m => m.default).catch(error => { delete loading[id]; throw error })

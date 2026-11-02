@@ -1,0 +1,36 @@
+{
+  "_comment": "// [DANCE-SWAP]",
+  "source": "gloom.glb",
+  "sourceSHA256": "d528e4ad3e0625875f5ee5c40dfe64feabb748c9fe6a05291d34e8ff623d651f",
+  "vertices": 17957,
+  "triangles": 35999,
+  "bones": [
+    "pelvis",
+    "spine",
+    "neck",
+    "head",
+    "clavicleL",
+    "upperArmL",
+    "forearmL",
+    "handL",
+    "thighL",
+    "shinL",
+    "ankleL",
+    "clavicleR",
+    "upperArmR",
+    "forearmR",
+    "handR",
+    "thighR",
+    "shinR",
+    "ankleR"
+  ],
+  "unweightedVertices": 0,
+  "maxInfluences": 4,
+  "bytes": 3949736,
+  "normalizedHeight": 1.6,
+  "portraitSource": "Existing approved artwork matching supplied reference; front projection onto actual source head",
+  "limitations": [
+    "Side/back detail projected from owner-provided four-view reference; projection is approximate",
+    "No individual finger tracking"
+  ]
+}

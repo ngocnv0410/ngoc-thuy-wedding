@@ -3,9 +3,9 @@ import {
   OrthographicCamera, Scene, SRGBColorSpace, WebGLRenderer,
 } from 'three'
 import { music } from '../../lib/music'
-import { createWeddingCharacter } from './character'
-import { characterArt } from './approvedArt'
-export { preloadCharacterArt } from './approvedArt'
+// [DANCE-SWAP] Load the owner's skinned GLBs through the same actor interface.
+import { createWeddingCharacter } from './glbCharacter'
+export { preloadRiggedCharacters as preloadCharacterArt } from './glbCharacter'
 import { sampleMotion, type MotionClip } from './motion'
 
 export interface DanceSceneApi { setClip: (clip: MotionClip) => void; dispose: () => void }
@@ -29,7 +29,8 @@ export function createDanceScene(host: HTMLElement, options: {
   const key = new DirectionalLight('#ffffff', 1.8); key.position.set(-3, 5, 6); scene.add(key)
   const rim = new DirectionalLight('#ffffff', .6); rim.position.set(3, 3, -3); scene.add(rim)
   const fill = new DirectionalLight('#f5f7ff', .5); fill.position.set(3, 2, 4); scene.add(fill)
-  const actors = [createWeddingCharacter(options.brideFirst, characterArt()), createWeddingCharacter(!options.brideFirst, characterArt())]
+  // [DANCE-SWAP] Independent GLB skeleton clones retain the original placement and scene settings.
+  const actors = [createWeddingCharacter(options.brideFirst), createWeddingCharacter(!options.brideFirst)]
   const shadowGeometry = new CircleGeometry(.32, 24)
   const shadowMaterial = new MeshBasicMaterial({ color: '#6f5140', transparent: true, opacity: .13, depthWrite: false })
   const shadows = actors.map(() => {
@@ -41,11 +42,16 @@ export function createDanceScene(host: HTMLElement, options: {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
   let clip: MotionClip | undefined, frame = 0, lastDraw = -Infinity, disposed = false, visible = true, dirty = true
   const pose: number[] = []
+  // [DANCE-SWAP] Animation-only transition state; retain the persistent audio controller/clock.
+  let wasAdvancing = false
   let framesDrawn = 0
   const active = () => visible && !document.hidden && !host.closest('[inert]')
   const draw = () => {
     if (!clip || !active() || disposed) return
     try {
+      // [DANCE-SWAP] Fade from the held pose when audio starts or resumes.
+      if (music.advancing && !wasAdvancing) actors.forEach(actor => actor.transition())
+      wasAdvancing = music.advancing
       sampleMotion(clip, reduced.matches ? 0 : music.currentTime, pose)
       for (const actor of actors) actor.apply(pose)
       renderer.render(scene, camera)
@@ -92,7 +98,8 @@ export function createDanceScene(host: HTMLElement, options: {
   reduced.addEventListener('change', wake)
   resize()
   return {
-    setClip(next) { clip = next; dirty = true; draw(); wake() },
+    // [DANCE-SWAP] Switching dance data blends the existing GLB skeletons for .3 seconds.
+    setClip(next) { if (clip) actors.forEach(actor => actor.transition()); clip = next; dirty = true; draw(); wake() },
     dispose() {
       if (disposed) return
       disposed = true

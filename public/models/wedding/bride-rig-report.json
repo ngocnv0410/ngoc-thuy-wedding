@@ -1,0 +1,42 @@
+{
+  "_comment": "// [DANCE-SWAP]",
+  "source": "bride.glb",
+  "sourceSHA256": "b03b4f62dd120bcbde5a66d456e4b981d44c72a37f7b5217dacee292f564ce6d",
+  "vertices": 17817,
+  "triangles": 35988,
+  "bones": [
+    "pelvis",
+    "spine",
+    "neck",
+    "head",
+    "clavicleL",
+    "upperArmL",
+    "forearmL",
+    "handL",
+    "thighL",
+    "shinL",
+    "ankleL",
+    "clavicleR",
+    "upperArmR",
+    "forearmR",
+    "handR",
+    "thighR",
+    "shinR",
+    "ankleR",
+    "skirtFront",
+    "skirtBack",
+    "skirtL",
+    "skirtR",
+    "veil"
+  ],
+  "unweightedVertices": 0,
+  "maxInfluences": 4,
+  "bytes": 3617140,
+  "normalizedHeight": 1.6,
+  "portraitSource": "Existing approved artwork matching supplied reference; front projection onto actual source head",
+  "limitations": [
+    "Side/back detail projected from owner-provided four-view reference; projection is approximate",
+    "No finger tracking or cloth simulation",
+    "Bride source contains gown but no visible leg/foot geometry; skeleton legs are retained for retargeting"
+  ]
+}
