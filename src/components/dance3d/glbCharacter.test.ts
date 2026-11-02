@@ -89,6 +89,45 @@ for (const [index, name] of ['groom', 'bride'].entries()) describe(`${name} Driv
     } finally { actor.dispose() }
   }, 60000)
 
+  // [DANCE-SWAP] Measure every rendered half-frame, including the small IK branch jumps missed by sparse pose checks.
+  for (const [dance, clip] of [['BAD', bad], ['BANG', bang]] as const) it(`${dance}: has continuous bone rotation and wrist acceleration at 60 Hz`, () => {
+    const actor = createRiggedCharacter(templates[index], index === 1)
+    expect(clip.retargeted[index === 1 ? 'bride' : 'groom'].signature).toBe(actor.group.userData.bakeSignature)
+    const hands = ['handL', 'handR'].map(n => actor.group.getObjectByName(n)!)
+    let previous: Vector3[] | undefined, velocity: Vector3[] | undefined
+    let rotations: import('three').Quaternion[] | undefined
+    let maxStep = 0, maxAcceleration = 0, maxAngle = 0, corrections = 0, hidden = 0
+    const center = new Vector3().fromArray(actor.group.userData.armHeadBounds.center)
+    const radii = new Vector3().fromArray(actor.group.userData.armHeadBounds.radii)
+    try {
+      for (let f = 0; f <= Math.ceil(clip.duration * 60); f++) {
+        actor.apply(sampleMotion(clip, Math.min(f / 60, clip.duration), []))
+        const positions = hands.map(hand => hand.getWorldPosition(new Vector3()))
+        const inverse = actor.head.matrixWorld.clone().invert()
+        for (const point of positions) if (hiddenFromViewer(point, inverse, center, radii)) hidden++
+        if (previous) {
+          const nextVelocity = positions.map((p, i) => p.clone().sub(previous![i]))
+          maxStep = Math.max(maxStep, ...nextVelocity.map(v => v.length()))
+          if (velocity) maxAcceleration = Math.max(maxAcceleration, ...nextVelocity.map((v, i) => v.clone().sub(velocity![i]).length()))
+          velocity = nextVelocity
+        }
+        const current = [actor.pelvis, actor.spine, actor.head, ...actor.limbs].map(b => b.quaternion.clone())
+        if (rotations) maxAngle = Math.max(maxAngle, ...current.map((q, i) => q.angleTo(rotations![i])))
+        previous = positions; rotations = current; corrections += actor.group.userData.contactCorrections
+      }
+      expect(maxStep).toBeLessThan(.05)
+      expect(maxAcceleration).toBeLessThan(.012)
+      expect(maxAngle).toBeLessThan(.105)
+      expect(corrections).toBe(0)
+      expect(hidden).toBe(0)
+      // Seeking and changing clips must not depend on the previously displayed frame or the render clock.
+      const snapshot = () => [actor.pelvis.position.toArray(), ...actor.limbs.map(b => b.quaternion.toArray())]
+      actor.apply(sampleMotion(clip, 6.125, [])); const expected = snapshot()
+      actor.apply(sampleMotion(index ? bad : bang, 18, []))
+      actor.apply(sampleMotion(clip, 6.125, [])); expect(snapshot()).toEqual(expected)
+    } finally { actor.dispose() }
+  }, 60000)
+
   // [DANCE-SWAP] Cover the previously missed failures: hidden wrists, torn palms and chest flaps.
   it('keeps reachable wrists in front of the head and distal palms rigid through both dances', () => {
     const actor = createRiggedCharacter(templates[index], index === 1)

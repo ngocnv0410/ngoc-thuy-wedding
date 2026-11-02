@@ -5,6 +5,9 @@ import { clone } from 'three/addons/utils/SkeletonUtils.js'
 import type { WeddingCharacter } from './character'
 // [DANCE-SWAP] Preserve source gestures within the unchanged chibi arm reach and head silhouette.
 import { fitWristInFrontOfHead } from './armReach'
+// [DANCE-SWAP] Use offline-smoothed final poses, not independent per-frame IK choices.
+import { applyBakedTrack, rigSignature } from './bakedMotion'
+import { motionSampleContext } from './motion'
 
 // [DANCE-SWAP] Keep async asset loading outside the synchronous scene/actor interface.
 let prepared: Group[] | undefined
@@ -37,8 +40,8 @@ export function createWeddingCharacter(bride: boolean): WeddingCharacter & { tra
   return createRiggedCharacter(prepared[bride ? 1 : 0], bride)
 }
 
-// [DANCE-SWAP] Clone skeletons per actor; cached geometry/materials remain shared and immutable.
-export function createRiggedCharacter(template: Group, bride: boolean): WeddingCharacter & { transition: () => void } {
+// [DANCE-SWAP] Clone skeletons per actor; optional padding is only used by offline animation baking.
+export function createRiggedCharacter(template: Group, bride: boolean, bakePadding = 0): WeddingCharacter & { transition: () => void } {
   const group = new Group()
   group.name = bride ? 'bride-3d' : 'groom-3d'
   group.userData.source = bride ? 'bride.glb' : 'gloom.glb'
@@ -90,7 +93,7 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
   const headCenter = headBounds.getCenter(new Vector3())
   // [DANCE-SWAP] Include the full rigid hand, not only the wrist/palm center, in the keep-out margin.
   const handPadding = bride ? .10 : .12
-  const headRadii = headBounds.getSize(new Vector3()).multiplyScalar(.5).addScalar(handPadding)
+  const headRadii = headBounds.getSize(new Vector3()).multiplyScalar(.5).addScalar(handPadding + bakePadding)
   group.userData.armHeadBounds = { center: headCenter.toArray(), radii: headRadii.toArray(), padding: handPadding }
   const headInverse = head.matrixWorld.clone(), armDirections = Array.from({ length: 4 }, () => new Vector3())
   const shoulder = new Vector3(), elbow = new Vector3(), wrist = new Vector3(), axis = new Vector3(), pole = new Vector3()
@@ -100,6 +103,9 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
   })
   const restPelvis = pelvis.position.clone(), restHeight = pelvis.getWorldPosition(new Vector3()).y
   const restPositions = new Map([...bones.values()].map(b => [b, b.position.clone()]))
+  // [DANCE-SWAP] Reset omitted constant tracks to their original rest transforms.
+  const restRotations = new Map([...bones.values()].map(b => [b, b.quaternion.clone()]))
+  group.userData.bakeSignature = rigSignature(bones)
   const support: { mesh: SkinnedMesh; indices: number[] }[] = []
   // [DANCE-SWAP] Measure the actual deformed shoe soles/gown hem, rather than an ankle proxy.
   for (const mesh of meshes) {
@@ -146,10 +152,19 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
     for (const mesh of meshes) mesh.skeleton.update()
   }
   const apply = (pose: number[]) => {
+    // [DANCE-SWAP] Audit final collision corrections without affecting playback state.
+    group.userData.contactCorrections = 0
     // [DANCE-SWAP] Reset transforms every sample: pause/seek/loop cannot accumulate root travel.
-    for (const [bone, position] of restPositions) { bone.position.copy(position); bone.scale.set(1, 1, 1) }
+    for (const [bone, position] of restPositions) { bone.position.copy(position); bone.quaternion.copy(restRotations.get(bone)!); bone.scale.set(1, 1, 1) }
     pelvis.position.copy(restPelvis)
     group.updateMatrixWorld(true)
+    // [DANCE-SWAP] Baked curves are rig-specific and interpolated without accumulating playback state.
+    const sample = motionSampleContext(pose), track = sample?.clip.retargeted?.[bride ? 'bride' : 'groom']
+    const baked = track?.signature === group.userData.bakeSignature
+    if (baked && sample) {
+      applyBakedTrack(track!, bones, sample.seconds, sample.clip.fps, sample.clip.duration)
+      update()
+    } else {
     orient(pelvis, targetQ.fromArray(pose, 1).normalize().multiply(bindWorld.get(pelvis)!))
     orient(spine, targetQ.fromArray(pose, 5).normalize().multiply(bindWorld.get(spine)!))
     euler.setFromQuaternion(targetQ.fromArray(pose, 9).normalize(), 'YXZ')
@@ -174,9 +189,23 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
       limbs[i].getWorldPosition(shoulder)
       elbow.copy(shoulder).addScaledVector(armDirections[i], armLengths[i])
       wrist.copy(elbow).addScaledVector(armDirections[i + 1], armLengths[i + 1])
+      // [DANCE-SWAP] User-approved compact cheer gesture for an overhead pose beyond this chibi's reach.
+      // Source forearm variation supplies the small wave; no free-running/synthetic beat is added.
+      foot.copy(wrist).applyMatrix4(headInverse).sub(headCenter).divide(headRadii)
+      const compact = Math.max(MathUtils.smoothstep(armDirections[i].y, .35, .80),
+        MathUtils.smoothstep((wrist.y - shoulder.y) / (armLengths[i] + armLengths[i + 1]), .30, .65),
+        1 - MathUtils.smoothstep(foot.length(), 1, 1.35))
+      if (compact > 0) {
+        const side = i === 0 ? -1 : 1
+        foot.copy(shoulder).add(new Vector3(side * (.11 + .025 * Math.abs(armDirections[i + 1].x)), .08 + .04 * compact, .22))
+        wrist.lerp(foot, compact)
+        foot.copy(shoulder).add(new Vector3(side * .13, -.025, .07))
+        elbow.lerp(foot, compact)
+      }
       const minimum = Math.abs(armLengths[i] - armLengths[i + 1]) + .0001
       const maximum = armLengths[i] + armLengths[i + 1] - .0001
-      if (fitWristInFrontOfHead(shoulder, wrist, minimum, maximum, head.matrixWorld, headInverse, headCenter, headRadii, wrist)) {
+      const contactAdjusted = fitWristInFrontOfHead(shoulder, wrist, minimum, maximum, head.matrixWorld, headInverse, headCenter, headRadii, wrist)
+      if (compact > 0 || contactAdjusted) {
         axis.copy(wrist).sub(shoulder)
         const distance = MathUtils.clamp(axis.length(), minimum, maximum)
         axis.normalize()
@@ -222,6 +251,7 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
       if (veil) orient(veil, targetQ.copy(delta).multiply(bindWorld.get(veil)!))
       update()
     }
+    }
     // [DANCE-SWAP] Smooth .3-second crossfade; grounding is solved after interpolating the bones.
     if (fading) {
       const t = MathUtils.clamp((performance.now() - fadeStarted) / 300, 0, 1)
@@ -229,7 +259,9 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
       for (const { bone, rotation, scale } of fading) {
         targetQ.copy(bone.quaternion)
         direction.copy(bone.scale)
-        bone.quaternion.slerpQuaternions(rotation, targetQ, weight)
+        // [DANCE-SWAP] End on the exact target representation, including equivalent quaternion signs.
+        if (t === 1) bone.quaternion.copy(targetQ)
+        else bone.quaternion.slerpQuaternions(rotation, targetQ, weight)
         bone.scale.lerpVectors(scale, direction, weight)
       }
       if (t === 1) fading = undefined
@@ -243,24 +275,28 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
       }
       {
         const envelope = bride && !gownBounds.isEmpty() ? { minY: gownBounds.min.y, maxY: gownBounds.max.y, x: (gownBounds.min.x + gownBounds.max.x) / 2,
-          z: (gownBounds.min.z + gownBounds.max.z) / 2, rx: (gownBounds.max.x - gownBounds.min.x) / 2, rz: (gownBounds.max.z - gownBounds.min.z) / 2 } : undefined
+          z: (gownBounds.min.z + gownBounds.max.z) / 2, rx: (gownBounds.max.x - gownBounds.min.x) / 2, rz: (gownBounds.max.z - gownBounds.min.z) / 2, padding: .10 + bakePadding } : undefined
         headInverse.copy(head.matrixWorld).invert()
         for (const i of [0, 2]) {
           limbs[i].getWorldPosition(shoulder); limbs[i + 1].getWorldPosition(elbow); bones.get(limbEnds[i + 1])!.getWorldPosition(wrist)
           if (!fitWristInFrontOfHead(shoulder, wrist, Math.abs(armLengths[i] - armLengths[i + 1]) + .0001,
             armLengths[i] + armLengths[i + 1] - .0001, head.matrixWorld, headInverse, headCenter, headRadii, wrist, envelope)) continue
+          group.userData.contactCorrections++
           axis.copy(wrist).sub(shoulder); const distance = axis.length(); axis.normalize()
           pole.copy(elbow).sub(shoulder); pole.addScaledVector(axis, -pole.dot(axis))
           if (pole.lengthSq() < 1e-8) pole.set(i === 0 ? -1 : 1, 0, 0).addScaledVector(axis, -axis.x * (i === 0 ? -1 : 1))
           pole.normalize()
           const along = (armLengths[i] ** 2 - armLengths[i + 1] ** 2 + distance ** 2) / (2 * distance)
           elbow.copy(shoulder).addScaledVector(axis, along).addScaledVector(pole, Math.sqrt(Math.max(0, armLengths[i] ** 2 - along ** 2)))
-          direction.copy(elbow).sub(shoulder).normalize(); delta.setFromUnitVectors(restDirections[i], direction)
-          orient(limbs[i], targetQ.copy(delta).multiply(bindWorld.get(limbs[i])!))
-          limbs[i].getWorldQuaternion(armQ); armQ.multiply(targetQ.copy(bindWorld.get(limbs[i])!).invert())
-          inherited.copy(restDirections[i + 1]).applyQuaternion(armQ).normalize(); direction.copy(wrist).sub(elbow).normalize()
-          delta.setFromUnitVectors(inherited, direction)
-          orient(limbs[i + 1], targetQ.copy(delta).multiply(armQ).multiply(bindWorld.get(limbs[i + 1])!))
+          // [DANCE-SWAP] Apply the smallest contact correction to the displayed rotation, preserving its smooth elbow roll.
+          direction.copy(elbow).sub(shoulder).normalize()
+          limbs[i + 1].getWorldPosition(inherited); inherited.sub(shoulder).normalize()
+          limbs[i].getWorldQuaternion(armQ); delta.setFromUnitVectors(inherited, direction)
+          orient(limbs[i], targetQ.copy(delta).multiply(armQ))
+          limbs[i + 1].getWorldPosition(elbow); bones.get(limbEnds[i + 1])!.getWorldPosition(inherited)
+          inherited.sub(elbow).normalize(); direction.copy(wrist).sub(elbow).normalize()
+          limbs[i + 1].getWorldQuaternion(armQ); delta.setFromUnitVectors(inherited, direction)
+          orient(limbs[i + 1], targetQ.copy(delta).multiply(armQ))
         }
         update()
         group.userData.gownEnvelope = envelope

@@ -1,0 +1,25 @@
+{
+  "mode": "bad",
+  "port": 4182,
+  "state": {
+    "loops": 10,
+    "previous": 0.60449,
+    "maxClockError": 0.9996829999999974,
+    "samples": 13575,
+    "time": 0.60956,
+    "paused": false,
+    "duration": 27.4,
+    "frames": 454
+  },
+  "renderLag": {
+    "p95": 0.7647840000000006,
+    "median": 0.3169659999999994
+  },
+  "errors": [],
+  "warnings": [
+    "GSAP target  not found. https://gsap.com",
+    "GSAP target [object NodeList] not found. https://gsap.com"
+  ],
+  "elapsed": 276.71,
+  "_comment": "// [DANCE-SWAP] Ten continuous audio loops; CPU software-rendered browser, not a GPU performance benchmark."
+}
