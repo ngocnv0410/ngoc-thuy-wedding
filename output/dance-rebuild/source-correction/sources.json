@@ -1,0 +1,67 @@
+{
+  "_comment": "// [DANCE-SWAP] Audio correlation is alignment evidence, NOT a visual dance similarity percentage.",
+  "inputs": [
+    {
+      "id": 1,
+      "file": "1-v14025g50000d42crifog65hk6nk42j0.mp4",
+      "sha256": "d9599ad1c4abd01664ecc8bf8849150372a6a68c2a3779dcb9b504e34192797c",
+      "dance": "BANG BANG BANG"
+    },
+    {
+      "id": 2,
+      "file": "2-v14044g50000cv0cktvog65gvoj550f0.mp4",
+      "sha256": "6e8a0d93c3b70881a11567b0180c8dc7a9bb45b38574c6ad10e610562afe7e14",
+      "dance": "BANG BANG BANG"
+    },
+    {
+      "id": 3,
+      "file": "3-snapvideo-ateez-bad-dancechallenge-kpop-dance-3797843.mp4",
+      "sha256": "43ccdf9d997774a6c18ea028f20cdcf1b5de7c67d202210d91108e85db50db5b",
+      "dance": "BAD – ATEEZ"
+    }
+  ],
+  "audioMatches": {
+    "video1": {
+      "offsetSeconds": 0,
+      "waveformCorrelation": 0.99878466
+    },
+    "video2": {
+      "offsetSeconds": 43.79575,
+      "waveformCorrelation": 0.9397835,
+      "poseExtractionStartSeconds": 43.8,
+      "speed": 1
+    }
+  },
+  "selectedMotionSources": {
+    "bang": "video 2, normal-speed section 43.8–72.244444, lower panel y350:1024; video 1 used for audio/style reference",
+    "bad": "video 3, 0–27.4, complete frame"
+  },
+  "target95Verified": false,
+  "notes": [
+    "Group-video multi-person tracking was rejected because it switched performers.",
+    "No generated/different choreography was substituted.",
+    "Occluded joints still rely on monocular estimates/interpolation; they are not ground truth."
+  ],
+  "tracking": {
+    "bang": {
+      "missingPoseFrames": 0,
+      "usedConfidenceThreshold": 0.45,
+      "below045ArmLandmarks": {
+        "13": 15,
+        "14": 0,
+        "15": 20,
+        "16": 0
+      }
+    },
+    "bad": {
+      "missingPoseFrames": 6,
+      "usedConfidenceThreshold": 0.15,
+      "below045ArmLandmarks": {
+        "13": 93,
+        "14": 237,
+        "15": 56,
+        "16": 197
+      }
+    }
+  }
+}

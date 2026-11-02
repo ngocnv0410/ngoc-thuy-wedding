@@ -173,6 +173,30 @@ for (const [index, name] of ['groom', 'bride'].entries()) describe(`${name} Driv
     } finally { actor.dispose() }
   })
 
+  // [DANCE-SWAP] Source changes include low hand sweeps: sample forearms as well as wrists against the gown.
+  if (index === 1) it('keeps wrists and forearms outside the animated gown envelope', () => {
+    const actor = createRiggedCharacter(templates[index], true), wrist = new Vector3(), elbow = new Vector3(), point = new Vector3()
+    let penetrations = 0
+    try {
+      for (const clip of [bad, bang]) for (let t = 0; t < clip.duration; t += .25) {
+        actor.apply(sampleMotion(clip, t, []))
+        const e = actor.group.userData.gownEnvelope
+        expect(e).toBeDefined()
+        for (const [i, name] of [[1, 'handL'], [3, 'handR']] as const) {
+          actor.limbs[i].getWorldPosition(elbow); actor.group.getObjectByName(name)!.getWorldPosition(wrist)
+          for (const blend of [.25, .5, .75, 1]) {
+            point.lerpVectors(elbow, wrist, blend)
+            if (point.y <= e.minY || point.y >= e.maxY) continue
+            const height = (point.y - e.minY) / (e.maxY - e.minY), shape = .30 + .70 * (1 - height) ** .9
+            const radius = ((point.x - e.x) / (e.rx * shape)) ** 2 + ((point.z - e.z) / (e.rz * shape)) ** 2
+            if (radius < .98) penetrations++
+          }
+        }
+      }
+      expect(penetrations).toBe(0)
+    } finally { actor.dispose() }
+  }, 60000)
+
   // [DANCE-SWAP] Safety must hold between poses too, not only at the two transition endpoints.
   it('keeps wrists visible throughout a mode transition', () => {
     const clock = vi.spyOn(performance, 'now').mockReturnValue(1000)

@@ -14,7 +14,8 @@ export function loadMotion3D(id: DanceId): Promise<MotionClip> {
 
 /** Continuous, media-clock-driven sampling; no elapsed-time accumulation or random dancing. */
 export function sampleMotion(clip: MotionClip, seconds: number, target: number[]): number[] {
-  const position = Math.max(0, Math.min(clip.frames.length - 1, seconds * clip.fps))
+  // [DANCE-SWAP] Closed-loop endpoint uses the identical boundary sample, avoiding roundoff from fractional end frames.
+  const position = seconds >= clip.duration - 1 / clip.fps ? 0 : Math.max(0, Math.min(clip.frames.length - 1, seconds * clip.fps))
   const index = Math.floor(position), t = position - index, t2 = t * t, t3 = t2 * t
   const weights = [(1 - t) ** 3 / 6, (3 * t3 - 6 * t2 + 4) / 6, (-3 * t3 + 3 * t2 + 3 * t + 1) / 6, t3 / 6]
   for (let channel = 0; channel < 37; channel++) {

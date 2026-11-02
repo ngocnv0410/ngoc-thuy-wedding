@@ -112,6 +112,20 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
   }
   // [DANCE-SWAP] Transport forearm roll with the upper arm before bending the elbow.
   const armQ = new Quaternion(), inherited = new Vector3()
+  // [DANCE-SWAP] Sample actual skinned skirt surfaces, excluding the veil and upper torso.
+  const gownSamples: { mesh: SkinnedMesh; indices: number[] }[] = []
+  if (bride) for (const mesh of meshes) {
+    const p = mesh.geometry.getAttribute('position'), w = mesh.geometry.getAttribute('skinWeight'), ids = mesh.geometry.getAttribute('skinIndex')
+    const candidates: number[] = []
+    for (let i = 0; i < p.count; i++) {
+      let skirtWeight = 0
+      for (let k = 0; k < 4; k++) if (mesh.skeleton.bones[ids.getComponent(i, k)]?.name.startsWith('skirt')) skirtWeight += w.getComponent(i, k)
+      if (p.getY(i) < restHeight + .10 && skirtWeight > .6) candidates.push(i)
+    }
+    gownSamples.push({ mesh, indices: candidates.filter((_, i) => i % Math.max(1, Math.ceil(candidates.length / 192)) === 0) })
+  }
+  const gownBounds = new Box3(), gownPoint = new Vector3(), clavicleQ = new Quaternion()
+  const clavicles = ['clavicleL', 'clavicleR'].map(n => bones.get(n)!)
   const parentQ = new Quaternion(), targetQ = new Quaternion(), delta = new Quaternion()
   const direction = new Vector3(), foot = new Vector3(), euler = new Euler(0, 0, 0, 'YXZ')
   const up = new Vector3(0, 1, 0)
@@ -139,9 +153,19 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
     orient(pelvis, targetQ.fromArray(pose, 1).normalize().multiply(bindWorld.get(pelvis)!))
     orient(spine, targetQ.fromArray(pose, 5).normalize().multiply(bindWorld.get(spine)!))
     euler.setFromQuaternion(targetQ.fromArray(pose, 9).normalize(), 'YXZ')
-    euler.x = MathUtils.clamp(euler.x, -.25, .30)
-    euler.y = MathUtils.clamp(euler.y, -.30, .30)
+    // [DANCE-SWAP] Preserve observed head turns, but reject estimator roll flips.
+    euler.x = MathUtils.clamp(euler.x, -.5, .5)
+    euler.y = MathUtils.clamp(euler.y, -1.25, 1.25)
+    euler.z = MathUtils.clamp(euler.z, -.6, .6)
     orient(head, targetQ.setFromEuler(euler).multiply(bindWorld.get(head)!))
+    // [DANCE-SWAP] Scapular elevation shares the raise with the shoulder instead of stretching one armpit pivot.
+    for (let side = 0; side < 2; side++) {
+      const elevation = Math.max(0, Math.asin(MathUtils.clamp(pose[14 + side * 6], -1, 1)) + .15) * .30
+      spine.getWorldQuaternion(clavicleQ)
+      clavicleQ.multiply(targetQ.copy(bindWorld.get(spine)!).invert()).multiply(bindWorld.get(clavicles[side])!)
+      delta.setFromAxisAngle(new Vector3(0, 0, 1), (side === 0 ? -1 : 1) * elevation)
+      orient(clavicles[side], targetQ.copy(delta).multiply(clavicleQ))
+    }
     // [DANCE-SWAP] Retarget the two arm chains to reachable, visible wrists before rotating the bones.
     headInverse.copy(head.matrixWorld).invert()
     for (const i of [0, 2]) {
@@ -211,6 +235,37 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
       if (t === 1) fading = undefined
       update()
     }
+    // [DANCE-SWAP] Resolve final-pose hands against the moving gown, including crossfade intermediates.
+    {
+      gownBounds.makeEmpty()
+      for (const sample of gownSamples) for (const v of sample.indices) {
+        sample.mesh.getVertexPosition(v, gownPoint).applyMatrix4(sample.mesh.matrixWorld); gownBounds.expandByPoint(gownPoint)
+      }
+      {
+        const envelope = bride && !gownBounds.isEmpty() ? { minY: gownBounds.min.y, maxY: gownBounds.max.y, x: (gownBounds.min.x + gownBounds.max.x) / 2,
+          z: (gownBounds.min.z + gownBounds.max.z) / 2, rx: (gownBounds.max.x - gownBounds.min.x) / 2, rz: (gownBounds.max.z - gownBounds.min.z) / 2 } : undefined
+        headInverse.copy(head.matrixWorld).invert()
+        for (const i of [0, 2]) {
+          limbs[i].getWorldPosition(shoulder); limbs[i + 1].getWorldPosition(elbow); bones.get(limbEnds[i + 1])!.getWorldPosition(wrist)
+          if (!fitWristInFrontOfHead(shoulder, wrist, Math.abs(armLengths[i] - armLengths[i + 1]) + .0001,
+            armLengths[i] + armLengths[i + 1] - .0001, head.matrixWorld, headInverse, headCenter, headRadii, wrist, envelope)) continue
+          axis.copy(wrist).sub(shoulder); const distance = axis.length(); axis.normalize()
+          pole.copy(elbow).sub(shoulder); pole.addScaledVector(axis, -pole.dot(axis))
+          if (pole.lengthSq() < 1e-8) pole.set(i === 0 ? -1 : 1, 0, 0).addScaledVector(axis, -axis.x * (i === 0 ? -1 : 1))
+          pole.normalize()
+          const along = (armLengths[i] ** 2 - armLengths[i + 1] ** 2 + distance ** 2) / (2 * distance)
+          elbow.copy(shoulder).addScaledVector(axis, along).addScaledVector(pole, Math.sqrt(Math.max(0, armLengths[i] ** 2 - along ** 2)))
+          direction.copy(elbow).sub(shoulder).normalize(); delta.setFromUnitVectors(restDirections[i], direction)
+          orient(limbs[i], targetQ.copy(delta).multiply(bindWorld.get(limbs[i])!))
+          limbs[i].getWorldQuaternion(armQ); armQ.multiply(targetQ.copy(bindWorld.get(limbs[i])!).invert())
+          inherited.copy(restDirections[i + 1]).applyQuaternion(armQ).normalize(); direction.copy(wrist).sub(elbow).normalize()
+          delta.setFromUnitVectors(inherited, direction)
+          orient(limbs[i + 1], targetQ.copy(delta).multiply(armQ).multiply(bindWorld.get(limbs[i + 1])!))
+        }
+        update()
+        group.userData.gownEnvelope = envelope
+      }
+    }
     let lowest = Infinity
     for (const { mesh, indices } of support) for (const i of indices) {
       mesh.getVertexPosition(i, foot).applyMatrix4(mesh.matrixWorld)
@@ -219,6 +274,10 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
     // Parent is exported with identity axes; vertical translation is in model/world Y.
     pelvis.position.y -= lowest
     update()
+    // [DANCE-SWAP] Keep the measured envelope in the same grounded world space as the hands.
+    if (bride && group.userData.gownEnvelope) {
+      group.userData.gownEnvelope.minY -= lowest; group.userData.gownEnvelope.maxY -= lowest
+    }
   }
   return { group, pelvis, spine, head, limbs, ankles, apply, transition, dispose: () => {
     for (const mesh of meshes) mesh.skeleton.dispose()
