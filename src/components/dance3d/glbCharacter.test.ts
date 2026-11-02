@@ -1,12 +1,20 @@
 // [DANCE-SWAP] Validate shipped GLBs, skin weights and the real source geometry after retargeting.
 import { readFileSync } from 'node:fs'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
-import { Group, SkinnedMesh, Texture, Vector3 } from 'three'
+import { Group, Ray, SkinnedMesh, Sphere, Texture, Vector3 } from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { createRiggedCharacter, GLB_BONE_MAP } from './glbCharacter'
 import { sampleMotion } from './motion'
 import bad from './badInPlaceMotion.json'
 import bang from './bangSourceMotion.json'
+
+// [DANCE-SWAP] Independent ray/sphere visibility check from the existing camera direction.
+function hiddenFromViewer(point: Vector3, inverse: import('three').Matrix4, center: Vector3, radii: Vector3): boolean {
+  const origin = point.clone().applyMatrix4(inverse).sub(center).divide(radii)
+  const direction = new Vector3(0, 0, 1).transformDirection(inverse).divide(radii).normalize()
+  const hit = new Ray(origin, direction).intersectSphere(new Sphere(new Vector3(), 1), new Vector3())
+  return !!hit && hit.distanceTo(origin) > .01
+}
 
 const templates: Group[] = []
 beforeAll(async () => {
@@ -80,6 +88,112 @@ for (const [index, name] of ['groom', 'bride'].entries()) describe(`${name} Driv
       expect(actor.limbs.map(b => b.getWorldPosition(new Vector3()).toArray())).toEqual(first)
     } finally { actor.dispose() }
   }, 60000)
+
+  // [DANCE-SWAP] Cover the previously missed failures: hidden wrists, torn palms and chest flaps.
+  it('keeps reachable wrists in front of the head and distal palms rigid through both dances', () => {
+    const actor = createRiggedCharacter(templates[index], index === 1)
+    const center = new Vector3().fromArray(actor.group.userData.armHeadBounds.center)
+    const radii = new Vector3().fromArray(actor.group.userData.armHeadBounds.radii)
+    const point = new Vector3(), shoulder = new Vector3(), elbow = new Vector3()
+    const hands = ['handL', 'handR'].map(n => actor.group.getObjectByName(n)!)
+    const palm: { mesh: SkinnedMesh; vertex: number; side: number; rest: Vector3 }[] = []
+    actor.group.traverse(node => {
+      if (!(node instanceof SkinnedMesh)) return
+      const p = node.geometry.getAttribute('position')
+      for (let i = 0; i < p.count; i++) {
+        point.fromBufferAttribute(p, i).applyMatrix4(node.matrixWorld)
+        const low = index === 1 ? .51 : .415, high = index === 1 ? .58 : .475
+        if (Math.abs(point.x) > .35 && point.y > low && point.y < high && point.z > .025) {
+          const side = point.x < 0 ? 0 : 1
+          palm.push({ mesh: node, vertex: i, side, rest: point.clone().applyMatrix4(hands[side].matrixWorld.clone().invert()) })
+        }
+      }
+    })
+    expect(palm.length).toBeGreaterThan(10)
+    const lengths = [0, 2].map(i => {
+      actor.limbs[i].getWorldPosition(shoulder); actor.limbs[i + 1].getWorldPosition(elbow)
+      hands[i / 2].getWorldPosition(point)
+      return [shoulder.distanceTo(elbow), elbow.distanceTo(point)]
+    })
+    let hidden = 0, hiddenPalm = 0, maximumPalmError = 0
+    const actualHeadRadii = radii.clone().subScalar(actor.group.userData.armHeadBounds.padding)
+    try {
+      for (const clip of [bad, bang]) for (let time = 0; time < clip.duration; time += .5) {
+        actor.apply(sampleMotion(clip, time, []))
+        const inverseHead = actor.head.matrixWorld.clone().invert()
+        for (let side = 0; side < 2; side++) {
+          hands[side].getWorldPosition(point); actor.limbs[side * 2].getWorldPosition(shoulder)
+          actor.limbs[side * 2 + 1].getWorldPosition(elbow)
+          expect(shoulder.distanceTo(elbow)).toBeCloseTo(lengths[side][0], 5)
+          expect(elbow.distanceTo(point)).toBeCloseTo(lengths[side][1], 5)
+          if (hiddenFromViewer(point, inverseHead, center, radii)) hidden++
+        }
+        const inverseHands = hands.map(hand => hand.matrixWorld.clone().invert())
+        for (const v of palm) {
+          v.mesh.getVertexPosition(v.vertex, point).applyMatrix4(v.mesh.matrixWorld)
+          if (hiddenFromViewer(point, inverseHead, center, actualHeadRadii)) hiddenPalm++
+          point.applyMatrix4(inverseHands[v.side])
+          maximumPalmError = Math.max(maximumPalmError, point.distanceTo(v.rest))
+        }
+      }
+      expect(hidden).toBe(0)
+      expect(hiddenPalm).toBe(0)
+      expect(maximumPalmError).toBeLessThan(.005)
+    } finally { actor.dispose() }
+  }, 60000)
+
+  it('does not pull the middle of the jacket or bodice when only the arms move', () => {
+    const actor = createRiggedCharacter(templates[index], index === 1), point = new Vector3()
+    const base = sampleMotion(bad, 0, []).slice(), selected: { mesh: SkinnedMesh; vertex: number; rest: Vector3 }[] = []
+    actor.apply(base)
+    actor.group.traverse(node => {
+      if (!(node instanceof SkinnedMesh)) return
+      const p = node.geometry.getAttribute('position')
+      for (let i = 0; i < p.count; i++) {
+        point.fromBufferAttribute(p, i)
+        if (Math.abs(point.x) < (index === 1 ? .105 : .13) && point.y > .61 && point.y < .73) {
+          node.getVertexPosition(i, point).applyMatrix4(node.matrixWorld)
+          selected.push({ mesh: node, vertex: i, rest: point.clone() })
+        }
+      }
+    })
+    let maximum = 0
+    try {
+      for (const clip of [bad, bang]) for (const time of [4, 8, 12, 16, 20, 24]) {
+        const pose = base.slice(), arms = sampleMotion(clip, time, [])
+        for (let k = 13; k < 25; k++) pose[k] = arms[k]
+        actor.apply(pose)
+        for (const v of selected) {
+          v.mesh.getVertexPosition(v.vertex, point).applyMatrix4(v.mesh.matrixWorld)
+          maximum = Math.max(maximum, point.distanceTo(v.rest))
+        }
+      }
+      expect(selected.length).toBeGreaterThan(100)
+      expect(maximum).toBeLessThan(.0001)
+    } finally { actor.dispose() }
+  })
+
+  // [DANCE-SWAP] Safety must hold between poses too, not only at the two transition endpoints.
+  it('keeps wrists visible throughout a mode transition', () => {
+    const clock = vi.spyOn(performance, 'now').mockReturnValue(1000)
+    const actor = createRiggedCharacter(templates[index], index === 1), point = new Vector3()
+    const center = new Vector3().fromArray(actor.group.userData.armHeadBounds.center)
+    const radii = new Vector3().fromArray(actor.group.userData.armHeadBounds.radii)
+    const hands = ['handL', 'handR'].map(n => actor.group.getObjectByName(n)!)
+    let hidden = 0
+    try {
+      actor.apply(sampleMotion(bad, 8, [])); actor.transition()
+      for (let step = 0; step <= 10; step++) {
+        clock.mockReturnValue(1000 + step * 30); actor.apply(sampleMotion(bang, 5.733333, []))
+        const inverse = actor.head.matrixWorld.clone().invert()
+        for (const hand of hands) {
+          hand.getWorldPosition(point)
+          if (hiddenFromViewer(point, inverse, center, radii)) hidden++
+        }
+      }
+      expect(hidden).toBe(0)
+    } finally { clock.mockRestore(); actor.dispose() }
+  })
 
   // [DANCE-SWAP] A mode/resume crossfade starts at the held pose and reaches the new pose at .3 s.
   it('crossfades without a first-frame jump and reaches the target pose', () => {

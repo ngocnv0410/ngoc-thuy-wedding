@@ -1,0 +1,15 @@
+{
+  "_comment": "// [DANCE-SWAP] Bidirectional nearest matching of combined XYZ+UV attributes; ignores intentionally changed weights/normals/material assignment.",
+  "groom": {
+    "trianglesBefore": 35999,
+    "trianglesAfter": 35999,
+    "maximumCombinedPositionUVError": 1.416150622481316e-06,
+    "passed": true
+  },
+  "bride": {
+    "trianglesBefore": 35988,
+    "trianglesAfter": 35988,
+    "maximumCombinedPositionUVError": 3.8508133189424986e-07,
+    "passed": true
+  }
+}
