@@ -38,15 +38,20 @@ for (const [name, clip] of [['BAD', bad], ['BANG BANG BANG', bang]] as const) it
   } finally { actors.forEach(actor => actor.dispose()); texture.dispose() }
 }, 20000)
 
-// [DANCE-SWAP] The replacement must retain exact audio timestamps and the untouched BAD interior.
-it('keeps the original duration, speed and BAD poses outside the loop blend', async () => {
+// [DANCE-SWAP] Both newly extracted sources follow their own native audio time; no tutorial retiming.
+it('keeps audio durations and uses the correctly assigned native-time videos', async () => {
   const original = (await import('./badMotion.json')).default
   expect(bad.duration).toBe(original.duration)
   expect(bang.duration).toBe(28.444444)
   expect(bang.bpm).toBe(135)
   expect(bang.playbackRate).toBe(1)
-  expect(bang.sourceTimeScale).toBe(1.333821)
-  for (let i = 19; i < bad.frames.length - 19; i++) expect(bad.frames[i].slice(1)).toEqual(original.frames[i].slice(1))
+  expect(bang.sourceTimeScale).toBe(1)
+  expect(bang.sourceOffset).toBe(43.8)
+  expect(bad.sourceTimeScale).toBe(1)
+  expect(bang.source).toContain('video 2')
+  expect(bang.source).toContain('video 1 audio')
+  expect(bad.source).toContain('video 3')
+
 })
 
 for (const [name, clip] of [['BAD', bad], ['BANG BANG BANG', bang]] as const) describe(`${name} 3D rig`, () => {
