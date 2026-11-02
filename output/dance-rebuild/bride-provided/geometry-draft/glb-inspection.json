@@ -1,0 +1,49 @@
+{
+  "file": "D:\\IdeaProjects\\ngoc-thuy-wedding\\output\\dance-rebuild\\bride-provided\\geometry-draft\\bride-48000-uv-untextured.glb",
+  "bytes": 1628128,
+  "sha256": "b356aed6f9a415e3ce8375c56b396be94042e891086e8defd62bf16a23687b27",
+  "generator": "Khronos glTF Blender I/O v4.5.51",
+  "meshCount": 1,
+  "meshes": [
+    {
+      "name": "tmpx94b869b.ply",
+      "primitives": [
+        {
+          "vertices": 41841,
+          "triangles": 47999,
+          "material": 0,
+          "attributes": [
+            "POSITION",
+            "NORMAL",
+            "TEXCOORD_0"
+          ],
+          "min": [
+            -0.5035753846168518,
+            -0.46589699387550354,
+            -0.4778514802455902
+          ],
+          "max": [
+            0.48827695846557617,
+            0.9982672333717346,
+            0.5503352284431458
+          ]
+        }
+      ]
+    }
+  ],
+  "triangles": 47999,
+  "skinCount": 0,
+  "animationCount": 0,
+  "materials": [
+    {
+      "name": "Material_0",
+      "pbr": {
+        "metallicFactor": 0.20000000298023224,
+        "roughnessFactor": 0.5
+      }
+    }
+  ],
+  "images": [],
+  "extensionsUsed": [],
+  "acceptedForProduction": false
+}

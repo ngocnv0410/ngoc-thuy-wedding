@@ -1,0 +1,23 @@
+{
+  "source": "D:\\IdeaProjects\\ngoc-thuy-wedding\\output\\dance-rebuild\\bride-provided\\bride-original.glb",
+  "output": "D:\\IdeaProjects\\ngoc-thuy-wedding\\output\\dance-rebuild\\bride-provided\\geometry-draft\\bride-48000-uv-untextured.glb",
+  "status": "technical geometry draft; not accepted for design or rigging",
+  "originalTrianglesAfterImport": 1995818,
+  "draftTriangles": 48000,
+  "vertices": 23932,
+  "uvLayers": 1,
+  "bytes": 1628128,
+  "surfaceCheck": {
+    "method": "20000 deterministic sampled source vertices to nearest reduced surface; object coordinates; not a full Hausdorff bound",
+    "samples": 20000,
+    "mean": 0.00021842727069610834,
+    "p95": 0.0006020587170496583,
+    "maxSampled": 0.0017421100055798888,
+    "normalizationSpan": 1.0281008183956146
+  },
+  "textureAdded": false,
+  "skinAdded": false,
+  "sourceChanged": false,
+  "designAcceptance": false,
+  "smoothNormals": true
+}

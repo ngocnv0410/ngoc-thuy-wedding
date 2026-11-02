@@ -1,0 +1,31 @@
+{
+  "input": "D:\\IdeaProjects\\ngoc-thuy-wedding\\output\\dance-rebuild\\bride-provided\\geometry-draft\\bride-48000-uv-untextured.glb",
+  "originalBounds": {
+    "min": [
+      -0.5035753846168518,
+      -0.5503352284431458,
+      -0.46589699387550354
+    ],
+    "max": [
+      0.48827695846557617,
+      0.4778514802455902,
+      0.9982672333717346
+    ]
+  },
+  "normalizationForPreviewOnly": {
+    "height": 1.8,
+    "scale": 1.2293702895502123
+  },
+  "meshes": [
+    {
+      "name": "tmpx94b869b.ply",
+      "vertices": 41841,
+      "polygons": 47999,
+      "uvLayers": 1
+    }
+  ],
+  "armatures": [],
+  "actions": 0,
+  "acceptedForProduction": false,
+  "renderMode": "gray clay override for inspection; source GLB unchanged"
+}

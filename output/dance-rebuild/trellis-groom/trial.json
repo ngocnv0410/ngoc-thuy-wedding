@@ -1,0 +1,15 @@
+{
+  "service": "microsoft/TRELLIS.2",
+  "input": "D:\\IdeaProjects\\ngoc-thuy-wedding\\output\\dance-rebuild\\groom-a-pose-draft.png",
+  "parameters": {
+    "seed": 0,
+    "resolution": "1024",
+    "decimation_target": 100000,
+    "texture_size": 2048
+  },
+  "status": "failed",
+  "stage": "preprocess_image",
+  "acceptedForProduction": false,
+  "errorType": "AppError",
+  "error": "You have exceeded your ZeroGPU quota (90s requested vs. 86s left). Try again in 23:56:18. Authenticate with a Hugging Face token for more quota - https://huggingface.co/settings/tokens"
+}

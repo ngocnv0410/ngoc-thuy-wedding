@@ -1,0 +1,48 @@
+[
+  {
+    "input": "C:\\Users\\ngocn\\Downloads\\1793545599589_1773277864879298111_7843160593634009468.mp4",
+    "bytes": 7103369,
+    "sha256": "c76cc38bd8ddabfa151fa8659d1960449e7d8874ddd81baac30aac7243ca56c8",
+    "durationSeconds": 27.421315,
+    "video": {
+      "width": 720,
+      "height": 1280,
+      "fps": "30/1",
+      "codec": "h264",
+      "decodedFrames": 822,
+      "lastFrameSeconds": 27.366666666666667
+    },
+    "audio": [
+      {
+        "codec": "aac",
+        "sampleRate": 44100,
+        "channels": 2
+      }
+    ],
+    "contactSheet": "reference-1-frames.jpg",
+    "danceAssignment": "unverified"
+  },
+  {
+    "input": "C:\\Users\\ngocn\\Downloads\\1793545599595_1773277864879298111_7843160593634009468.mp4",
+    "bytes": 5009855,
+    "sha256": "d9599ad1c4abd01664ecc8bf8849150372a6a68c2a3779dcb9b504e34192797c",
+    "durationSeconds": 58.328005,
+    "video": {
+      "width": 576,
+      "height": 1024,
+      "fps": "30/1",
+      "codec": "h264",
+      "decodedFrames": 1747,
+      "lastFrameSeconds": 58.2
+    },
+    "audio": [
+      {
+        "codec": "aac",
+        "sampleRate": 44100,
+        "channels": 2
+      }
+    ],
+    "contactSheet": "reference-2-frames.jpg",
+    "danceAssignment": "unverified"
+  }
+]

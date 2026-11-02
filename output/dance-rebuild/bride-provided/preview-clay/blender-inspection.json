@@ -1,0 +1,31 @@
+{
+  "input": "D:\\IdeaProjects\\ngoc-thuy-wedding\\output\\dance-rebuild\\bride-provided\\bride-original.glb",
+  "originalBounds": {
+    "min": [
+      -0.5034692883491516,
+      -0.550081193447113,
+      -0.46591585874557495
+    ],
+    "max": [
+      0.4880159795284271,
+      0.4780196249485016,
+      0.9980553984642029
+    ]
+  },
+  "normalizationForPreviewOnly": {
+    "height": 1.8,
+    "scale": 1.2295323361953625
+  },
+  "meshes": [
+    {
+      "name": "tmpx94b869b.ply",
+      "vertices": 997841,
+      "polygons": 1995818,
+      "uvLayers": 0
+    }
+  ],
+  "armatures": [],
+  "actions": 0,
+  "acceptedForProduction": false,
+  "renderMode": "gray clay override for inspection; source GLB unchanged"
+}

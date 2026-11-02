@@ -1,0 +1,53 @@
+{
+  "file": "D:\\IdeaProjects\\ngoc-thuy-wedding\\output\\dance-rebuild\\bride-provided\\bride-original.glb",
+  "bytes": 35925440,
+  "sha256": "62bd1f26559eb8177706f5cf60ba976701c9f169063c1b7412a8cc4d8f0d8579",
+  "generator": "https://github.com/mikedh/trimesh",
+  "meshCount": 1,
+  "meshes": [
+    {
+      "name": "tmpx94b869b.ply",
+      "primitives": [
+        {
+          "vertices": 997841,
+          "triangles": 1995858,
+          "material": 0,
+          "attributes": [
+            "POSITION"
+          ],
+          "min": [
+            -0.5034692883491516,
+            -0.46591585874557495,
+            -0.4780196249485016
+          ],
+          "max": [
+            0.4880159795284271,
+            0.9980553984642029,
+            0.550081193447113
+          ]
+        }
+      ]
+    }
+  ],
+  "triangles": 1995858,
+  "skinCount": 0,
+  "animationCount": 0,
+  "materials": [
+    {
+      "pbr": {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "roughnessFactor": 0.5,
+        "metallicFactor": 0.2
+      },
+      "doubleSided": false
+    }
+  ],
+  "images": [],
+  "extensionsUsed": [],
+  "acceptedForProduction": false
+}
