@@ -15,42 +15,6 @@
     ]
   },
   "models": {
-    "groom": {
-      "_comment": "// [DANCE-SWAP]",
-      "source": "gloom.glb",
-      "sourceSHA256": "d528e4ad3e0625875f5ee5c40dfe64feabb748c9fe6a05291d34e8ff623d651f",
-      "vertices": 17957,
-      "triangles": 35999,
-      "bones": [
-        "pelvis",
-        "spine",
-        "neck",
-        "head",
-        "clavicleL",
-        "upperArmL",
-        "forearmL",
-        "handL",
-        "thighL",
-        "shinL",
-        "ankleL",
-        "clavicleR",
-        "upperArmR",
-        "forearmR",
-        "handR",
-        "thighR",
-        "shinR",
-        "ankleR"
-      ],
-      "unweightedVertices": 0,
-      "maxInfluences": 4,
-      "bytes": 3949736,
-      "normalizedHeight": 1.6,
-      "portraitSource": "Existing approved artwork matching supplied reference; front projection onto actual source head",
-      "limitations": [
-        "Side/back detail projected from owner-provided four-view reference; projection is approximate",
-        "No individual finger tracking"
-      ]
-    },
     "bride": {
       "_comment": "// [DANCE-SWAP]",
       "source": "bride.glb",
@@ -84,13 +48,73 @@
       ],
       "unweightedVertices": 0,
       "maxInfluences": 4,
-      "bytes": 3617140,
+      "bytes": 2633656,
       "normalizedHeight": 1.6,
-      "portraitSource": "Existing approved artwork matching supplied reference; front projection onto actual source head",
+      "portraitSource": "Owner four-view reference photographs",
+      "textureRegistration": {
+        "method": "Visibility-weighted four-view photograph projection, calibrated eye/chin/shoulder/hem heights",
+        "reference": "reference-bride.jpg",
+        "atlasSize": 2048,
+        "material": "KHR_materials_unlit; retain reference photograph shading",
+        "geometryChanged": false,
+        "rigChanged": false,
+        "uvPacking": {
+          "charts": 1633,
+          "utilization": 0.8233230710029602
+        }
+      },
       "limitations": [
         "Side/back detail projected from owner-provided four-view reference; projection is approximate",
         "No finger tracking or cloth simulation",
         "Bride source contains gown but no visible leg/foot geometry; skeleton legs are retained for retargeting"
+      ]
+    },
+    "groom": {
+      "_comment": "// [DANCE-SWAP]",
+      "source": "gloom.glb",
+      "sourceSHA256": "d528e4ad3e0625875f5ee5c40dfe64feabb748c9fe6a05291d34e8ff623d651f",
+      "vertices": 17957,
+      "triangles": 35999,
+      "bones": [
+        "pelvis",
+        "spine",
+        "neck",
+        "head",
+        "clavicleL",
+        "upperArmL",
+        "forearmL",
+        "handL",
+        "thighL",
+        "shinL",
+        "ankleL",
+        "clavicleR",
+        "upperArmR",
+        "forearmR",
+        "handR",
+        "thighR",
+        "shinR",
+        "ankleR"
+      ],
+      "unweightedVertices": 0,
+      "maxInfluences": 4,
+      "bytes": 2371800,
+      "normalizedHeight": 1.6,
+      "portraitSource": "Owner four-view reference photographs",
+      "textureRegistration": {
+        "method": "Visibility-weighted four-view photograph projection, calibrated eye/chin/shoulder/hem heights",
+        "reference": "reference-groom.jpg",
+        "atlasSize": 2048,
+        "material": "KHR_materials_unlit; retain reference photograph shading",
+        "geometryChanged": false,
+        "rigChanged": false,
+        "uvPacking": {
+          "charts": 861,
+          "utilization": 0.7680878043174744
+        }
+      },
+      "limitations": [
+        "Side/back detail projected from owner-provided four-view reference; projection is approximate",
+        "No individual finger tracking"
       ]
     }
   },
@@ -222,7 +246,8 @@
           "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
         ]
       }
-    }
+    },
+    "animationAuditCommit": "583169a99a1f8b69546a5827cc187b7debee51f6"
   },
   "limits": [
     "Image projections approximate the multiview reference; geometric surface is the supplied model",
@@ -259,6 +284,50 @@
       "playbackRate": 1,
       "loopBlendAtEachEdgeSeconds": 0.6,
       "note": "No BPM is declared for BAD; direct media-clock sampling keeps the existing soundtrack timing"
+    }
+  },
+  "colorRevision": {
+    "_comment": "// [DANCE-SWAP] Recolor-only comparison against rig commit 583169a",
+    "baseCommit": "583169a99a1f8b69546a5827cc187b7debee51f6",
+    "models": {
+      "bride": {
+        "triangleSurfaceUnchanged": true,
+        "skinWeightsUnchanged": true,
+        "inverseBindMatricesUnchanged": true,
+        "unlitMaterial": true,
+        "bytes": 2633656,
+        "sha256": "6d49539863f1f053acbc03247d4ca07d4a15db74c0808cfd87c84027c0234700"
+      },
+      "groom": {
+        "triangleSurfaceUnchanged": true,
+        "skinWeightsUnchanged": true,
+        "inverseBindMatricesUnchanged": true,
+        "unlitMaterial": true,
+        "bytes": 2371800,
+        "sha256": "644e7c5d34833db77c7a17e7aa86d4a5b3cd76e21d2218fa9501042425348243"
+      }
+    },
+    "changes": [
+      "UV atlas",
+      "Four-view reference textures",
+      "Unlit material with reference sRGB color preservation"
+    ],
+    "exactReferenceMatch": false,
+    "remainingDifferences": [
+      "The supplied mesh silhouette/ears/chin/veil differ from the reference drawings; color projection cannot remove geometric differences",
+      "View seams and low-resolution reference details remain approximate; this is not a pixel-identical four-view reconstruction"
+    ],
+    "reproducibleBuildSHA256Matches": true,
+    "verification": {
+      "unitTestsPassed": 178,
+      "build": "passed",
+      "lint": "passed with two pre-existing warnings",
+      "browser": "both dance modes; paused seeks at 4/8/12/16/20/24 s; no JavaScript errors, only inherited warnings",
+      "animationRevalidated": "mesh surface/weights/bind matrices identical to the 10-loop-tested rig commit 583169a; motion data/controller unchanged"
+    },
+    "referenceSHA256": {
+      "bride": "85a2619f17a5f30b3c92cf9c429e58d3de805f0ffb87c995597500620b59e7ac",
+      "groom": "f4016b839c7691327704a333ec1394106e1ccd08322b8b9efec014fd038625dc"
     }
   }
 }

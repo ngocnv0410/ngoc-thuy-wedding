@@ -26,6 +26,10 @@ for (const [index, name] of ['groom', 'bride'].entries()) describe(`${name} Driv
     templates[index].traverse(node => {
       if (!(node instanceof SkinnedMesh)) return
       const geometry = node.geometry, weights = geometry.getAttribute('skinWeight')
+      // [DANCE-SWAP] Emission-only exports would reintroduce lighting/tone shifts in the reference colors.
+      for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
+        expect(material.type).toBe('MeshBasicMaterial')
+      }
       vertices += weights.count; triangles += (geometry.index?.count ?? weights.count) / 3
       expect(geometry.getAttribute('uv')).toBeDefined()
       for (let i = 0; i < weights.count; i++) {

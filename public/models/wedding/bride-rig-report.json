@@ -31,9 +31,21 @@
   ],
   "unweightedVertices": 0,
   "maxInfluences": 4,
-  "bytes": 3617140,
+  "bytes": 2633656,
   "normalizedHeight": 1.6,
-  "portraitSource": "Existing approved artwork matching supplied reference; front projection onto actual source head",
+  "portraitSource": "Owner four-view reference photographs",
+  "textureRegistration": {
+    "method": "Visibility-weighted four-view photograph projection, calibrated eye/chin/shoulder/hem heights",
+    "reference": "reference-bride.jpg",
+    "atlasSize": 2048,
+    "material": "KHR_materials_unlit; retain reference photograph shading",
+    "geometryChanged": false,
+    "rigChanged": false,
+    "uvPacking": {
+      "charts": 1633,
+      "utilization": 0.8233230710029602
+    }
+  },
   "limitations": [
     "Side/back detail projected from owner-provided four-view reference; projection is approximate",
     "No finger tracking or cloth simulation",
