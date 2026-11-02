@@ -1,0 +1,26 @@
+{
+  "mode": "bangbangbang",
+  "port": 4180,
+  "state": {
+    "loops": 10,
+    "previous": 0.534276,
+    "maxClockError": 0.9984770000000012,
+    "samples": 14232,
+    "time": 0.548055,
+    "paused": false,
+    "duration": 28.444444,
+    "frames": 779
+  },
+  "renderLag": {
+    "p95": 0.5126450000000009,
+    "median": 0.19428399999999968
+  },
+  "errors": [],
+  "warnings": [
+    "GSAP target  not found. https://gsap.com",
+    "GSAP target [object NodeList] not found. https://gsap.com",
+    "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ],
+  "elapsed": 286.33,
+  "_comment": "// [DANCE-SWAP] Real Chromium + SwiftShader CPU playback, ten audio loops; no seeks during measurement."
+}
