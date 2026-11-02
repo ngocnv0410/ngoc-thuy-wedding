@@ -3,7 +3,7 @@ import { Matrix4, Vector3 } from 'three'
 
 const source = new Vector3(), origin = new Vector3(), candidate = new Vector3(), best = new Vector3(), cameraRay = new Vector3(), worldCandidate = new Vector3()
 // [DANCE-SWAP] A measured, pose-dependent gown envelope; hand clearance is included.
-export interface GownEnvelope { minY: number; maxY: number; x: number; z: number; rx: number; rz: number }
+export interface GownEnvelope { minY: number; maxY: number; x: number; z: number; rx: number; rz: number; padding?: number }
 export function fitWristInFrontOfHead(
   shoulder: Vector3, wrist: Vector3, minReach: number, maxReach: number,
   headWorld: Matrix4, headInverse: Matrix4, center: Vector3, radii: Vector3, result: Vector3, gown?: GownEnvelope,
@@ -22,10 +22,12 @@ export function fitWristInFrontOfHead(
   }
   // [DANCE-SWAP] The gown widens toward the hem; preserve high gestures instead of pushing hands down.
   const gownContact = (p: Vector3): number | undefined => {
-    if (!gown || p.y > gown.maxY + .10 || p.y < gown.minY - .10) return undefined
+    if (!gown) return undefined
+    const padding = gown.padding ?? .10
+    if (p.y > gown.maxY + padding || p.y < gown.minY - padding) return undefined
     const t = Math.max(0, Math.min(1, (p.y - gown.minY) / (gown.maxY - gown.minY)))
     const shape = .30 + .70 * (1 - t) ** .9
-    const rx = gown.rx * shape + .10, rz = gown.rz * shape + .10
+    const rx = gown.rx * shape + padding, rz = gown.rz * shape + padding
     const x = (p.x - gown.x) / rx
     if (Math.abs(x) >= 1) return undefined
     const halfDepth = rz * Math.sqrt(1 - x * x)
@@ -56,8 +58,26 @@ export function fitWristInFrontOfHead(
     const distance = candidate.distanceToSquared(source) + 4 * (candidate.y - source.y) ** 2
     if (distance < cost) { best.copy(candidate); cost = distance; bestX = x; bestY = y }
   }
-  for (let x = 0; x <= (gown ? 40 : 20); x++) for (let y = gown ? -20 : 0; y <= 24; y++) consider(x * .018, y * .018)
-  if (Number.isFinite(cost)) for (const step of [.006, .002, .0006666667]) {
+  // [DANCE-SWAP] A single downward/outward route avoids switching between two equally close cheek-side solutions.
+  if (!gown) {
+    let previous = 0
+    for (let step = 0; step <= 90; step++) {
+      const amount = step * .006
+      consider(amount * .35, amount)
+      if (Number.isFinite(cost)) {
+        let low = previous, high = amount
+        for (let k = 0; k < 12; k++) {
+          const mid = (low + high) / 2, before = cost
+          consider(mid * .35, mid)
+          if (cost < before) high = mid
+          else low = mid
+        }
+        break
+      }
+      previous = amount
+    }
+  } else for (let x = 0; x <= 40; x++) for (let y = -20; y <= 24; y++) consider(x * .018, y * .018)
+  if (gown && Number.isFinite(cost)) for (const step of [.006, .002, .0006666667]) {
     const x = bestX, y = bestY
     for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) consider(x + dx * step, y + dy * step)
   }
