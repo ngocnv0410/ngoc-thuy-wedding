@@ -1,0 +1,47 @@
+{
+  "_comment": "// [DANCE-SWAP] Verify original albedo and MR image pixels; added bride skin material is separate.",
+  "groom": {
+    "originalTextures": {
+      "baseColorTexture": {
+        "size": [
+          2048,
+          2048
+        ],
+        "rgbaSHA256": "63caf8ea9fc78c316a9be1e7294a8db83011c410b6886d8ffc498c8f34d7713e",
+        "unchanged": true
+      },
+      "metallicRoughnessTexture": {
+        "size": [
+          2048,
+          2048
+        ],
+        "rgbaSHA256": "bf3297619b0de85a23fd5763941bde587e11b85ead165f171cc8e9d93ec852a6",
+        "unchanged": true
+      }
+    },
+    "materialsBefore": 1,
+    "materialsAfter": 1
+  },
+  "bride": {
+    "originalTextures": {
+      "baseColorTexture": {
+        "size": [
+          2048,
+          2048
+        ],
+        "rgbaSHA256": "c2dfad7dcc5584f012a99e05d71747fe09ec9998bd8d22632322de50422b42fa",
+        "unchanged": true
+      },
+      "metallicRoughnessTexture": {
+        "size": [
+          2048,
+          2048
+        ],
+        "rgbaSHA256": "cef2b1d67eb09a2fbb2a4f5a55e9ad0e6ceb631e211e27066514e0c337c2e6cb",
+        "unchanged": true
+      }
+    },
+    "materialsBefore": 1,
+    "materialsAfter": 2
+  }
+}

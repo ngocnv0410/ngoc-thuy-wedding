@@ -1,0 +1,26 @@
+{
+  "mode": "bad",
+  "port": 4182,
+  "state": {
+    "loops": 10,
+    "previous": 0.47808,
+    "maxClockError": 0.9894710000000018,
+    "samples": 13006,
+    "time": 0.495342,
+    "paused": false,
+    "duration": 27.4,
+    "frames": 712
+  },
+  "renderLag": {
+    "p95": 0.5304509999999993,
+    "median": 0.2049430000000001
+  },
+  "errors": [],
+  "warnings": [
+    "GSAP target  not found. https://gsap.com",
+    "GSAP target [object NodeList] not found. https://gsap.com",
+    "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ],
+  "elapsed": 276.15,
+  "_comment": "// [DANCE-SWAP] Final full-hand-clearance build; ten continuous audio loops, no seeks during measurement."
+}

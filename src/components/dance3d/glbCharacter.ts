@@ -1,8 +1,10 @@
 // [DANCE-SWAP] Adapter for the owner's colored/skinned Drive GLBs. The legacy rig remains available.
-import { Bone, Euler, Group, MathUtils, Quaternion, SkinnedMesh, Vector3 } from 'three'
+import { Bone, Box3, Euler, Group, MathUtils, Quaternion, SkinnedMesh, Vector3 } from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { clone } from 'three/addons/utils/SkeletonUtils.js'
 import type { WeddingCharacter } from './character'
+// [DANCE-SWAP] Preserve source gestures within the unchanged chibi arm reach and head silhouette.
+import { fitWristInFrontOfHead } from './armReach'
 
 // [DANCE-SWAP] Keep async asset loading outside the synchronous scene/actor interface.
 let prepared: Group[] | undefined
@@ -73,6 +75,29 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
     bone.getWorldPosition(start); bones.get(limbEnds[i])!.getWorldPosition(end)
     return end.clone().sub(start).normalize()
   })
+  // [DANCE-SWAP] Measure the actual rigid head in bind space, including the lower cheek/chin.
+  const headBounds = new Box3(), headBindInverse = head.matrixWorld.clone().invert()
+  for (const mesh of meshes) {
+    const positions = mesh.geometry.getAttribute('position'), weights = mesh.geometry.getAttribute('skinWeight')
+    const indices = mesh.geometry.getAttribute('skinIndex'), index = mesh.skeleton.bones.indexOf(head)
+    for (let i = 0; i < positions.count; i++) for (let k = 0; k < 4; k++) {
+      if (indices.getComponent(i, k) === index && weights.getComponent(i, k) > .9) {
+        start.fromBufferAttribute(positions, i).applyMatrix4(mesh.matrixWorld).applyMatrix4(headBindInverse)
+        headBounds.expandByPoint(start); break
+      }
+    }
+  }
+  const headCenter = headBounds.getCenter(new Vector3())
+  // [DANCE-SWAP] Include the full rigid hand, not only the wrist/palm center, in the keep-out margin.
+  const handPadding = bride ? .10 : .12
+  const headRadii = headBounds.getSize(new Vector3()).multiplyScalar(.5).addScalar(handPadding)
+  group.userData.armHeadBounds = { center: headCenter.toArray(), radii: headRadii.toArray(), padding: handPadding }
+  const headInverse = head.matrixWorld.clone(), armDirections = Array.from({ length: 4 }, () => new Vector3())
+  const shoulder = new Vector3(), elbow = new Vector3(), wrist = new Vector3(), axis = new Vector3(), pole = new Vector3()
+  const armLengths = [0, 1, 2, 3].map(i => {
+    limbs[i].getWorldPosition(start); bones.get(limbEnds[i])!.getWorldPosition(end)
+    return start.distanceTo(end)
+  })
   const restPelvis = pelvis.position.clone(), restHeight = pelvis.getWorldPosition(new Vector3()).y
   const restPositions = new Map([...bones.values()].map(b => [b, b.position.clone()]))
   const support: { mesh: SkinnedMesh; indices: number[] }[] = []
@@ -85,6 +110,8 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
     for (let i = 0; i < position.count; i++) if (position.getY(i) <= floor + .025) indices.push(i)
     support.push({ mesh, indices })
   }
+  // [DANCE-SWAP] Transport forearm roll with the upper arm before bending the elbow.
+  const armQ = new Quaternion(), inherited = new Vector3()
   const parentQ = new Quaternion(), targetQ = new Quaternion(), delta = new Quaternion()
   const direction = new Vector3(), foot = new Vector3(), euler = new Euler(0, 0, 0, 'YXZ')
   const up = new Vector3(0, 1, 0)
@@ -115,10 +142,45 @@ export function createRiggedCharacter(template: Group, bride: boolean): WeddingC
     euler.x = MathUtils.clamp(euler.x, -.25, .30)
     euler.y = MathUtils.clamp(euler.y, -.30, .30)
     orient(head, targetQ.setFromEuler(euler).multiply(bindWorld.get(head)!))
+    // [DANCE-SWAP] Retarget the two arm chains to reachable, visible wrists before rotating the bones.
+    headInverse.copy(head.matrixWorld).invert()
+    for (const i of [0, 2]) {
+      armDirections[i].fromArray(pose, 13 + i * 3).normalize()
+      armDirections[i + 1].fromArray(pose, 16 + i * 3).normalize()
+      limbs[i].getWorldPosition(shoulder)
+      elbow.copy(shoulder).addScaledVector(armDirections[i], armLengths[i])
+      wrist.copy(elbow).addScaledVector(armDirections[i + 1], armLengths[i + 1])
+      const minimum = Math.abs(armLengths[i] - armLengths[i + 1]) + .0001
+      const maximum = armLengths[i] + armLengths[i + 1] - .0001
+      if (fitWristInFrontOfHead(shoulder, wrist, minimum, maximum, head.matrixWorld, headInverse, headCenter, headRadii, wrist)) {
+        axis.copy(wrist).sub(shoulder)
+        const distance = MathUtils.clamp(axis.length(), minimum, maximum)
+        axis.normalize()
+        pole.copy(elbow).sub(shoulder)
+        pole.addScaledVector(axis, -pole.dot(axis))
+        if (pole.lengthSq() < 1e-8) pole.set(i === 0 ? -1 : 1, 0, 0).addScaledVector(axis, -axis.x * (i === 0 ? -1 : 1))
+        pole.normalize()
+        const along = (armLengths[i] ** 2 - armLengths[i + 1] ** 2 + distance ** 2) / (2 * distance)
+        const height = Math.sqrt(Math.max(0, armLengths[i] ** 2 - along ** 2))
+        elbow.copy(shoulder).addScaledVector(axis, along).addScaledVector(pole, height)
+        armDirections[i].copy(elbow).sub(shoulder).normalize()
+        armDirections[i + 1].copy(wrist).sub(elbow).normalize()
+      }
+    }
     for (let i = 0; i < limbs.length; i++) {
-      direction.fromArray(pose, 13 + i * 3).normalize()
-      delta.setFromUnitVectors(restDirections[i], direction)
-      orient(limbs[i], targetQ.copy(delta).multiply(bindWorld.get(limbs[i])!))
+      if (i < 4) direction.copy(armDirections[i])
+      else direction.fromArray(pose, 13 + i * 3).normalize()
+      // [DANCE-SWAP] Independent world-space swings counter-twisted the two sides of the elbow.
+      if (i === 1 || i === 3) {
+        limbs[i - 1].getWorldQuaternion(armQ)
+        armQ.multiply(targetQ.copy(bindWorld.get(limbs[i - 1])!).invert())
+        inherited.copy(restDirections[i]).applyQuaternion(armQ).normalize()
+        delta.setFromUnitVectors(inherited, direction)
+        orient(limbs[i], targetQ.copy(delta).multiply(armQ).multiply(bindWorld.get(limbs[i])!))
+      } else {
+        delta.setFromUnitVectors(restDirections[i], direction)
+        orient(limbs[i], targetQ.copy(delta).multiply(bindWorld.get(limbs[i])!))
+      }
     }
     for (const ankle of ankles) orient(ankle, bindWorld.get(ankle)!)
     update()
