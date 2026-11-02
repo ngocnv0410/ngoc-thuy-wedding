@@ -2,6 +2,8 @@
 Run with Blender: blender -b -t 4 --python scripts/prepare-wedding-glb.py --
   --source-dir /path/to/downloads --output-dir public/models/wedding
 Optional --prepared-dir reuses normalized/reduced .blend intermediates.
+Offline texture build requires scipy in Blender and numpy/xatlas in DANCE_UNWRAP_PYTHON
+(default: python). These tools do not become application/browser dependencies.
 """
 import argparse
 import hashlib
@@ -50,45 +52,6 @@ obj.name = args.subject + '-source-surface'
 for p in obj.data.polygons:
     p.use_smooth = True
 obj.data.update()
-
-# [DANCE-SWAP] PBR palette follows the supplied image; portrait detail is projected onto the
-# actual head geometry, with its own UVs. No replacement head mesh, billboard or camera change.
-def linear(v):
-    return v / 12.92 if v <= .04045 else ((v + .055) / 1.055) ** 2.4
-
-def material(name, hex_color, roughness=.8, metallic=0):
-    rgb = tuple(linear(int(hex_color[i:i + 2], 16) / 255) for i in (0, 2, 4))
-    m = bpy.data.materials.new(name)
-    m.use_nodes = True
-    bsdf = m.node_tree.nodes['Principled BSDF']
-    bsdf.inputs['Base Color'].default_value = (*rgb, 1)
-    bsdf.inputs['Roughness'].default_value = roughness
-    bsdf.inputs['Metallic'].default_value = metallic
-    m.diffuse_color = (*rgb, 1)
-    obj.data.materials.append(m)
-    return len(obj.data.materials) - 1
-obj.data.materials.clear()
-skin = material('Reference fair peach skin', 'f5d2bc', .9)
-hair = material('Reference chestnut hair', '614537', .8)
-white = material('Reference ivory white fabric', 'f6f2eb', .9)
-suit = material('Reference taupe wedding suit', '927968', .93)
-shoe = material('Reference brown leather', '594337', .55)
-flower = material('Reference ivory blossoms', 'ffedd5', .75)
-leaf = material('Reference boutonniere stems', '8a8b56', .95)
-face = material('Reference portrait projected on supplied 3D head', 'ffffff', .9)
-head_image = bpy.data.images.load(str(repo / 'src/assets/chibi/approved' / (args.subject + '-head.webp')))
-head_image.pack()
-face_mat = obj.data.materials[face]
-texture = face_mat.node_tree.nodes.new('ShaderNodeTexImage')
-texture.image = head_image
-texture.extension = 'EXTEND'
-face_mat.node_tree.links.new(texture.outputs['Color'], face_mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
-uv = obj.data.uv_layers.new(name='SourcePortraitProjection')
-head_bottom = .94 if bride else .84
-for loop in obj.data.loops:
-    x, y, z = obj.data.vertices[loop.vertex_index].co
-    width = (.77 if bride else .88) if z < (1.25 if bride else 1.2) else (.70 if bride else .73)
-    uv.data[loop.index].uv = (.5 + x / width, (z - head_bottom) / (1.6 - head_bottom))
 
 # [DANCE-SWAP] Anatomical landmark placement is fitted to each supplied mesh's rest A-pose.
 # Coordinates below are Blender X/-Y/Z; export converts them to glTF X/Y/Z.
@@ -194,175 +157,10 @@ for v in obj.data.vertices:
         raise RuntimeError('Unweighted vertex ' + str(v.index))
     for n, w in raw:
         groups[n].add([v.index], w / total, 'REPLACE')
-for polygon in obj.data.polygons:
-    p = sum((obj.data.vertices[i].co for i in polygon.vertices), Vector()) / len(polygon.vertices)
-    x, y, z = p
-    if z >= head_bottom:
-        if y < (-.135 if bride else -.15):
-            index = face
-        elif z < (1.16 if bride else 1.12) and y < -.015:
-            index = skin
-        else:
-            index = hair
-        if bride and y > .23 + .5 * (z - .94) and z < 1.18:
-            index = white
-    elif bride:
-        near_arm = min(distance(p, *rest[n]) for n in ['upperArmL', 'forearmL', 'handL', 'upperArmR', 'forearmR', 'handR'])
-        index = skin if y < .075 and abs(x) > .15 and near_arm < .078 and z > .48 else white
-        if .885 < z < .95 and abs(x) < .16 and y < .05:
-            index = skin
-    else:
-        index = suit
-        if z < .09:
-            index = shoe
-        elif abs(x) > .30 and z < .49:
-            index = skin
-        elif y < -.12 and .68 < z < .84 and abs(x) < .065:
-            index = white
-        elif y < -.16 and .70 < z < .79 and .065 < x < .15:
-            index = flower
-        elif y < -.16 and .66 < z < .71 and .085 < x < .12:
-            index = leaf
-    polygon.material_index = index
-# [DANCE-SWAP] Bake smooth material transitions and portrait projection to a packed UV atlas.
-# Fill transparent reference pixels from their nearest opaque neighbor so the silhouette
-# cannot introduce black/white wedges on the model's cheeks, ears or chin.
-from collections import deque
-import numpy as np
-pixels = np.array(head_image.pixels[:], dtype=np.float32).reshape(head_image.size[1], head_image.size[0], 4)
-opaque = pixels[:, :, 3] > .95
-visited = opaque.copy()
-queue = deque()
-for yy, xx in zip(*np.where(opaque)):
-    if (yy and not opaque[yy - 1, xx]) or (yy + 1 < len(opaque) and not opaque[yy + 1, xx]) or (xx and not opaque[yy, xx - 1]) or (xx + 1 < opaque.shape[1] and not opaque[yy, xx + 1]):
-        queue.append((yy, xx))
-while queue:
-    yy, xx = queue.popleft()
-    for ny, nx in [(yy - 1, xx), (yy + 1, xx), (yy, xx - 1), (yy, xx + 1)]:
-        if 0 <= ny < pixels.shape[0] and 0 <= nx < pixels.shape[1] and not visited[ny, nx]:
-            visited[ny, nx] = True
-            pixels[ny, nx, :3] = pixels[yy, xx, :3]
-            queue.append((ny, nx))
-pixels[:, :, 3] = 1
-head_image.pixels.foreach_set(pixels.ravel())
-head_image.update()
-palette = obj.data.color_attributes.new(name='ReferencePalette', type='FLOAT_COLOR', domain='CORNER')
-mask = obj.data.color_attributes.new(name='PortraitMask', type='FLOAT_COLOR', domain='CORNER')
-palette = obj.data.color_attributes['ReferencePalette']
-mask = obj.data.color_attributes['PortraitMask']
-# Average neighboring polygon palette colors at each vertex to soften material borders.
-vertex_colors = np.zeros((len(obj.data.vertices), 3))
-counts = np.zeros(len(obj.data.vertices))
-for polygon in obj.data.polygons:
-    color = obj.data.materials[polygon.material_index].diffuse_color[:3]
-    for index in polygon.vertices:
-        vertex_colors[index] += color
-        counts[index] += 1
-vertex_colors /= np.maximum(counts[:, None], 1)
-for loop in obj.data.loops:
-    x, y, z = obj.data.vertices[loop.vertex_index].co
-    color = vertex_colors[loop.vertex_index]
-    if z > head_bottom - .025 and not (bride and y > .23 + .5 * (z - .94) and z < 1.18):
-        skin_side = (1 - smooth(1.11 if bride else 1.08, 1.22 if bride else 1.19, z)) * (1 - smooth(-.02, .06, y))
-        c_hair = obj.data.materials[hair].diffuse_color[:3]
-        c_skin = obj.data.materials[skin].diffuse_color[:3]
-        color = [a * (1 - skin_side) + b * skin_side for a, b in zip(c_hair, c_skin)]
-    palette.data[loop.index].color = (*color, 1)
-    front = smooth(.10, .23, -y) * smooth(head_bottom - .015, head_bottom + .025, z)
-    if bride and y > .12:
-        front = 0
-    mask.data[loop.index].color = (front, front, front, 1)
-blend_material = bpy.data.materials.new('Reference palette with smooth portrait boundary')
-blend_material.use_nodes = True
-nodes = blend_material.node_tree.nodes
-links = blend_material.node_tree.links
-base = nodes['Principled BSDF']
-base.inputs['Roughness'].default_value = .88
-colors = nodes.new('ShaderNodeVertexColor'); colors.layer_name = 'ReferencePalette'
-blend = nodes.new('ShaderNodeVertexColor'); blend.layer_name = 'PortraitMask'
-photo_uv = nodes.new('ShaderNodeUVMap'); photo_uv.uv_map = 'SourcePortraitProjection'
-photo = nodes.new('ShaderNodeTexImage'); photo.image = head_image; photo.extension = 'EXTEND'
-links.new(photo_uv.outputs['UV'], photo.inputs['Vector'])
-mix = nodes.new('ShaderNodeMixRGB')
-links.new(blend.outputs['Color'], mix.inputs[0]); links.new(colors.outputs['Color'], mix.inputs[1]); links.new(photo.outputs['Color'], mix.inputs[2]); links.new(mix.outputs[0], base.inputs['Base Color'])
-# [DANCE-SWAP] New owner-provided four-view reference supplies the side/back hair
-# detail and front tailoring. Projection is baked onto the same original mesh surface.
-reference = bpy.data.images.load(str(repo / 'output/dance-rebuild/drive-rig' / ('reference-' + args.subject + '.jpg')))
-reference.alpha_mode = 'STRAIGHT'
-ref_pixels = np.array(reference.pixels[:], dtype=np.float32).reshape(reference.size[1], reference.size[0], 4)
-ref_pixels[:, :, 3] = np.clip((.98 - ref_pixels[:, :, :3].min(axis=2)) / .16, 0, 1)
-reference.pixels.foreach_set(ref_pixels.ravel()); reference.update(); reference.pack()
-previous_color = mix.outputs[0]
-for view in ['Side', 'Back', 'Tailoring']:
-    layer_name = 'Reference' + view
-    layer = obj.data.uv_layers.new(name=layer_name)
-    blend_attr = obj.data.color_attributes.new(name=layer_name + 'Mask', type='FLOAT_COLOR', domain='CORNER')
-    layer = obj.data.uv_layers[layer_name]
-    scale = (454 if bride else 469) / 1.6
-    center = {'Side': 148 if bride else 139, 'Back': 128 if bride else 132, 'Tailoring': 173 if bride else 183}[view]
-    panel = {'Side': 2, 'Back': 3, 'Tailoring': 0}[view]
-    for loop in obj.data.loops:
-        x, y, z = obj.data.vertices[loop.vertex_index].co
-        horizontal = y - body_y if view == 'Side' else (-x if view == 'Back' else x)
-        layer.data[loop.index].uv = ((panel * 320 + center + horizontal * scale) / 1280, ((511 - (478 if bride else 480)) + z * scale) / 511)
-        is_veil = bride and y > .23 + .5 * (z - .94) and z < 1.18
-        if view == 'Side':
-            weight = smooth(.19, .30, abs(x)) * smooth(-.20, -.08, y) * (1 - smooth(.04, .18, y)) * smooth(head_bottom + .04, head_bottom + .14, z)
-        elif view == 'Back':
-            weight = smooth(.06, .20, y) * smooth(head_bottom + .015, head_bottom + .10, z)
-        else:
-            weight = (1 - smooth(-.17, -.10, y)) * smooth(.42, .49, z) * (1 - smooth(.80, .845, z)) * (1 - smooth(.16, .205, abs(x))) if not bride else 0
-        if is_veil:
-            weight = 0
-        blend_attr.data[loop.index].color = (weight, weight, weight, 1)
-    texture_uv = nodes.new('ShaderNodeUVMap'); texture_uv.uv_map = layer_name
-    view_texture = nodes.new('ShaderNodeTexImage'); view_texture.image = reference; view_texture.extension = 'EXTEND'
-    links.new(texture_uv.outputs['UV'], view_texture.inputs['Vector'])
-    view_blend = nodes.new('ShaderNodeVertexColor'); view_blend.layer_name = layer_name + 'Mask'
-    multiply = nodes.new('ShaderNodeMath'); multiply.operation = 'MULTIPLY'
-    links.new(view_blend.outputs['Color'], multiply.inputs[0]); links.new(view_texture.outputs['Alpha'], multiply.inputs[1])
-    view_mix = nodes.new('ShaderNodeMixRGB')
-    links.new(multiply.outputs[0], view_mix.inputs[0]); links.new(previous_color, view_mix.inputs[1]); links.new(view_texture.outputs['Color'], view_mix.inputs[2])
-    previous_color = view_mix.outputs[0]
-links.new(previous_color, base.inputs['Base Color'])
-
-obj.data.materials.clear(); obj.data.materials.append(blend_material)
-for polygon in obj.data.polygons:
-    polygon.material_index = 0
-# [DANCE-SWAP] Adding CustomData layers can invalidate RNA handles; check source UVs before baking.
-for loop_index in range(0, len(obj.data.loops), 113):
-    loop = obj.data.loops[loop_index]
-    x, y, z = obj.data.vertices[loop.vertex_index].co
-    width = (.77 if bride else .88) if z < (1.25 if bride else 1.2) else (.70 if bride else .73)
-    expected = Vector((.5 + x / width, (z - head_bottom) / (1.6 - head_bottom)))
-    actual = obj.data.uv_layers['SourcePortraitProjection'].data[loop_index].uv
-    if (actual - expected).length > 1e-4:
-        raise RuntimeError('Source portrait UV corruption at loop ' + str(loop_index))
-
-atlas_uv = obj.data.uv_layers.new(name='WeddingAtlas')
-obj.data.uv_layers.active = atlas_uv
-atlas_uv.active_render = True
-bpy.context.view_layer.objects.active = obj
-bpy.ops.object.select_all(action='DESELECT'); obj.select_set(True)
-bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
-bpy.ops.uv.smart_project(angle_limit=1.15, island_margin=.006)
-bpy.ops.object.mode_set(mode='OBJECT')
-atlas = bpy.data.images.new(args.subject + '-reference-atlas', width=2048, height=2048, alpha=False)
-target = nodes.new('ShaderNodeTexImage'); target.image = atlas; nodes.active = target
-scene = bpy.context.scene; scene.render.engine = 'CYCLES'; scene.cycles.samples = 1; scene.cycles.use_denoising = False
-scene.render.bake.use_pass_direct = False; scene.render.bake.use_pass_indirect = False; scene.render.bake.use_pass_color = True; scene.render.bake.margin = 8
-bpy.ops.object.bake(type='DIFFUSE')
-atlas.filepath_raw = str(out / (args.subject + '-atlas.png')); atlas.file_format = 'PNG'; atlas.save(); atlas.pack()
-links.new(target.outputs['Color'], base.inputs['Base Color'])
-for node in list(nodes):
-    if node not in [target, base, nodes.get('Material Output')]:
-        nodes.remove(node)
-# Only the packed atlas is needed by glTF; don't multiply it by intermediate colors.
-for attr_name in [attr.name for attr in obj.data.color_attributes]:
-    obj.data.color_attributes.remove(obj.data.color_attributes[attr_name])
-for uv_name in [layer.name for layer in obj.data.uv_layers if layer.name != 'WeddingAtlas']:
-    obj.data.uv_layers.remove(obj.data.uv_layers[uv_name])
-obj.data.uv_layers.active = obj.data.uv_layers['WeddingAtlas']
+# [DANCE-SWAP] Repaint from all four owner views; preserve the source mesh and skin weights.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wedding_multiview_texture import paint_four_views
+texture_report = paint_four_views(obj, repo / 'output/dance-rebuild/drive-rig' / ('reference-' + args.subject + '.jpg'), args.subject, out)
 
 mod = obj.modifiers.new('Wedding humanoid deformation', 'ARMATURE')
 mod.object = arm
@@ -378,8 +176,8 @@ obj.select_set(True)
 arm.select_set(True)
 bpy.context.view_layer.objects.active = obj
 output = out / (args.subject + '-rigged.glb')
-bpy.ops.export_scene.gltf(filepath=str(output), export_format='GLB', use_selection=True, export_animations=False, export_extras=True, export_image_format='AUTO', export_yup=True)
-report = {'_comment': '// [DANCE-SWAP]', 'source': source.name, 'sourceSHA256': obj['source_sha256'], 'vertices': len(obj.data.vertices), 'triangles': len(obj.data.polygons), 'bones': list(rest), 'unweightedVertices': sum(not v.groups for v in obj.data.vertices), 'maxInfluences': max(len(v.groups) for v in obj.data.vertices), 'bytes': output.stat().st_size, 'normalizedHeight': 1.6, 'portraitSource': 'Existing approved artwork matching supplied reference; front projection onto actual source head', 'limitations': ['Side/back detail projected from owner-provided four-view reference; projection is approximate', 'No finger tracking or cloth simulation', 'Bride source contains gown but no visible leg/foot geometry; skeleton legs are retained for retargeting'] if bride else ['Side/back detail projected from owner-provided four-view reference; projection is approximate', 'No individual finger tracking']}
+bpy.ops.export_scene.gltf(filepath=str(output), export_format='GLB', use_selection=True, export_animations=False, export_extras=True, export_image_format='JPEG', export_jpeg_quality=95, export_yup=True)
+report = {'_comment': '// [DANCE-SWAP]', 'source': source.name, 'sourceSHA256': obj['source_sha256'], 'vertices': len(obj.data.vertices), 'triangles': len(obj.data.polygons), 'bones': list(rest), 'unweightedVertices': sum(not v.groups for v in obj.data.vertices), 'maxInfluences': max(len(v.groups) for v in obj.data.vertices), 'bytes': output.stat().st_size, 'normalizedHeight': 1.6, 'portraitSource': 'Owner four-view reference photographs', 'textureRegistration': texture_report, 'limitations': ['Side/back detail projected from owner-provided four-view reference; projection is approximate', 'No finger tracking or cloth simulation', 'Bride source contains gown but no visible leg/foot geometry; skeleton legs are retained for retargeting'] if bride else ['Side/back detail projected from owner-provided four-view reference; projection is approximate', 'No individual finger tracking']}
 (out / (args.subject + '-rig-report.json')).write_text(json.dumps(report, indent=2) + '\n')
 bpy.ops.wm.save_as_mainfile(filepath=str(out / (args.subject + '-working.blend')))
 print('DANCE_SWAP_REPORT', json.dumps(report), flush=True)

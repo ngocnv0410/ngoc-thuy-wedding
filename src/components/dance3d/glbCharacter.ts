@@ -10,7 +10,15 @@ let loading: Promise<void> | undefined
 export function preloadRiggedCharacters(): Promise<void> {
   return loading ??= Promise.all(['groom', 'bride'].map(name => new GLTFLoader()
     .loadAsync(`${import.meta.env.BASE_URL}models/wedding/${name}-rigged.glb`)
-    .then(gltf => gltf.scene)))
+    .then(gltf => {
+      // [DANCE-SWAP] Four-view photographs already contain shading; preserve their sRGB colors.
+      gltf.scene.traverse(node => {
+        if (node instanceof SkinnedMesh) for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
+          if (material.type === 'MeshBasicMaterial') material.toneMapped = false
+        }
+      })
+      return gltf.scene
+    })))
     .then(models => { prepared = models })
     .catch(error => { loading = undefined; throw error })
 }

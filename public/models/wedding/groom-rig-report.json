@@ -26,9 +26,21 @@
   ],
   "unweightedVertices": 0,
   "maxInfluences": 4,
-  "bytes": 3949736,
+  "bytes": 2371800,
   "normalizedHeight": 1.6,
-  "portraitSource": "Existing approved artwork matching supplied reference; front projection onto actual source head",
+  "portraitSource": "Owner four-view reference photographs",
+  "textureRegistration": {
+    "method": "Visibility-weighted four-view photograph projection, calibrated eye/chin/shoulder/hem heights",
+    "reference": "reference-groom.jpg",
+    "atlasSize": 2048,
+    "material": "KHR_materials_unlit; retain reference photograph shading",
+    "geometryChanged": false,
+    "rigChanged": false,
+    "uvPacking": {
+      "charts": 861,
+      "utilization": 0.7680878043174744
+    }
+  },
   "limitations": [
     "Side/back detail projected from owner-provided four-view reference; projection is approximate",
     "No individual finger tracking"
