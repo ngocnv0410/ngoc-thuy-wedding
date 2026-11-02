@@ -1,0 +1,119 @@
+{
+  "baseline": {
+    "warnings": [
+      {
+        "text": "GSAP target [object NodeList] not found. https://gsap.com",
+        "location": {
+          "url": "http://localhost:4180/assets/gsap-ekVQL5bK.js",
+          "line": 0,
+          "column": 1227,
+          "lineNumber": 0,
+          "columnNumber": 1227
+        }
+      },
+      {
+        "text": "GSAP target  not found. https://gsap.com",
+        "location": {
+          "url": "http://localhost:4180/assets/gsap-ekVQL5bK.js",
+          "line": 0,
+          "column": 1227,
+          "lineNumber": 0,
+          "columnNumber": 1227
+        }
+      },
+      {
+        "text": "GSAP target [object NodeList] not found. https://gsap.com",
+        "location": {
+          "url": "http://localhost:4180/assets/gsap-ekVQL5bK.js",
+          "line": 0,
+          "column": 1227,
+          "lineNumber": 0,
+          "columnNumber": 1227
+        }
+      },
+      {
+        "text": "GSAP target  not found. https://gsap.com",
+        "location": {
+          "url": "http://localhost:4180/assets/gsap-ekVQL5bK.js",
+          "line": 0,
+          "column": 1227,
+          "lineNumber": 0,
+          "columnNumber": 1227
+        }
+      },
+      {
+        "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+        "location": {
+          "url": "http://localhost:4180/assets/three.module-Bsp7hIxP.js",
+          "line": 0,
+          "column": 2336,
+          "lineNumber": 0,
+          "columnNumber": 2336
+        }
+      }
+    ],
+    "errors": []
+  },
+  "ai": {
+    "warnings": [
+      {
+        "text": "GSAP target [object NodeList] not found. https://gsap.com",
+        "location": {
+          "url": "http://localhost:4180/assets/gsap-ekVQL5bK.js",
+          "line": 0,
+          "column": 1227,
+          "lineNumber": 0,
+          "columnNumber": 1227
+        }
+      },
+      {
+        "text": "GSAP target  not found. https://gsap.com",
+        "location": {
+          "url": "http://localhost:4180/assets/gsap-ekVQL5bK.js",
+          "line": 0,
+          "column": 1227,
+          "lineNumber": 0,
+          "columnNumber": 1227
+        }
+      },
+      {
+        "text": "GSAP target [object NodeList] not found. https://gsap.com",
+        "location": {
+          "url": "http://localhost:4180/assets/gsap-ekVQL5bK.js",
+          "line": 0,
+          "column": 1227,
+          "lineNumber": 0,
+          "columnNumber": 1227
+        }
+      },
+      {
+        "text": "GSAP target  not found. https://gsap.com",
+        "location": {
+          "url": "http://localhost:4180/assets/gsap-ekVQL5bK.js",
+          "line": 0,
+          "column": 1227,
+          "lineNumber": 0,
+          "columnNumber": 1227
+        }
+      },
+      {
+        "text": "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+        "location": {
+          "url": "http://localhost:4180/assets/three.module-Bsp7hIxP.js",
+          "line": 0,
+          "column": 2336,
+          "lineNumber": 0,
+          "columnNumber": 2336
+        }
+      }
+    ],
+    "errors": []
+  },
+  "_comment": "// [DANCE-SWAP] Same built application, original vs AI GLBs, allow opening before skip; unchanged source.",
+  "newWarningsInControlledComparison": [],
+  "intermittentOpeningWarning": {
+    "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead.",
+    "observed": "One earlier short AI run; not in the ten-loop run or final controlled comparison.",
+    "existingSource": "src/scenes/Opening/three/Doors3D.tsx:58 shadows=\"soft\"; unchanged"
+  }
+}

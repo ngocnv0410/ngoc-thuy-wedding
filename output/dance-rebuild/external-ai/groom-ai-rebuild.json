@@ -1,0 +1,11 @@
+{
+  "sourceGeometry": "Hunyuan textured mesh, unchanged",
+  "skeleton": "actual UniRig prediction",
+  "weights": "actual SkinTokens, nearest source vertex transfer",
+  "nearestVertexMaxDistance": 8.907184110285016e-07,
+  "discardedNonPredictedRootWeightTotal": 0,
+  "vertices": 27855,
+  "joints": 46,
+  "animations": 0,
+  "_comment": "// [DANCE-SWAP] External free AI run; raw AI audit precedes cloth/actor-interface assembly."
+}
