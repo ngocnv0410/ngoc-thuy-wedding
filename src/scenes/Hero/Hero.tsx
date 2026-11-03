@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { DanceStage } from '../../components/dance3d/DanceStage'
+import { DanceStage } from '../../components/dance2d/DanceStage'
 import { ChibiCouple } from '../../components/chibi/Chibi'
 import { CoupleNames } from '../../components/CoupleNames'
 import { DateBlock } from '../../components/DateBlock'

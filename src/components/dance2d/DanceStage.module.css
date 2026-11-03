@@ -1,0 +1,6 @@
+.stage { display: inline-grid; position: relative; width: 100%; aspect-ratio: 4 / 3; pointer-events: none; }
+.canvas, .fallback { grid-area: 1 / 1; width: 100%; height: 100%; }
+.canvas { object-fit: contain; visibility: hidden; }
+.fallback { display: flex; align-items: center; justify-content: center; }
+.stage[data-ready='true'] .canvas { visibility: visible; }
+.stage[data-ready='true'] .fallback { visibility: hidden; }
