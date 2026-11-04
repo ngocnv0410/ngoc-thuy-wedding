@@ -51,7 +51,7 @@ export function DanceStage({ dance, layout = 'couple', brideFirst = false, fallb
       if (actors.every(Boolean)) {
         if (last !== frame) {
           context.clearRect(0,0,element.width,element.height)
-          actors.forEach((image, i) => context.drawImage(image!, rect.x, rect.y, clip!.width, clip!.height, i * 256, 0, 256, 384))
+          actors.forEach((image, i) => context.drawImage(image!, rect.x, rect.y, clip!.width, clip!.height, i * 224 - 8, -34, 304, 456))
           last = frame
           element.dataset.frame = String(frame)
         }
