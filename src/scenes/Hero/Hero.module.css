@@ -280,7 +280,7 @@
 @media (max-width: 899px) {
   .stationery { padding-top: 72px; padding-bottom: 100px; }
   .composition { gap: 32px; }
-  .portrait { width: min(50vw, 195px); }
+  .portrait { width: min(64vw, 250px); }
   .quickLinks { margin-top: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .quickLinks a { transition: none; } }
