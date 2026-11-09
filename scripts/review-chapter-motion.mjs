@@ -17,9 +17,10 @@ try {
     for (const [id, expected] of [['bia', 'welcome'], ['thong-tin', 'calendar'], ['dia-diem', 'map']]) {
       assert.equal(await page.locator(`#${id} [data-story]`).first().getAttribute('data-story'), expected)
     }
-    assert.deepEqual(await page.locator('#album [data-story]').evaluateAll(nodes => nodes.map(n => n.dataset.story)), ['album', 'promise'])
+    assert.equal(await page.locator('#album [data-story]').count(), 0, 'album has no chapter characters')
+    assert.equal(await page.locator('#album [data-film], #album [id^=chapter-]').count(), 0, 'album has no chapters or film track')
     assert.equal(await page.locator('[data-story="gift"]').count(), 2)
-    for (const kind of ['welcome', 'calendar', 'map', 'album', 'promise', 'gift']) {
+    for (const kind of ['welcome', 'calendar', 'map', 'gift']) {
       const stage = page.locator(`[data-story="${kind}"]`).first()
       await stage.scrollIntoViewIfNeeded()
       await page.waitForTimeout(900)
