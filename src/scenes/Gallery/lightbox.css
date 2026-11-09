@@ -1,4 +1,4 @@
-/* Lightbox theo palette: nền espresso, nút ivory, chú thích serif nghiêng. Tải cùng PhotoSwipe. */
+/* Lightbox theo palette: nền espresso, nút ivory. Tải cùng PhotoSwipe. */
 .pswp {
   --pswp-bg: #1f1915;
   --pswp-icon-color: #f8f4ec;
@@ -13,22 +13,6 @@
   font-size: 13px;
   letter-spacing: 0.12em;
   opacity: 0.85;
-}
-
-.pswp__caption {
-  position: absolute;
-  left: 50%;
-  bottom: calc(24px + env(safe-area-inset-bottom));
-  max-width: min(90vw, 640px);
-  padding: 8px 16px;
-  transform: translateX(-50%);
-  color: #f8f4ec;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 20px;
-  font-style: italic;
-  text-align: center;
-  background: rgb(31 25 21 / 0.6);
-  border-radius: 2px;
 }
 
 /* Vùng chạm nút ≥ 44px. */

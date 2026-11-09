@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react'
 import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
 import { ResponsivePicture } from '../../components/ResponsivePicture'
-import { SceneHeading, SceneShell } from '../../components/SceneShell'
+import { SceneShell } from '../../components/SceneShell'
 import type { Photo, WeddingContent } from '../../content/types'
 import { useSceneMotion } from '../../motion/useMotion'
 import styles from './Gallery.module.css'
@@ -29,11 +29,12 @@ export function Gallery({ content }: { content: WeddingContent }) {
   }
 
   return (
-    <SceneShell ref={ref} id="album" light="golden" labelledBy="gallery-title">
+    <SceneShell ref={ref} id="album" light="golden" labelledBy="gallery-title" className={styles.scene}>
       <Stationery seed={21} />
-      <SceneHeading id="gallery-title" eyebrow="Kỷ niệm ngày cưới">
-        Album ảnh
-      </SceneHeading>
+      <header className={styles.heading}>
+        <h2 id="gallery-title">Album ảnh</h2>
+        {photos.length > 0 && <span className={styles.count}>{photos.length} ảnh</span>}
+      </header>
       {photos.length === 0 && !video && <PendingNote>ảnh cưới và video.</PendingNote>}
       {photos.length > 0 && (
         <div className={styles.album}>
@@ -48,7 +49,7 @@ export function Gallery({ content }: { content: WeddingContent }) {
                   aria-label={`Xem ảnh lớn: ${photo.alt}`}
                   onClick={() => open(index)}
                 >
-                  <ResponsivePicture image={photo.image} alt={photo.alt} sizes="(min-width: 1024px) 30vw, 45vw" className={styles.photo} />
+                  <ResponsivePicture image={photo.image} alt={photo.alt} sizes="(min-width: 1120px) 150px, (min-width: 1024px) 14vw, (min-width: 600px) 21vw, 28vw" className={styles.photo} />
                 </button>
               </li>
             ))}
