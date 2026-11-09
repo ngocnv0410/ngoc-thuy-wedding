@@ -53,20 +53,19 @@ export function introDoors(root: HTMLElement): () => void {
       state.breathing = gsap.to(seal, { scale: 1.02, duration: 1.2, ease: 'sine.inOut', yoyo: true, repeat: -1 })
     })
   }
-  // Hai bạn chibi đứng trước cửa: bước ra, nhìn quanh, chớp mắt rồi nhìn khách (tư thế cuối).
+  // Hai bạn chibi đứng trước cửa: hiện dần, nhìn quanh, chớp mắt rồi nhìn khách (tư thế cuối).
   const hosts = hostsOf(root)
   if (hosts.length) {
     rig(hosts)
     intro
-      .from(hosts, { autoAlpha: 0, y: 18, duration: 0.6, stagger: 0.12 }, 1.0)
+      .from(hosts, { autoAlpha: 0, duration: 0.6, stagger: 0.12 }, 1.0)
       .add(lookAround(hosts), 1.8)
       .add(blink(hosts), 3.1)
-      // Trong lúc đứng chờ: thở nhẹ liên tục + một chuỗi cử chỉ lặp ~7s cho tới khi khách bấm mở.
+      // Trong lúc đứng chờ: chỉ đổi ánh nhìn và vẫy tay, chân giữ nguyên.
       .call(() => {
         stopHosts(state)
         const [left, right] = hosts
         state.hostLoops = [
-          gsap.to(hosts, { '--body-y': '-3px', duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: 0.45 }),
           gsap
             .timeline({ repeat: -1, repeatDelay: 1.8, delay: 0.8 })
             .add(blink(hosts))
@@ -79,9 +78,7 @@ export function introDoors(root: HTMLElement): () => void {
             // Vẫy tay chào khách: người bên phải trước, người bên trái nối theo.
             .add(right ? wave(right, 1) : gsap.timeline(), 4.5)
             .add(left ? wave(left, 1) : gsap.timeline(), 4.9)
-            .to(hosts, { '--eo': '1', '--eh': '0', duration: 0.2 }, '+=0.1')
-            // Nhún chân một cái (transform của cả người — không tranh `--body-y` với nhịp thở).
-            .to(hosts, { y: -7, duration: 0.16, ease: 'power2.out', yoyo: true, repeat: 1, stagger: 0.08 }, '+=0.2'),
+            .to(hosts, { '--eo': '1', '--eh': '0', duration: 0.2 }, '+=0.1'),
         ]
       })
   }
@@ -184,22 +181,10 @@ function hostsOpen(root: HTMLElement) {
     const box = el.getBoundingClientRect()
     return middle - 6 * inward(i) - (i === 0 ? box.right : box.left)
   })
-  const stride = { duration: 0.11, ease: 'sine.inOut', yoyo: true }
-  const walk = (at: number, steps: number) =>
-    tl
-      .fromTo(
-        hosts,
-        { '--leg-l': '-16deg', '--leg-r': '16deg', '--skirt': '-4deg' },
-        { '--leg-l': '16deg', '--leg-r': '-16deg', '--skirt': '4deg', ...stride, repeat: steps },
-        at,
-      )
-      .to(hosts, { '--body-y': '-4px', ...stride, duration: stride.duration / 2, repeat: steps * 2 + 1 }, at)
-      .to(hosts, { '--leg-l': '0deg', '--leg-r': '0deg', '--skirt': '0deg', '--body-y': '0px', duration: 0.1 }, at + stride.duration * (steps + 1))
 
   tl.to(hosts, { '--face-x': (i: number) => `${4 * inward(i)}px`, '--eo': '0', '--eh': '1', duration: 0.2 }, 0)
     // Đi vào giữa.
     .to(hosts, { x: (i: number) => walkIn[i], duration: 0.5, ease: 'power1.inOut' }, 0.05)
-  walk(0.05, 3)
   // Đẩy cửa: hai tay đưa về phía cánh cửa của mình, người nghiêng theo.
   tl.to(
     hosts,
@@ -215,7 +200,6 @@ function hostsOpen(root: HTMLElement) {
     .to(hosts, { '--arm-l': '6deg', '--arm-r': '6deg', '--upper-r': '0deg', duration: 0.25, ease: 'silk' }, 1.05)
     // Lùi ra hai bên, nhường lối vào.
     .to(hosts, { x: (i: number) => walkIn[i] * 0.25, duration: 0.45, ease: 'power1.inOut' }, 1.15)
-  walk(1.15, 3)
   // Mời vào: tay hướng về cửa đã mở, cúi chào, mắt cười.
   return tl
     .to(

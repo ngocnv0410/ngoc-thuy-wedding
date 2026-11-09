@@ -2,8 +2,8 @@
 
 The invitation keeps its existing layout and animations. Its compact mode
 choices are **Nguyên bản** (Forever in Love, the default), **BANG BANG**
-(the existing excerpt and couple dance), and **BAD** (the supplied ATEEZ dance
-challenge, with its own recording and choreography). The same radio picker appears
+(the existing BIGBANG excerpt), and **BAD** (the supplied ATEEZ recording).
+These are audio choices only; all three keep the same chapter-specific gestures. The same radio picker appears
 before opening and in the floating **Chế độ** panel; keyboard arrow keys work.
 
 The removed **Nhạc cưới** mode is no longer offered. Old `?music=youtube` links
@@ -17,19 +17,15 @@ handler, including on iPhone.
 
 ## Optional online MP3 sources
 
-The invitation paints first, then idle tasks warm the 3D renderer and both dance
-tracks in the background. The MP3 recordings are not prefetched. Slow 2G and
-Save-Data connections load 3D only when a dance is selected. See
-[3D dance](3d-dance.md) for model, animation and loading details.
+The opening retains its 3D doors. Chapter characters stand still at their feet;
+no dancing sprites, whole-body bouncing, or rhythm-based motion is loaded.
 
 Set these build variables (locally in `.env.local`, or as GitHub Actions
 repository variables for the Pages workflow):
 
 - `VITE_MUSIC_ORIGINAL_URL`: a direct HTTPS URL for the Forever in Love recording.
-- `VITE_MUSIC_BAD_URL`: a direct HTTPS URL for the **same 27.4-second BAD
-  challenge excerpt**, starting at the beginning of the supplied video.
-- `VITE_MUSIC_BANGBANGBANG_URL`: a direct HTTPS URL for the **same 28.444-second
-  dance excerpt**; replacing it with the full song would misalign choreography.
+- `VITE_MUSIC_BAD_URL`: a direct HTTPS URL for the BAD recording.
+- `VITE_MUSIC_BANGBANGBANG_URL`: a direct HTTPS URL for the BANG BANG BANG recording.
 
 Use stable MP3 URLs that allow browser playback and seeking (range requests).
 YouTube watch pages and music-service HTML pages are not MP3 URLs. No external

@@ -211,3 +211,9 @@
     padding: 0 var(--space-6);
   }
 }
+
+.chapterStory { --story-character-height: 92px; width: fit-content; margin: 0; padding: 12px 18px; }
+@media (min-width: 1024px) {
+  .chapterHead { position: relative; min-height: 132px; padding-right: 180px; }
+  .chapterStory { position: absolute; right: 0; top: 0; }
+}

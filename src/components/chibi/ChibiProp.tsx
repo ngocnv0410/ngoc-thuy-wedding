@@ -2,9 +2,11 @@ import type { CSSProperties } from 'react'
 import { PROP } from './chibiArt'
 import styles from './ChibiProp.module.css'
 
-export type PropKind = 'calendar' | 'map' | 'envelope' | 'mailbox' | 'heart' | 'petal'
+export type PropKind = 'calendar' | 'map' | 'envelope' | 'mailbox' | 'heart' | 'petal' | 'camera' | 'gift'
 
 const VIEWBOX: Record<PropKind, string> = {
+  camera: '-18 -13 36 26',
+  gift: '-15 -16 30 32',
   calendar: '-12 -14 24 28',
   map: '-16 -13 32 26',
   envelope: '-19 -13 38 26',
@@ -16,6 +18,19 @@ const VIEWBOX: Record<PropKind, string> = {
 /** Nét đạo cụ quanh gốc (0, 0) — lồng được vào tay chibi (`held`) hoặc đứng riêng (`ChibiProp`). */
 export function PropArt({ kind, label }: { kind: PropKind; label?: string }) {
   switch (kind) {
+    case 'camera':
+      return <g className={styles.prop}>
+        <path d="M-16-8h8l3-4h10l3 4h8v18h-32Z" className={styles.paper} />
+        <circle r="7" className={styles.accent} /><circle r="4" className={styles.paper} />
+        <rect x="-13" y="-5" width="5" height="3" className={styles.accent} />
+      </g>
+    case 'gift':
+      return <g className={styles.prop}>
+        <rect x="-12" y="-5" width="24" height="19" className={styles.paper} />
+        <rect x="-14" y="-8" width="28" height="6" className={styles.paper} />
+        <path d="M-2-8h4v22h-4Z" className={styles.accent} />
+        <path d="M0-8C-15-9-12-21-5-15L0-8C15-9 12-21 5-15Z" className={styles.accent} />
+      </g>
     case 'calendar':
       return (
         <g className={styles.prop}>
@@ -23,6 +38,7 @@ export function PropArt({ kind, label }: { kind: PropKind; label?: string }) {
           <path d="M-11-13h22v6h-22Z" className={styles.accent} />
           <circle cx={-5} cy={-13} r={1.3} className={styles.ink} />
           <circle cx={5} cy={-13} r={1.3} className={styles.ink} />
+          <circle data-story-day-mark cx="0" cy="3" r="8" className={styles.dateMark} />
           {label && (
             <text y={8} textAnchor="middle" className={styles.number}>
               {label}
