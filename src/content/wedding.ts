@@ -4,7 +4,8 @@ import accountData from './accounts.json' with { type: 'json' }
 import type { Side, WeddingContent } from './types'
 
 /**
- * DỮ LIỆU THẬT — nguồn duy nhất cho toàn bộ trang.
+ * NỘI DUNG THIỆP — nguồn thông tin lễ cưới của toàn bộ trang.
+ * Giờ mẫu được đánh dấu sampleTime; không xem là giờ tổ chức đã chốt.
  *
  * Quy ước:
  * - Mục ghi "ĐỀ XUẤT" là lời văn Claude đề xuất — cô dâu chú rể đã duyệt ngày 22/10/2026.
@@ -53,10 +54,10 @@ export const wedding: WeddingContent = {
   // ĐỀ XUẤT
   invitation: 'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi trong ngày trọng đại của hai con.',
 
-  // Giờ, bên tổ chức và địa điểm: bổ sung sau.
+  // Giờ minh họa để duyệt bố cục; thay và bỏ sampleTime khi chốt lịch.
   events: [
-    { id: 'an-hoi', title: 'Lễ ăn hỏi', dayId: 'an-hoi' },
-    { id: 'don-dau', title: 'Lễ đón dâu', dayId: 'don-dau' },
+    { id: 'an-hoi', title: 'Lễ ăn hỏi', dayId: 'an-hoi', time: '09:00', endTime: '11:00', side: 'bride', locationId: 'nha-gai', sampleTime: true },
+    { id: 'don-dau', title: 'Lễ đón dâu', dayId: 'don-dau', time: '09:00', endTime: '11:00', side: 'groom', locationId: 'nha-trai', sampleTime: true },
   ],
 
   // Địa chỉ ghi đúng như cô dâu chú rể cung cấp; nút "Chỉ đường" mở link Google Maps kèm theo.

@@ -1,4 +1,5 @@
-import { gsap, ScrollTrigger } from '../../lib/gsap'
+import { gsap } from '../../lib/gsap'
+import { visibleLoops } from '../../motion/visibleLoops'
 import { blink, bow, rig } from '../../motion/chibi'
 
 const STANDING = { '--arm-l': '6deg', '--arm-r': '6deg', '--eo': '1', '--eh': '0', '--heart': '0', '--heart-pulse': '0', '--heart-bloom': '0', '--head-r': '0deg', '--face-x': '0px' }
@@ -39,18 +40,5 @@ export function closingMotion(root: HTMLElement) {
     .to(pair, { '--head-r': '0deg', '--face-x': '0px', duration: 0.6 }, 9.8)
     .to(pair, { ...STANDING, duration: 0.85 }, 11.2)
 
-  const sync = (watcher: ScrollTrigger) => {
-    const active = watcher.isActive && !document.hidden
-    for (const loop of [breathe, veil, story]) {
-      if (active) loop.play()
-      else loop.pause()
-    }
-  }
-  const watcher = ScrollTrigger.create({ trigger: stage, start: 'top bottom', end: 'bottom top', onToggle: sync, onRefresh: sync })
-  sync(watcher)
-  gsap.context(() => {
-    const onVisibility = () => sync(watcher)
-    document.addEventListener('visibilitychange', onVisibility)
-    return () => document.removeEventListener('visibilitychange', onVisibility)
-  })
+  visibleLoops(stage, [breathe, veil, story])
 }

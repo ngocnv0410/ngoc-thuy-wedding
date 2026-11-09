@@ -37,3 +37,21 @@ Workflow chạy `node scripts/check-secrets.mjs` để chặn Google API key ghi
 # Tự khởi động emulator, kiểm tra quyền và tắt emulator sau khi xong.
 npm run test:rules
 ```
+
+## Chibi và nội dung minh họa tạm
+
+Các block dùng `ChibiStory` với động tác theo nội dung, dùng chung bộ chibi đã duyệt.
+Vòng lặp chỉ chạy khi cảnh trong khung nhìn, cửa mở đầu đã đóng và tab đang hiển thị;
+chế độ giảm chuyển động giữ hình tĩnh. Không tự phát nhạc.
+
+Hai sự kiện trong `src/content/wedding.ts` đang dùng giờ **minh họa** 09:00–11:00.
+Khi chốt lịch, thay giờ rồi bỏ `sampleTime`; nhãn mẫu trên thiệp và lịch xuất sẽ tự bỏ.
+Giữ nguyên ngày cưới và địa điểm thật.
+
+Album mẫu nằm ở `src/content/sample-gallery.ts`, gồm hai chương và sáu hình minh họa.
+`src/content/page-content.ts` chỉ dùng album mẫu khi `wedding.gallery` trống; thêm album
+thật sẽ thay toàn bộ album mẫu. Đặt `sample: true` trên chương nào còn dùng ảnh mẫu.
+Ảnh được tối ưu AVIF/WebP qua vite-imagetools, không lấy ảnh từ dịch vụ bên ngoài.
+Có thể dựng lại sáu bố cục minh họa từ các lớp chibi đã duyệt bằng
+`node scripts/generate-sample-gallery.mjs`. File `wedding.ts` vẫn đọc được bằng Node
+cho các script QR và ảnh chia sẻ. Không thêm dữ liệu mẫu vào Firestore.

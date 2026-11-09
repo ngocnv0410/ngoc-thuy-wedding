@@ -159,3 +159,16 @@ html.lenis body {
     transition-duration: 1ms !important;
   }
 }
+
+/* Sample labels remain visible in the production invitation until real content replaces them. */
+.sample-note {
+  display: block;
+  width: fit-content;
+  padding: 5px 10px;
+  border: 1px solid #bfa785;
+  border-radius: 6px;
+  background: #fff8ed;
+  color: #705333;
+  font: 500 11px/1.6 var(--font-sans);
+  letter-spacing: 0.02em;
+}

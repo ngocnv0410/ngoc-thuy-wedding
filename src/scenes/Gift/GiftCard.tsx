@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { Button } from '../../components/Button'
-import { Chibi, ChibiCouple } from '../../components/chibi/Chibi'
-import { ChibiProp, PropArt } from '../../components/chibi/ChibiProp'
+import { ChibiCouple } from '../../components/chibi/Chibi'
+import { ChibiProp } from '../../components/chibi/ChibiProp'
 import { CopyButton } from '../../components/CopyButton'
 import type { BankAccount } from '../../content/types'
 import { groupDigits } from '../../lib/clipboard'
@@ -90,7 +91,7 @@ export function GiftCard({ account, onAction }: GiftCardProps) {
       <button ref={triggerRef} type="button" className={styles.card} onClick={open}
         data-ambient-active={cardMotion.active}
         aria-haspopup="dialog" aria-controls={id} aria-label={`Mở QR mừng cưới ${label}`}>
-        <Chibi who={who} size="sm" pose="carry" eyes="happy" held={<PropArt kind="envelope" />} className={styles.host} />
+        <ChibiStory kind="letter" who={who} className={styles.host} />
         <span className={styles.summary}>
           <span className={styles.side}>{label}</span>
           <span className={styles.recipient}>{account.accountName}</span>

@@ -62,18 +62,23 @@ function locationText(location?: Location): string {
   return location ? `${location.name}, ${location.address}` : ''
 }
 
+export const SAMPLE_TIME_NOTE = 'Giờ minh họa — sẽ cập nhật'
+const calendarTitle = (event: WeddingEvent) => event.sampleTime ? `${event.title} (${SAMPLE_TIME_NOTE})` : event.title
+const calendarNotes = (event: WeddingEvent, extra = '') => [event.sampleTime ? SAMPLE_TIME_NOTE : '', event.note, extra].filter(Boolean).join('\n')
+
 /** Link "Thêm vào Google Calendar" cho một sự kiện. */
 export function googleCalendarUrl(entry: CalendarEntry, details = ''): string {
   const { start, end } = range(entry)
   const params = new URLSearchParams({
     action: 'TEMPLATE',
-    text: entry.event.title,
+    text: calendarTitle(entry.event),
     dates: `${start}/${end}`,
     ctz: 'Asia/Ho_Chi_Minh',
   })
   const where = locationText(entry.location)
   if (where) params.set('location', where)
-  if (details) params.set('details', details)
+  const notes = calendarNotes(entry.event, details)
+  if (notes) params.set('details', notes)
   return `https://calendar.google.com/calendar/render?${params.toString()}`
 }
 
@@ -119,11 +124,12 @@ export function buildIcs(entries: CalendarEntry[], now: Date = new Date(), uidDo
       `DTSTAMP:${formatUtc(now)}`,
       `DTSTART${prop}:${start}`,
       `DTEND${prop}:${end}`,
-      `SUMMARY:${escapeText(event.title)}`,
+      `SUMMARY:${escapeText(calendarTitle(event))}`,
     )
     const where = locationText(location)
     if (where) lines.push(`LOCATION:${escapeText(where)}`)
-    if (event.note) lines.push(`DESCRIPTION:${escapeText(event.note)}`)
+    const notes = calendarNotes(event)
+    if (notes) lines.push(`DESCRIPTION:${escapeText(notes)}`)
     lines.push('END:VEVENT')
   }
   lines.push('END:VCALENDAR')

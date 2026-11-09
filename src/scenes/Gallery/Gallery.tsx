@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react'
+import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
 import { ResponsivePicture } from '../../components/ResponsivePicture'
@@ -56,6 +57,8 @@ export function Gallery({ content }: { content: WeddingContent }) {
         Những khoảnh khắc
       </SceneHeading>
 
+      <ChibiStory kind="album" />
+
       {gallery.length === 0 && !video && <PendingNote>ảnh cưới (chia chương, ghi vai trò từng ảnh) và video.</PendingNote>}
 
       {gallery.map((chapter, index) => (
@@ -95,6 +98,7 @@ function Chapter({ chapter, index, film, firstPhoto, onOpen }: ChapterProps) {
   return (
     <section className={styles.chapter} aria-labelledby={headingId} data-film={film}>
       <header className={styles.chapterHead} data-anim="chapter-head">
+        {chapter.sample && <p className="sample-note">Ảnh minh họa mẫu</p>}
         <span className={styles.chapterIndex}>Chương {String(index + 1).padStart(2, '0')}</span>
         <h3 id={headingId} className={styles.chapterTitle}>
           {chapter.title}

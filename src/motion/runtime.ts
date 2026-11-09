@@ -3,6 +3,7 @@
  * animation của các scene. Component không import file này trực tiếp mà qua `useMotion.ts`.
  */
 import type Lenis from 'lenis'
+import { storyMotion } from './story'
 import { MEDIA, type MotionConditions, ScrollTrigger, gsap, guard } from '../lib/gsap'
 import { detailsMotion } from '../scenes/Details/detailsMotion'
 import { countdownMotion } from '../scenes/Countdown/countdownMotion'
@@ -17,7 +18,7 @@ import { startLight } from './light'
 
 export { introDoors, openHosts } from '../scenes/Opening/openingMotion'
 
-export type SceneKey = 'hero' | 'countdown' | 'details' | 'locations' | 'gallery' | 'gift'
+export type SceneKey = 'chibi-story' | 'hero' | 'countdown' | 'details' | 'locations' | 'gallery' | 'gift'
 
 /** Re-measure scene positions after async guestbook content changes height. */
 export function refreshLayout() { ScrollTrigger.refresh() }
@@ -51,6 +52,7 @@ export function openDoors(root: HTMLElement, onDone: () => void) {
 }
 
 const SCENES: Record<SceneKey, (conditions: MotionConditions, el: HTMLElement) => void | (() => void)> = {
+  'chibi-story': (_, el) => storyMotion(el),
   hero: (_, el) => {
     // Global lighting follows the current scene elements after a full replay remount.
     const stopLight = startLight()

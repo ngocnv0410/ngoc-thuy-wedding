@@ -83,3 +83,23 @@ describe('buildIcs', () => {
     expect(unfolded).toContain('lối vào cổng số 3 cạnh bãi gửi xe')
   })
 })
+
+describe('sample event exports', () => {
+  const sample: WeddingEvent = { ...event, time: '09:00', endTime: '11:00', sampleTime: true }
+  it('keeps the sample label in both calendar formats and preserves Vietnam time', () => {
+    const entry = { event: sample, day, location }
+    const params = new URL(googleCalendarUrl(entry)).searchParams
+    expect(params.get('text')).toContain('Giờ minh họa — sẽ cập nhật')
+    expect(params.get('details')).toContain('Giờ minh họa — sẽ cập nhật')
+    expect(params.get('dates')).toBe('20261212T020000Z/20261212T040000Z')
+    const ics = buildIcs([entry]).replace(/\r\n /g, '')
+    expect(ics).toContain('SUMMARY:Tiệc cưới (Giờ minh họa — sẽ cập nhật)')
+    expect(ics).toContain('DESCRIPTION:Giờ minh họa — sẽ cập nhật')
+    expect(ics).toContain('DTSTART:20261212T020000Z')
+  })
+  it('omits the sample warning after the event is confirmed', () => {
+    const entry = { event: { ...sample, sampleTime: false }, day }
+    expect(new URL(googleCalendarUrl(entry)).searchParams.get('text')).toBe(event.title)
+    expect(buildIcs([entry])).not.toContain('minh họa')
+  })
+})
