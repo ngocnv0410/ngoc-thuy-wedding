@@ -91,7 +91,7 @@ export function GiftCard({ account, onAction }: GiftCardProps) {
       <button ref={triggerRef} type="button" className={styles.card} onClick={open}
         data-ambient-active={cardMotion.active}
         aria-haspopup="dialog" aria-controls={id} aria-label={`Mở QR mừng cưới ${label}`}>
-        <ChibiStory kind="letter" who={who} className={styles.host} />
+        <ChibiStory kind="gift" who={who} className={styles.host} />
         <span className={styles.summary}>
           <span className={styles.side}>{label}</span>
           <span className={styles.recipient}>{account.accountName}</span>

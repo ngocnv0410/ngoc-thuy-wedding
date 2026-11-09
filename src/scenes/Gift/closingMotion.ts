@@ -17,11 +17,10 @@ export function closingMotion(root: HTMLElement) {
   gsap.set(pair, STANDING)
 
   gsap.timeline({ defaults: { ease: 'power2.out' }, scrollTrigger: { trigger: closing, start: 'top 88%', once: true } })
-    .from(stage, { autoAlpha: 0, y: 18, duration: 0.9 })
+    .from(stage, { autoAlpha: 0, duration: 0.9 })
     .from(closing.querySelectorAll('[data-anim="closing-text"] > *'), { autoAlpha: 0, y: 10, duration: 0.7, stagger: 0.12 }, 0.35)
 
-  const breathe = gsap.to(pair, { '--body-y': '-3px', duration: 1.5, stagger: 0.35, yoyo: true, repeat: -1, ease: 'sine.inOut', paused: true })
-  const veil = gsap.to(bride, { '--veil': '3deg', '--skirt': '1.5deg', duration: 2.4, yoyo: true, repeat: -1, ease: 'sine.inOut', paused: true })
+  const veil = gsap.to(bride, { '--veil': '3deg', duration: 2.4, yoyo: true, repeat: -1, ease: 'sine.inOut', paused: true })
   const story = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 1.8, defaults: { ease: 'sine.inOut' } })
     .add(blink(pair), 0.2)
     .add(bow(pair, 0.8), 0.8)
@@ -40,5 +39,5 @@ export function closingMotion(root: HTMLElement) {
     .to(pair, { '--head-r': '0deg', '--face-x': '0px', duration: 0.6 }, 9.8)
     .to(pair, { ...STANDING, duration: 0.85 }, 11.2)
 
-  visibleLoops(stage, [breathe, veil, story])
+  visibleLoops(stage, [veil, story])
 }

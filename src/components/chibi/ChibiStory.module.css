@@ -13,7 +13,6 @@
 .stage [data-chibi] { --chibi-h: var(--story-character-height, 108px); }
 .stage[data-story='welcome'] { padding: 0; margin: 0; }
 .stage[data-story='welcome'] [data-chibi] { --chibi-h: clamp(160px, 20vw, 260px); }
-.stage[data-story='countdown'] [data-chibi] { --chibi-h: 88px; }
 .stage[data-story='letter'] [data-chibi], .stage[data-story='thanks'] [data-chibi] { --chibi-h: var(--story-character-height, 88px); }
 .pair { display: inline-flex; align-items: end; gap: 8px; }
 @media (max-width: 480px) {
@@ -21,9 +20,12 @@
 }
 
 .flourish { position: absolute; inset: 0; width: 100%; height: 100%; color: #b79562; pointer-events: none; overflow: visible; }
-.flourish [data-story-ring] { opacity: 0; transform-origin: 120px 92px; }
 .flourish [data-story-route] { opacity: 0; }
 .spark { position: absolute; left: 50%; top: 50%; opacity: 0; color: #b58c50; font: 16px/1 Georgia, serif; }
 .stage .flyingLetter { position: absolute; left: 50%; top: 50%; width: 25px; opacity: 0; z-index: 2; }
 .stage [data-chibi] { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .flourish, .spark, .flyingLetter { display: none; } }
+
+.cameraFlash { position: absolute; left: calc(50% - 25px); top: 48%; width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle, #fffdf0, #f6e7b7 25%, transparent 70%); opacity: 0; z-index: 2; }
+.rings { position: absolute; left: calc(50% - 24px); top: 58%; width: 48px; height: 32px; fill: none; stroke: #b58c50; stroke-width: 1.8; opacity: 0; z-index: 2; }
+@media (prefers-reduced-motion: reduce) { .cameraFlash, .rings { display: none; } }

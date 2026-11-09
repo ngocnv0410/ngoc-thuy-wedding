@@ -24,7 +24,7 @@ export function onlineMusicSource(value: string | undefined, fallback: string): 
   return fallback
 }
 
-/** Both pickers share the registry; each dance stays paired with its own excerpt. */
+/** Soundtrack choices never change chapter choreography. */
 export function getMusicModes(original: Music | undefined, online: OnlineMusicSources = {
   original: import.meta.env?.VITE_MUSIC_ORIGINAL_URL,
   bangbangbang: import.meta.env?.VITE_MUSIC_BANGBANGBANG_URL,
@@ -34,13 +34,13 @@ export function getMusicModes(original: Music | undefined, online: OnlineMusicSo
   const originalTrack = original && originalSrc && originalSrc !== original.src ? { ...original, src: originalSrc } : original
   return [
     ...(originalTrack ? [{ id: 'original' as const, label: 'Nguyên bản', description: 'Dịu dàng · Forever in Love', track: originalTrack }] : []),
-    { id: 'bangbangbang', label: 'BANG BANG', description: 'BANG BANG BANG · Cùng cô dâu chú rể nhảy', track: {
+    { id: 'bangbangbang', label: 'BANG BANG', description: 'BANG BANG BANG · BIGBANG', track: {
       src: onlineMusicSource(online.bangbangbang, 'audio/bang-bang-bang-chorus.mp3'),
-      title: 'BANG BANG BANG · Điệp khúc', artist: 'BIGBANG', dance: 'bang-bang-bang',
+      title: 'BANG BANG BANG · Điệp khúc', artist: 'BIGBANG',
     } },
-    { id: 'bad', label: 'BAD', description: 'BAD · ATEEZ dance challenge', track: {
+    { id: 'bad', label: 'BAD', description: 'BAD · ATEEZ', track: {
       src: onlineMusicSource(online.bad, 'audio/ateez-bad-chorus.mp3'),
-      title: 'BAD · ATEEZ dance challenge', dance: 'ateez-bad',
+      title: 'BAD · ATEEZ',
     } },
   ]
 }

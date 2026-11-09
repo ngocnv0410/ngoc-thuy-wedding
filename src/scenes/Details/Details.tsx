@@ -44,7 +44,7 @@ export function Details({ content }: { content: WeddingContent }) {
         Ngày vui của {first.givenName} &amp; {second.givenName}
       </SceneHeading>
 
-      <ChibiStory kind="greeting" />
+      <ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />
 
       <div className={styles.families} data-anim="families">
         <Family label={first === couple.groom ? 'Nhà trai' : 'Nhà gái'} person={first} />

@@ -57,8 +57,6 @@ export function Gallery({ content }: { content: WeddingContent }) {
         Những khoảnh khắc
       </SceneHeading>
 
-      <ChibiStory kind="album" />
-
       {gallery.length === 0 && !video && <PendingNote>ảnh cưới (chia chương, ghi vai trò từng ảnh) và video.</PendingNote>}
 
       {gallery.map((chapter, index) => (
@@ -104,6 +102,7 @@ function Chapter({ chapter, index, film, firstPhoto, onOpen }: ChapterProps) {
           {chapter.title}
         </h3>
         {chapter.caption && <p className={styles.chapterCaption}>{chapter.caption}</p>}
+        <ChibiStory kind={index % 2 === 0 ? 'album' : 'promise'} className={styles.chapterStory} />
       </header>
       <ul className={styles.track} data-anim="track" aria-label={`${chapter.title}, ${photoCount} ảnh — vuốt ngang để xem`}>
         {chapter.items.map((item, itemIndex) => {
