@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChibiStory } from '../../components/chibi/ChibiStory'
 import type { WeddingContent } from '../../content/types'
 import { countdownTo, weddingDayStart } from '../../lib/countdown'
 import { primaryDay } from '../../lib/format'
@@ -42,7 +41,6 @@ export function Countdown({ content }: { content: WeddingContent }) {
   return (
     <div ref={ref} id="dem-nguoc" className={styles.keepsake} aria-labelledby="countdown-title">
       <h3 id="countdown-title" className={styles.title}>Cùng đếm ngược đến ngày vui</h3>
-      <ChibiStory kind="countdown" who="groom" />
       <div className={styles.clockArea}>
         <div role="timer" aria-live="off" aria-label="Thời gian còn lại đến ngày cưới">
           <dl className={styles.clock}>

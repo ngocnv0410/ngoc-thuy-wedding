@@ -55,3 +55,9 @@ thật sẽ thay toàn bộ album mẫu. Đặt `sample: true` trên chương n�
 Có thể dựng lại sáu bố cục minh họa từ các lớp chibi đã duyệt bằng
 `node scripts/generate-sample-gallery.mjs`. File `wedding.ts` vẫn đọc được bằng Node
 cho các script QR và ảnh chia sẻ. Không thêm dữ liệu mẫu vào Firestore.
+
+Kiểm tra regression chibi phần lời chúc (chưa gửi, đã gửi, gửi mới, lỗi kết nối):
+chạy dev với `VITE_FIREBASE_API_KEY=local-visual-fixture npm run dev`, sau đó chạy
+`node scripts/review-chibi-stories.mjs` (cần Playwright như script review chibi bên trên).
+Script chặn module dịch vụ bằng fixture trong trình duyệt, kiểm tra chỉ có một nhân vật,
+chuyển động khớp tay, giảm chuyển động và không tràn ngang trên mobile/desktop.
