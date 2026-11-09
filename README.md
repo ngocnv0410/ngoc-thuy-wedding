@@ -48,9 +48,11 @@ Hai sự kiện trong `src/content/wedding.ts` đang dùng giờ **minh họa** 
 Khi chốt lịch, thay giờ rồi bỏ `sampleTime`; nhãn mẫu trên thiệp và lịch xuất sẽ tự bỏ.
 Giữ nguyên ngày cưới và địa điểm thật.
 
-Album mẫu nằm ở `src/content/sample-gallery.ts`, gồm hai chương và sáu hình minh họa.
+Album mẫu nằm ở `src/content/sample-gallery.ts`, gồm sáu hình minh họa.
+Các nhóm trong dữ liệu được gộp thành một lưới ảnh liên tục, không hiển thị chương,
+trích dẫn hoặc cảnh chibi riêng. Mobile có hai cột, desktop có ba cột; bấm ảnh để mở lớn.
 `src/content/page-content.ts` chỉ dùng album mẫu khi `wedding.gallery` trống; thêm album
-thật sẽ thay toàn bộ album mẫu. Đặt `sample: true` trên chương nào còn dùng ảnh mẫu.
+thật sẽ thay toàn bộ album mẫu. Đặt `sample: true` trên nhóm dữ liệu nào còn dùng ảnh mẫu.
 Ảnh được tối ưu AVIF/WebP qua vite-imagetools, không lấy ảnh từ dịch vụ bên ngoài.
 Có thể dựng lại sáu bố cục minh họa từ các lớp chibi đã duyệt bằng
 `node scripts/generate-sample-gallery.mjs`. File `wedding.ts` vẫn đọc được bằng Node
@@ -63,8 +65,7 @@ Script chặn module dịch vụ bằng fixture trong trình duyệt, kiểm tra
 chuyển động khớp tay, giảm chuyển động và không tràn ngang trên mobile/desktop.
 
 Mỗi chương dùng một cử chỉ riêng: bìa chào/nắm tay, thông tin lễ giới thiệu ngày cưới,
-địa điểm dò bản đồ, chương album đầu chụp ảnh, chương hẹn ước trao nhẫn, lời chúc
-chuyển thư, trạng thái đã gửi đặt tay lên tim/cúi cảm ơn, thẻ quà nhận hộp quà,
+địa điểm dò bản đồ, lời chúc chuyển thư, trạng thái đã gửi đặt tay lên tim/cúi cảm ơn, thẻ quà nhận hộp quà,
 cuối thiệp vẫy chào. Chibi không bật người, nhún lên xuống hoặc đổi chân.
 Ba lựa chọn nhạc và liên kết cũ được giữ; đổi nhạc không đổi animation của chương.
 
