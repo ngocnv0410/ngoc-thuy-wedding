@@ -132,7 +132,6 @@ function DayBlock({ day, primary, events, locationName }: DayBlockProps) {
 
   return (
     <li className={styles.day} data-primary={primary} data-anim="day">
-      <ChibiStory kind="calendar" who={primary ? 'groom' : 'bride'} />
       <h3 className={styles.dayTitle} data-anim="day-title">
         {day.title}
       </h3>

@@ -154,38 +154,39 @@ export function Wishes({ content }: { content: WeddingContent }) {
         <h2 id="wishes-title">Gửi lời chúc</h2>
         <p>Dành tặng {content.couple.groom.givenName} &amp; {content.couple.bride.givenName}</p>
       </header>
-      <ChibiStory kind="letter" who="bride" />
       <div className={styles.layout}>
-        {receipt ? (
-          <div className={styles.receipt} role="status">
-            <ChibiStory kind="thanks" who="bride" className={styles.host} />
-            <h3>{receipt === 'sent' ? 'Đã gửi lời chúc' : 'Bạn đã gửi lời chúc rồi'}</h3>
-            <p>Cảm ơn bạn đã gửi lời chúc đến {content.couple.groom.givenName} &amp; {content.couple.bride.givenName}!</p>
-          </div>
-        ) : guestState !== 'ready' ? (
-          <div className={styles.guestCheck} aria-busy={guestState === 'loading'}>
-            <p role="status">{guestState === 'loading' ? 'Đang kiểm tra lời chúc của bạn…' : 'Chưa kiểm tra được lời chúc của bạn. Bạn thử kết nối lại nhé.'}</p>
-            {guestState === 'error' && <button className={styles.submit} type="button" onClick={retry}>Thử lại kết nối</button>}
-          </div>
-        ) : (
-          <form className={styles.form} onSubmit={submit} noValidate aria-busy={submitting}>
-            <label htmlFor="wish-name">Tên của bạn</label>
-            <input ref={nameInput} id="wish-name" name="name" autoComplete="name" required maxLength={WISH_NAME_LIMIT}
-              value={name} disabled={submitting} onChange={(event) => { setName(event.target.value); setError('') }}
-              aria-describedby={error ? 'wish-error' : undefined} />
-            <label htmlFor="wish-message">Lời chúc</label>
-            <textarea ref={messageInput} id="wish-message" name="message" rows={5} required maxLength={WISH_MESSAGE_LIMIT}
-              value={message} disabled={submitting} onChange={(event) => { setMessage(event.target.value); setError('') }}
-              aria-describedby={`wish-length wish-public${error ? ' wish-error' : ''}`} />
-            <span id="wish-length" className={styles.length}>{message.length}/{WISH_MESSAGE_LIMIT}</span>
-            {error && <p id="wish-error" className={styles.error} role="alert">{error}</p>}
-            {slow && <p className={styles.note} role="status">Đang chờ kết nối. Bạn giữ trang mở để nhận kết quả gửi nhé.</p>}
-            <button className={styles.submit} type="submit" disabled={submitting || !service}>
-              <SendIcon /><span>{submitting ? 'Đang gửi…' : 'Gửi lời chúc'}</span>
-            </button>
-            <p id="wish-public" className={styles.note}>Lời chúc sẽ được hiển thị công khai trên thiệp.</p>
-          </form>
-        )}
+        <div className={styles.composer}>
+          <ChibiStory key={receipt ? 'thanks' : 'letter'} kind={receipt ? 'thanks' : 'letter'} who="bride" className={styles.host} />
+          {receipt ? (
+            <div className={styles.receipt} role="status">
+              <h3>{receipt === 'sent' ? 'Đã gửi lời chúc' : 'Bạn đã gửi lời chúc rồi'}</h3>
+              <p>Cảm ơn bạn đã gửi lời chúc đến {content.couple.groom.givenName} &amp; {content.couple.bride.givenName}!</p>
+            </div>
+          ) : guestState !== 'ready' ? (
+            <div className={styles.guestCheck} aria-busy={guestState === 'loading'}>
+              <p role="status">{guestState === 'loading' ? 'Đang kiểm tra lời chúc của bạn…' : 'Chưa kiểm tra được lời chúc của bạn. Bạn thử kết nối lại nhé.'}</p>
+              {guestState === 'error' && <button className={styles.submit} type="button" onClick={retry}>Thử lại kết nối</button>}
+            </div>
+          ) : (
+            <form className={styles.form} onSubmit={submit} noValidate aria-busy={submitting}>
+              <label htmlFor="wish-name">Tên của bạn</label>
+              <input ref={nameInput} id="wish-name" name="name" autoComplete="name" required maxLength={WISH_NAME_LIMIT}
+                value={name} disabled={submitting} onChange={(event) => { setName(event.target.value); setError('') }}
+                aria-describedby={error ? 'wish-error' : undefined} />
+              <label htmlFor="wish-message">Lời chúc</label>
+              <textarea ref={messageInput} id="wish-message" name="message" rows={5} required maxLength={WISH_MESSAGE_LIMIT}
+                value={message} disabled={submitting} onChange={(event) => { setMessage(event.target.value); setError('') }}
+                aria-describedby={`wish-length wish-public${error ? ' wish-error' : ''}`} />
+              <span id="wish-length" className={styles.length}>{message.length}/{WISH_MESSAGE_LIMIT}</span>
+              {error && <p id="wish-error" className={styles.error} role="alert">{error}</p>}
+              {slow && <p className={styles.note} role="status">Đang chờ kết nối. Bạn giữ trang mở để nhận kết quả gửi nhé.</p>}
+              <button className={styles.submit} type="submit" disabled={submitting || !service}>
+                <SendIcon /><span>{submitting ? 'Đang gửi…' : 'Gửi lời chúc'}</span>
+              </button>
+              <p id="wish-public" className={styles.note}>Lời chúc sẽ được hiển thị công khai trên thiệp.</p>
+            </form>
+          )}
+        </div>
         <section className={styles.feed} aria-labelledby="wish-feed-title">
           <h3 id="wish-feed-title">Lời chúc từ mọi người</h3>
           {displayedWishes.length > 0 && (
