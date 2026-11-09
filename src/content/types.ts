@@ -52,6 +52,8 @@ export interface WeddingDay {
 export type Time = string
 
 export interface WeddingEvent {
+  /** Giờ minh họa, cần thay khi chốt lịch lễ. */
+  sampleTime?: boolean
   id: string
   title: string
   /** Tham chiếu `WeddingDay.id`. */
@@ -140,6 +142,8 @@ export interface Quote {
 }
 
 export interface GalleryChapter {
+  /** Hiển thị nhãn ảnh minh họa mẫu trên trang chính. */
+  sample?: boolean
   id: string
   title: string
   caption?: string

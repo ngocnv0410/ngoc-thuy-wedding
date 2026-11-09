@@ -286,3 +286,5 @@
 @media (prefers-reduced-motion: reduce) { .quickLinks a { transition: none; } }
 
 .quickLinks svg { width: 16px; height: 16px; }
+
+.illustration[data-story='welcome'] [data-chibi] { --chibi-h: 92cqw; }

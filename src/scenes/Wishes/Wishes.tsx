@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { Chibi } from '../../components/chibi/Chibi'
-import { PropArt } from '../../components/chibi/ChibiProp'
+import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { SceneShell } from '../../components/SceneShell'
 import type { WeddingContent } from '../../content/types'
 import { hasVisibleText, normalizeWish, validateWish, wishErrorMessage, WISH_MESSAGE_LIMIT, WISH_NAME_LIMIT, type WeddingWish } from '../../lib/wish-content'
@@ -155,10 +154,11 @@ export function Wishes({ content }: { content: WeddingContent }) {
         <h2 id="wishes-title">Gửi lời chúc</h2>
         <p>Dành tặng {content.couple.groom.givenName} &amp; {content.couple.bride.givenName}</p>
       </header>
+      <ChibiStory kind="letter" who="bride" />
       <div className={styles.layout}>
         {receipt ? (
           <div className={styles.receipt} role="status">
-            <Chibi who="bride" pose="carry" eyes="happy" held={<PropArt kind="envelope" />} className={styles.host} />
+            <ChibiStory kind="thanks" who="bride" className={styles.host} />
             <h3>{receipt === 'sent' ? 'Đã gửi lời chúc' : 'Bạn đã gửi lời chúc rồi'}</h3>
             <p>Cảm ơn bạn đã gửi lời chúc đến {content.couple.groom.givenName} &amp; {content.couple.bride.givenName}!</p>
           </div>
