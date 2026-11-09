@@ -50,7 +50,8 @@ Giữ nguyên ngày cưới và địa điểm thật.
 
 Album mẫu nằm ở `src/content/sample-gallery.ts`, gồm sáu hình minh họa.
 Các nhóm trong dữ liệu được gộp thành một lưới ảnh liên tục, không hiển thị chương,
-trích dẫn hoặc cảnh chibi riêng. Mobile có hai cột, desktop có ba cột; bấm ảnh để mở lớn.
+trích dẫn hoặc cảnh chibi riêng. Ảnh vuông nhỏ xếp 3 cột trên mobile, 4 cột trên tablet và 6 cột trên desktop; bấm ảnh để mở lớn.
+Không hiển thị mô tả/chú thích ảnh, kể cả trong lightbox.
 `src/content/page-content.ts` chỉ dùng album mẫu khi `wedding.gallery` trống; thêm album
 thật sẽ thay toàn bộ album mẫu. Đặt `sample: true` trên nhóm dữ liệu nào còn dùng ảnh mẫu.
 Ảnh được tối ưu AVIF/WebP qua vite-imagetools, không lấy ảnh từ dịch vụ bên ngoài.
