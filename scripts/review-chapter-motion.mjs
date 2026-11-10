@@ -34,21 +34,35 @@ try {
         }))))
         await page.waitForTimeout(250)
       }
-      const fixed = snapshots.map(sample => sample.map(({ arms, ...pose }) => pose))
+      const fixed = snapshots.map(sample => sample.map(({ arms: _arms, ...pose }) => pose))
       assert(fixed.every(sample => JSON.stringify(sample) === JSON.stringify(fixed[0])), `${kind}: no body bounce or leg changes`)
       assert(snapshots.some(sample => sample.some((actor, i) => actor.arms !== snapshots[0][i].arms)), `${kind}: gesture actually animates`)
       await page.screenshot({ path: `${directory}/${kind}-${width}.png` })
     }
-    // Existing soundtrack URLs keep their audio, but never mount dancing sprites.
-    for (const mode of ['bangbangbang', 'bad']) {
+    assert.deepEqual(danceRequests, [], 'original mode does not load dance sprites')
+    for (const [mode, dance] of [['bangbangbang', 'bang-bang-bang'], ['bad', 'ateez-bad']]) {
       await page.goto(`${base}?music=${mode}`, { waitUntil: 'networkidle' })
-      assert.equal(await page.locator('#bia [data-story="welcome"]').count(), 1)
-      assert.equal(await page.locator('[data-dance-2d]').count(), 0)
-      assert.equal(await page.locator('[data-dance]').count(), 0)
+      await page.locator(`#bia [data-dance-2d="${dance}"][data-ready="true"]`).waitFor()
+      assert.equal(await page.locator('#thong-tin [data-story="calendar"]').count(), 1)
     }
-    assert.deepEqual(danceRequests, [])
+
+    await page.getByRole('button', { name: 'Bật nhạc nền' }).click()
+    await page.getByRole('button', { name: 'Chọn chế độ thiệp' }).click()
+    for (const [label, dance] of [['BAD', 'ateez-bad'], ['BANG BANG', 'bang-bang-bang']]) {
+      await page.getByRole('radio', { name: label, exact: true }).check()
+      const canvas = `#bia [data-dance-2d="${dance}"][data-ready="true"] canvas`
+      await page.waitForFunction(selector => Number(document.querySelector(selector)?.dataset.frame) > 0, canvas)
+      const frame = await page.locator(canvas).getAttribute('data-frame')
+      await page.waitForFunction(({ selector, frame }) => {
+        const next = document.querySelector(selector)?.dataset.frame
+        return next !== undefined && next !== frame
+      }, { selector: canvas, frame })
+    }
+    await page.getByRole('radio', { name: 'Nguyên bản' }).check()
+    await page.locator('#bia [data-story="welcome"]').waitFor()
+    assert.equal(await page.locator('[data-dance-2d]').count(), 0)
     assert.deepEqual(errors, [])
-    console.log(`${width}px: chapter-specific gestures, fixed feet, old audio URLs, no sprite requests OK`)
+    console.log(`${width}px: chapter gestures, dance links, and mode switches during playback OK`)
     await page.close()
   }
 } finally { await browser.close() }

@@ -10,17 +10,19 @@ describe('invitation soundtrack', () => {
     }
   })
 
-  it('keeps soundtrack selection independent from chapter choreography', () => {
+  it('pairs each dance soundtrack with its cover choreography', () => {
     const modes = getMusicModes(original)
     expect(modes.map((mode) => mode.id)).toEqual(['original', 'bangbangbang', 'bad'])
     for (const mode of modes) expect(selectMusic(original, `?music=${mode.id}`)).toEqual(mode.track)
     expect(selectMusic(original, '?music=bangbangbang')).toMatchObject({
       src: 'audio/bang-bang-bang-chorus.mp3',
+      dance: 'bang-bang-bang',
     })
     expect(selectMusic(original, '?music=bad')).toMatchObject({
       src: 'audio/ateez-bad-chorus.mp3',
+      dance: 'ateez-bad',
     })
-    for (const mode of modes) expect(mode.track.dance).toBeUndefined()
+    expect(selectMusic(original, '')?.dance).toBeUndefined()
   })
 
   it('accepts configured HTTPS sources and keeps local fallbacks for invalid sources', () => {
@@ -31,8 +33,8 @@ describe('invitation soundtrack', () => {
     }
     const modes = getMusicModes(original, { original: remote, bangbangbang: 'https://media.example.com/excerpt.mp3', bad: 'https://media.example.com/bad.mp3' })
     expect(modes[0].track.src).toBe(remote)
-    expect(modes[1].track).toMatchObject({ src: 'https://media.example.com/excerpt.mp3' })
-    expect(modes[2].track).toMatchObject({ src: 'https://media.example.com/bad.mp3' })
+    expect(modes[1].track).toMatchObject({ src: 'https://media.example.com/excerpt.mp3', dance: 'bang-bang-bang' })
+    expect(modes[2].track).toMatchObject({ src: 'https://media.example.com/bad.mp3', dance: 'ateez-bad' })
     expect(original.src).toBe('audio/forever-in-love-kenny-g.mp3')
   })
 

@@ -3,8 +3,10 @@
 The invitation keeps its existing layout and animations. Its compact mode
 choices are **Nguyên bản** (Forever in Love, the default), **BANG BANG**
 (the existing BIGBANG excerpt), and **BAD** (the supplied ATEEZ recording).
-These are audio choices only; all three keep the same chapter-specific gestures. The same radio picker appears
-before opening and in the floating **Chế độ** panel; keyboard arrow keys work.
+BANG BANG and BAD pair the music with a dance on the illustrated cover. The original
+mode uses the welcome gesture, and later chapters keep their own gestures in every mode.
+The same radio picker appears before opening and in the floating **Chế độ** panel.
+Keyboard arrow keys work in both places.
 
 The removed **Nhạc cưới** mode is no longer offered. Old `?music=youtube` links
 open the original mode. Sharing keeps `?music=bangbangbang` or `?music=bad` when selected and
@@ -17,8 +19,8 @@ handler, including on iPhone.
 
 ## Optional online MP3 sources
 
-The opening retains its 3D doors. Chapter characters stand still at their feet;
-no dancing sprites, whole-body bouncing, or rhythm-based motion is loaded.
+The opening retains its 3D doors and character gestures. The illustrated cover
+loads sprites for the selected dance and follows the audio clock during playback.
 
 Set these build variables (locally in `.env.local`, or as GitHub Actions
 repository variables for the Pages workflow):

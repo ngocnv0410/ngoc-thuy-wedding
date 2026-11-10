@@ -65,11 +65,11 @@ chạy dev với `VITE_FIREBASE_API_KEY=local-visual-fixture npm run dev`, sau �
 Script chặn module dịch vụ bằng fixture trong trình duyệt, kiểm tra chỉ có một nhân vật,
 chuyển động khớp tay, giảm chuyển động và không tràn ngang trên mobile/desktop.
 
-Mỗi chương dùng một cử chỉ riêng: bìa chào/nắm tay, thông tin lễ giới thiệu ngày cưới,
+Mỗi chương dùng một cử chỉ riêng: bìa Nguyên bản chào/nắm tay, thông tin lễ giới thiệu ngày cưới,
 địa điểm dò bản đồ, lời chúc chuyển thư, trạng thái đã gửi đặt tay lên tim/cúi cảm ơn, thẻ quà nhận hộp quà,
-cuối thiệp vẫy chào. Chibi không bật người, nhún lên xuống hoặc đổi chân.
-Ba lựa chọn nhạc và liên kết cũ được giữ; đổi nhạc không đổi animation của chương.
+cuối thiệp vẫy chào. Chibi giữ nguyên vị trí chân khi diễn các cử chỉ này.
+BANG BANG và BAD có vũ đạo theo nhạc trên bìa. Các chương còn lại giữ cử chỉ riêng.
 
 Kiểm tra chuyển động theo chương và chân đứng yên trên bản build/preview bằng
 `node scripts/review-chapter-motion.mjs` (mặc định preview ở cổng 4174; có thể đặt
-`WEDDING_BASE`). Script cũng kiểm tra các URL nhạc cũ không tải sprite nhảy.
+`WEDDING_BASE`). Script cũng kiểm tra liên kết trực tiếp và đổi vũ đạo khi đang phát nhạc.

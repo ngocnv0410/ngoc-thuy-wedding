@@ -24,7 +24,7 @@ export function onlineMusicSource(value: string | undefined, fallback: string): 
   return fallback
 }
 
-/** Soundtrack choices never change chapter choreography. */
+/** Each dance mode pairs the cover choreography with its soundtrack. */
 export function getMusicModes(original: Music | undefined, online: OnlineMusicSources = {
   original: import.meta.env?.VITE_MUSIC_ORIGINAL_URL,
   bangbangbang: import.meta.env?.VITE_MUSIC_BANGBANGBANG_URL,
@@ -36,11 +36,11 @@ export function getMusicModes(original: Music | undefined, online: OnlineMusicSo
     ...(originalTrack ? [{ id: 'original' as const, label: 'Nguyên bản', description: 'Dịu dàng · Forever in Love', track: originalTrack }] : []),
     { id: 'bangbangbang', label: 'BANG BANG', description: 'BANG BANG BANG · BIGBANG', track: {
       src: onlineMusicSource(online.bangbangbang, 'audio/bang-bang-bang-chorus.mp3'),
-      title: 'BANG BANG BANG · Điệp khúc', artist: 'BIGBANG',
+      title: 'BANG BANG BANG · Điệp khúc', artist: 'BIGBANG', dance: 'bang-bang-bang',
     } },
     { id: 'bad', label: 'BAD', description: 'BAD · ATEEZ', track: {
       src: onlineMusicSource(online.bad, 'audio/ateez-bad-chorus.mp3'),
-      title: 'BAD · ATEEZ',
+      title: 'BAD · ATEEZ', dance: 'ateez-bad',
     } },
   ]
 }
