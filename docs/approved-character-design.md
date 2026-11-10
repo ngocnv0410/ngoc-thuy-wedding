@@ -42,25 +42,9 @@ head, neck, shoulders and heart must leave no skin in the static bridal clothing
 The original vector rig remains available as legacy artwork; no animation video
 or extra raster arm assets are shipped.
 
-## 3D
+## Dance sprites
 
-The approved portraits are mapped onto closed front/back head volumes whose row
-profiles follow each portrait's alpha silhouette. Both surfaces meet at a common
-seam; an inner visible hair surface prevents transparent gaps. The old open plane
-and separate backing sphere caused distorted, disconnected profiles during bows
-and have been removed. Head pitch/yaw are intentionally limited to a gentle
-forward-facing range; the torso, hips and limbs keep the full tracked choreography.
-The jacket has geometric collar/lapels/bowtie/buttons; the white gown has a curved,
-pleated volume with fold detail from the approved artwork.
-
-This is stylized geometry reconstructed from a single view, not a recovered
-production character mesh. Hidden profiles remain an approximation, so visual
-review must include moving views on the deployed website.
-
-The white gown/bodice and fair hands use stable bright materials; neutral studio
-lighting avoids yellow cast. Textures are cached with the existing idle preload.
-The original MP3 behavior, real media-clock choreography, rotation limits, reduced
-motion and offscreen/paused rendering limits are retained.
+The dance stage uses offline-rendered transparent 15 fps atlases; see [sprite pipeline](2.5d-dance.md). The opening doors retain Three.js.
 
 ## Review
 
@@ -68,8 +52,7 @@ Browser review covers the opening, normal cover, gift cards, QR dialog and closi
 including white artwork against dark backgrounds. All rendered Chibi instances are
 checked for approved artwork and loaded assets. Both dance tracks are played in real
 time through their loop boundary, with screenshots at 1/5/10/15/18/22/26 seconds.
-Unit checks cover independent 2D joints/expressions, SVG-map embedding, held-object compatibility, portrait depth and
-texture identity, bone lengths, grounding, rotation limits and media behavior.
+Unit checks cover independent 2D joints/expressions, SVG-map embedding, held-object compatibility, sprite timestamps, atlas boundaries and media behavior.
 
 ## Repeat the browser review
 

@@ -31,3 +31,6 @@ dist-ssr
 public/qr/
 public/og.jpg
 public/social/
+
+# Reproducible visual review artifacts
+output/

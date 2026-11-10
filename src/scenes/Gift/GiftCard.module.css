@@ -126,9 +126,9 @@
 @keyframes paperOut { to { opacity: 0; transform: translateY(12px) scale(0.98); } }
 @keyframes veilIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes veilOut { to { opacity: 0; } }
-@keyframes hello { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: none; } }
+@keyframes hello { from { opacity: 0; } to { opacity: 1; transform: none; } }
 @keyframes heart { 0% { opacity: 0; transform: translateY(8px) scale(0.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-20px) scale(1); } }
-@keyframes chibiSway { from { transform: rotate(-1.5deg) translateY(0); } to { transform: rotate(1.5deg) translateY(-2px); } }
+@keyframes chibiSway { from { transform: rotate(-1.5deg); } to { transform: rotate(1.5deg); } }
 
 @media (max-width: 359px) {
   .card { grid-template-columns: 42px minmax(0, 1fr) auto; gap: 10px; padding-inline: 12px; }
@@ -144,3 +144,6 @@
   .dialog, .dialog::backdrop, .coupleStage, .heart, .host, .dialogCouple > [data-chibi] { animation: none !important; }
   .heart { display: none; }
 }
+
+.card .host { padding: 0; margin: 0; width: 50px; animation: none; }
+.card .host [data-chibi] { --chibi-h: 82px; }

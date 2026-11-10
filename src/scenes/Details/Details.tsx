@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { Button } from '../../components/Button'
 import { DateBlock } from '../../components/DateBlock'
 import { Stationery } from '../../components/decor/Stationery'
@@ -42,6 +43,8 @@ export function Details({ content }: { content: WeddingContent }) {
       <SceneHeading id="details-title" eyebrow="Thông tin lễ cưới">
         Ngày vui của {first.givenName} &amp; {second.givenName}
       </SceneHeading>
+
+      <ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />
 
       <div className={styles.families} data-anim="families">
         <Family label={first === couple.groom ? 'Nhà trai' : 'Nhà gái'} person={first} />
@@ -144,6 +147,7 @@ function DayBlock({ day, primary, events, locationName }: DayBlockProps) {
                 </span>
               )}
               <span className={styles.eventBody}>
+                {event.sampleTime && <span className="sample-note">Giờ minh họa — sẽ cập nhật</span>}
                 <span className={styles.eventTitle}>{event.title}</span>
                 {event.side && event.side !== 'both' && (
                   <span className={styles.tag}>{event.side === 'bride' ? 'Nhà gái' : 'Nhà trai'}</span>

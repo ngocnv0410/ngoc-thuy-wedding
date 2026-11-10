@@ -1,6 +1,5 @@
 import { useRef } from 'react'
-import { DanceStage } from '../../components/dance3d/DanceStage'
-import { ChibiCouple } from '../../components/chibi/Chibi'
+import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { CoupleNames } from '../../components/CoupleNames'
 import { DateBlock } from '../../components/DateBlock'
 import { Stationery } from '../../components/decor/Stationery'
@@ -93,9 +92,7 @@ export function Hero({ content, onReplay }: HeroProps) {
       <div className={styles.composition}>
         <div className={styles.portrait} data-anim="portrait" aria-hidden="true">
           <span className={styles.arch} />
-          {content.music?.dance ? <DanceStage dance={content.music.dance} className={styles.illustration}
-            fallback={<ChibiCouple pose="stand" lean size="lg" />} />
-            : <ChibiCouple pose="hold" lean size="lg" className={styles.illustration} />}
+          <ChibiStory kind="welcome" size="lg" className={styles.illustration} />
           <span className={styles.portraitDate}>{year} <span>✦</span> {date}.{month}</span>
         </div>
         <div className={styles.frame} data-anim="frame">

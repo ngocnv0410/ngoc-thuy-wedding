@@ -37,3 +37,39 @@ Workflow chạy `node scripts/check-secrets.mjs` để chặn Google API key ghi
 # Tự khởi động emulator, kiểm tra quyền và tắt emulator sau khi xong.
 npm run test:rules
 ```
+
+## Chibi và nội dung minh họa tạm
+
+Các block dùng `ChibiStory` với động tác theo nội dung, dùng chung bộ chibi đã duyệt.
+Vòng lặp chỉ chạy khi cảnh trong khung nhìn, cửa mở đầu đã đóng và tab đang hiển thị;
+chế độ giảm chuyển động giữ hình tĩnh. Không tự phát nhạc.
+
+Hai sự kiện trong `src/content/wedding.ts` đang dùng giờ **minh họa** 09:00–11:00.
+Khi chốt lịch, thay giờ rồi bỏ `sampleTime`; nhãn mẫu trên thiệp và lịch xuất sẽ tự bỏ.
+Giữ nguyên ngày cưới và địa điểm thật.
+
+Album mẫu nằm ở `src/content/sample-gallery.ts`, gồm sáu hình minh họa.
+Các nhóm trong dữ liệu được gộp thành một lưới ảnh liên tục, không hiển thị chương,
+trích dẫn hoặc cảnh chibi riêng. Ảnh vuông nhỏ xếp 3 cột trên mobile, 4 cột trên tablet và 6 cột trên desktop; bấm ảnh để mở lớn.
+Không hiển thị mô tả/chú thích ảnh, kể cả trong lightbox.
+`src/content/page-content.ts` chỉ dùng album mẫu khi `wedding.gallery` trống; thêm album
+thật sẽ thay toàn bộ album mẫu. Đặt `sample: true` trên nhóm dữ liệu nào còn dùng ảnh mẫu.
+Ảnh được tối ưu AVIF/WebP qua vite-imagetools, không lấy ảnh từ dịch vụ bên ngoài.
+Có thể dựng lại sáu bố cục minh họa từ các lớp chibi đã duyệt bằng
+`node scripts/generate-sample-gallery.mjs`. File `wedding.ts` vẫn đọc được bằng Node
+cho các script QR và ảnh chia sẻ. Không thêm dữ liệu mẫu vào Firestore.
+
+Kiểm tra regression chibi phần lời chúc (chưa gửi, đã gửi, gửi mới, lỗi kết nối):
+chạy dev với `VITE_FIREBASE_API_KEY=local-visual-fixture npm run dev`, sau đó chạy
+`node scripts/review-chibi-stories.mjs` (cần Playwright như script review chibi bên trên).
+Script chặn module dịch vụ bằng fixture trong trình duyệt, kiểm tra chỉ có một nhân vật,
+chuyển động khớp tay, giảm chuyển động và không tràn ngang trên mobile/desktop.
+
+Mỗi chương dùng một cử chỉ riêng: bìa chào/nắm tay, thông tin lễ giới thiệu ngày cưới,
+địa điểm dò bản đồ, lời chúc chuyển thư, trạng thái đã gửi đặt tay lên tim/cúi cảm ơn, thẻ quà nhận hộp quà,
+cuối thiệp vẫy chào. Chibi không bật người, nhún lên xuống hoặc đổi chân.
+Ba lựa chọn nhạc và liên kết cũ được giữ; đổi nhạc không đổi animation của chương.
+
+Kiểm tra chuyển động theo chương và chân đứng yên trên bản build/preview bằng
+`node scripts/review-chapter-motion.mjs` (mặc định preview ở cổng 4174; có thể đặt
+`WEDDING_BASE`). Script cũng kiểm tra các URL nhạc cũ không tải sprite nhảy.

@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { Button } from '../../components/Button'
 import { CopyButton } from '../../components/CopyButton'
 import { Stationery } from '../../components/decor/Stationery'
@@ -11,7 +12,7 @@ import { useSceneMotion } from '../../motion/useMotion'
 import styles from './Locations.module.css'
 
 export function Locations({ content }: { content: WeddingContent }) {
-  const { locations, events } = content
+  const { locations } = content
   const ref = useRef<HTMLElement>(null)
   useSceneMotion(ref, 'locations')
 
@@ -19,7 +20,7 @@ export function Locations({ content }: { content: WeddingContent }) {
     <SceneShell ref={ref} id="dia-diem" light="afternoon" labelledBy="locations-title">
       <Stationery seed={13} />
       <SceneHeading id="locations-title" eyebrow="Địa điểm tổ chức">
-        Nơi ngày vui diễn ra
+        Địa điểm lễ cưới
       </SceneHeading>
 
       {locations.length === 0 ? (
@@ -27,8 +28,7 @@ export function Locations({ content }: { content: WeddingContent }) {
       ) : (
         <ol className={styles.cards}>
           {locations.map((location) => (
-            <LocationCard key={location.id} location={location}
-              times={events.filter((event) => event.locationId === location.id && event.time)} />
+            <LocationCard key={location.id} location={location} />
           ))}
         </ol>
       )}
@@ -38,26 +38,19 @@ export function Locations({ content }: { content: WeddingContent }) {
 
 interface LocationCardProps {
   location: Location
-  times: Array<{ id: string; title: string; time?: string }>
 }
 
-function LocationCard({ location, times }: LocationCardProps) {
+function LocationCard({ location }: LocationCardProps) {
   const headingId = `location-${location.id}`
   return (
     <li className={styles.card} data-location={location.id}
       aria-labelledby={headingId} data-anim="location">
       <p className={styles.label}><span aria-hidden="true" />{location.label}<span aria-hidden="true" /></p>
+      <ChibiStory kind="map" who={location.side === 'bride' ? 'bride' : 'groom'} />
       <span className={styles.venuePin} aria-hidden="true"><RouteIcon /></span>
       <h3 id={headingId} className={styles.name}>{location.name}</h3>
       <div className={styles.rule} aria-hidden="true"><span>♡</span></div>
       <address className={styles.address}>{location.address}</address>
-      {times.length > 0 && (
-        <ul className={styles.times}>
-          {times.map((event) => (
-            <li key={event.id}><span className={styles.time}>{event.time}</span> {event.title}</li>
-          ))}
-        </ul>
-      )}
       {location.note && <p className={styles.note}>{location.note}</p>}
       <div className={styles.actions}>
         <a className={styles.directions} href={directionsUrl(location)} target="_blank" rel="noopener"

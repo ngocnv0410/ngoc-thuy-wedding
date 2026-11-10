@@ -41,24 +41,5 @@ export async function openLightbox(items: LightboxItem[], index: number) {
     indexIndicatorSep: ' / ',
   })
 
-  // Chú thích ảnh (nếu có) ở mép dưới.
-  pswp.on('uiRegister', () => {
-    pswp.ui?.registerElement({
-      name: 'caption',
-      order: 9,
-      isButton: false,
-      appendTo: 'root',
-      onInit: (el) => {
-        const update = () => {
-          const caption = items[pswp.currIndex]?.photo.caption ?? ''
-          el.textContent = caption
-          el.hidden = !caption
-        }
-        pswp.on('change', update)
-        update()
-      },
-    })
-  })
-
   pswp.init()
 }

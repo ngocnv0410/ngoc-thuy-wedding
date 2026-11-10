@@ -111,3 +111,7 @@
   transform-box: view-box;
   transform: rotate(var(--flag, 0deg));
 }
+
+.camera { width: 36px; aspect-ratio: 36 / 26; }
+.gift { width: 30px; aspect-ratio: 30 / 32; }
+.dateMark { fill: none; stroke: var(--chibi-accent) !important; stroke-width: 1.2 !important; opacity: 0; }

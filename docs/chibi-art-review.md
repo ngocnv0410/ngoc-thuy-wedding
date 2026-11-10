@@ -2,7 +2,7 @@
 
 All active 2D illustrations follow the owner-approved bright wedding couple,
 including the opening, normal cover, map figures, envelope-carrying gift cards,
-QR dialogs, guestbook and closing heart gesture. The 3D dancers use portraits
+QR dialogs, guestbook and closing heart gesture. The earlier 3D dancers used portraits
 and garment details derived from the same approved design. The original vector
 source remains in the repository as legacy artwork.
 

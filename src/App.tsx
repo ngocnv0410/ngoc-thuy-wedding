@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { scheduleDancePreload } from './components/dance3d/preload'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { AudioToggle } from './components/AudioToggle'
 import { ChapterNav, type Chapter } from './components/ChapterNav'
 import { LightLayer } from './components/LightLayer'
 import { ToastProvider } from './components/ToastProvider'
-import { wedding as weddingContent } from './content/wedding'
+import { wedding as weddingContent } from './content/page-content'
 import { getMusicModes, musicModeFromSearch, searchWithMusicMode, type MusicModeId } from './lib/music-source'
 import { music } from './lib/music'
 import { guestbookEnabled } from './lib/firebase-config'
@@ -40,7 +39,6 @@ function shouldShowOpening(): boolean {
 }
 
 function App() {
-  useEffect(() => scheduleDancePreload(), [])
   const [mode, setMode] = useState<MusicModeId>(initialMode)
   const track = modes.find((item) => item.id === mode)?.track
   const wedding = { ...weddingContent, music: track }
