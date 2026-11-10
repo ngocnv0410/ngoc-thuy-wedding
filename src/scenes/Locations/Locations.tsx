@@ -12,7 +12,7 @@ import { useSceneMotion } from '../../motion/useMotion'
 import styles from './Locations.module.css'
 
 export function Locations({ content }: { content: WeddingContent }) {
-  const { locations, events } = content
+  const { locations } = content
   const ref = useRef<HTMLElement>(null)
   useSceneMotion(ref, 'locations')
 
@@ -20,7 +20,7 @@ export function Locations({ content }: { content: WeddingContent }) {
     <SceneShell ref={ref} id="dia-diem" light="afternoon" labelledBy="locations-title">
       <Stationery seed={13} />
       <SceneHeading id="locations-title" eyebrow="Địa điểm tổ chức">
-        Nơi ngày vui diễn ra
+        Địa điểm lễ cưới
       </SceneHeading>
 
       {locations.length === 0 ? (
@@ -28,8 +28,7 @@ export function Locations({ content }: { content: WeddingContent }) {
       ) : (
         <ol className={styles.cards}>
           {locations.map((location) => (
-            <LocationCard key={location.id} location={location}
-              times={events.filter((event) => event.locationId === location.id && event.time)} />
+            <LocationCard key={location.id} location={location} />
           ))}
         </ol>
       )}
@@ -39,10 +38,9 @@ export function Locations({ content }: { content: WeddingContent }) {
 
 interface LocationCardProps {
   location: Location
-  times: Array<{ id: string; title: string; time?: string; sampleTime?: boolean }>
 }
 
-function LocationCard({ location, times }: LocationCardProps) {
+function LocationCard({ location }: LocationCardProps) {
   const headingId = `location-${location.id}`
   return (
     <li className={styles.card} data-location={location.id}
@@ -53,13 +51,6 @@ function LocationCard({ location, times }: LocationCardProps) {
       <h3 id={headingId} className={styles.name}>{location.name}</h3>
       <div className={styles.rule} aria-hidden="true"><span>♡</span></div>
       <address className={styles.address}>{location.address}</address>
-      {times.length > 0 && (
-        <ul className={styles.times}>
-          {times.map((event) => (
-            <li key={event.id}><span className={styles.time}>{event.time}</span> {event.title}{event.sampleTime && <span className="sample-note">Giờ minh họa — sẽ cập nhật</span>}</li>
-          ))}
-        </ul>
-      )}
       {location.note && <p className={styles.note}>{location.note}</p>}
       <div className={styles.actions}>
         <a className={styles.directions} href={directionsUrl(location)} target="_blank" rel="noopener"
