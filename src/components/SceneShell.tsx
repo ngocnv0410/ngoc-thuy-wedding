@@ -43,15 +43,13 @@ interface SceneHeadingProps {
 
 /** Tiêu đề scene: dòng nhãn nhỏ + tiêu đề serif lớn. */
 export function SceneHeading({ id, eyebrow, children, photo, photoAccent, align = 'center' }: SceneHeadingProps) {
+  const heading = <>
+    <p className={styles.eyebrow} data-anim="eyebrow">{eyebrow}</p>
+    <h2 id={id} className={styles.title} data-anim="title">{children}</h2>
+  </>
   return (
     <header className={styles.heading} data-align={align} data-has-photo={Boolean(photo)}>
-      <p className={styles.eyebrow} data-anim="eyebrow">
-        {eyebrow}
-      </p>
-      <h2 id={id} className={styles.title} data-anim="title">
-        {children}
-      </h2>
-      <HeadingPhoto photo={photo}>{photoAccent}</HeadingPhoto>
+      <HeadingPhoto photo={photo} heading={heading}>{photoAccent}</HeadingPhoto>
     </header>
   )
 }

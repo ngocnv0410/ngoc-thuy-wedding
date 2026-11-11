@@ -15,11 +15,11 @@ for(const width of [320,390,768,1440]) {
  for(const [id,title] of [['thong-tin','details-title'],['dia-diem','locations-title'],['mung-cuoi','gift-title']]) {
   const section=p.locator(`#${id}`),photo=section.locator('[data-heading-photo]')
   await photo.scrollIntoViewIfNeeded();await p.waitForTimeout(950)
-  const metrics=await photo.evaluate((e,title)=>({width:e.clientWidth,height:e.clientHeight,top:e.getBoundingClientRect().top,titleBottom:document.getElementById(title).getBoundingClientRect().bottom,img:(()=>{const i=e.querySelector('img[data-anim="heading-image"]');return i.complete&&i.naturalWidth>0})()}),title)
+  const metrics=await photo.evaluate((e,title)=>({width:e.clientWidth,height:e.clientHeight,top:e.getBoundingClientRect().top,bottom:e.getBoundingClientRect().bottom,titleTop:document.getElementById(title).getBoundingClientRect().top,titleBottom:document.getElementById(title).getBoundingClientRect().bottom,img:(()=>{const i=e.querySelector('img[data-anim="heading-image"]');return i.complete&&i.naturalWidth>0})()}),title)
   assert(metrics.img,`${id}: photo loaded`)
-  assert(metrics.top>=metrics.titleBottom,`${id}: title above photo`)
-  assert.equal(metrics.width/metrics.height,2)
-  assert(metrics.width<= (width>=1024?440:320))
+  assert(metrics.titleTop>=metrics.top && metrics.titleBottom<=metrics.bottom,`${id}: title inside photo banner`)
+  assert(metrics.width<=640)
+  assert(metrics.height<=240)
   assert.equal(await photo.getByText('Ảnh mẫu',{exact:true}).count(),1)
   await p.screenshot({path:`${directory}/${id}-${width}.png`})
  }
@@ -34,7 +34,7 @@ for(const width of [320,390,768,1440]) {
  assert.equal(await p.locator('[data-heading-photo] img[data-anim="heading-image"]').first().evaluate(e=>getComputedStyle(e).animationName),'none')
  await p.screenshot({path:`${directory}/full-${width}.png`,fullPage:true})
  assert.deepEqual(errors,[])
- console.log(`${width}px: 3 heading photos, title order, 2:1 crop, small album, no venue times, no overflow/errors OK`)
+ console.log(`${width}px: 3 photo-backed headings, overlay title placement, small album, no venue times, no overflow/errors OK`)
  await p.close()
 }
 // Browser-only fixtures exercise omitted, broken, and real-photo configurations; no Firebase writes.

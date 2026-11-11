@@ -68,5 +68,4 @@
   .heading { margin-bottom: 48px; }
 }
 
-.heading[data-has-photo='true'] { gap: 12px; margin-bottom: 28px; }
-.heading[data-has-photo='true'] .title { font-size: clamp(34px, 4.5vw, 60px); }
+.heading[data-has-photo='true'] { gap: 0; margin-bottom: 28px; }
