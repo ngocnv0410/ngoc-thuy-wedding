@@ -88,9 +88,8 @@ Không import ảnh vào `wedding.ts` vì các script Node vẫn đọc file đ�
 
 Bỏ một mục khỏi map để tiêu đề đó chỉ hiện chữ. `wedding.headingPhotos` nếu được cung
 cấp sẽ thay toàn bộ map mẫu; `{}` tắt hết ảnh tiêu đề. Ảnh lỗi tự ẩn khung, không để
-panel trống. Ảnh mẫu luôn có nhãn, không có caption. Chữ tiêu đề nằm trực tiếp trên ảnh với lớp phủ
-ivory để dễ đọc. Banner dùng hết chiều ngang nội dung trên mobile, tối đa 640px trên
-desktop, cao tối thiểu 176px/212px. Khi ảnh thiếu hoặc lỗi, chữ tiêu đề vẫn hiển thị.
+panel trống. Ảnh mẫu luôn có nhãn, không có caption. Chữ tiêu đề nằm ở dải dưới ảnh, với lớp chuyển ivory để dễ đọc và chừa khuôn mặt ở phía trên. Banner dùng hết chiều ngang nội dung trên mobile, tối đa 640px trên
+desktop, cao tối thiểu 196px/236px. Khi ảnh thiếu hoặc lỗi, chữ tiêu đề vẫn hiển thị.
 Chibi lịch thu nhỏ nằm trong góc khung, không thêm một hàng.
 
 Lá chỉ đung đưa 0,4°, ảnh hiện dần/thu nhẹ một lần khi vào màn hình. Chuyển động dừng

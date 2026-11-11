@@ -18,6 +18,7 @@ for(const width of [320,390,768,1440]) {
   const metrics=await photo.evaluate((e,title)=>({width:e.clientWidth,height:e.clientHeight,top:e.getBoundingClientRect().top,bottom:e.getBoundingClientRect().bottom,titleTop:document.getElementById(title).getBoundingClientRect().top,titleBottom:document.getElementById(title).getBoundingClientRect().bottom,img:(()=>{const i=e.querySelector('img[data-anim="heading-image"]');return i.complete&&i.naturalWidth>0})()}),title)
   assert(metrics.img,`${id}: photo loaded`)
   assert(metrics.titleTop>=metrics.top && metrics.titleBottom<=metrics.bottom,`${id}: title inside photo banner`)
+  assert(metrics.titleTop>=metrics.top+metrics.height*0.58,`${id}: title stays in lower band, away from faces`)
   assert(metrics.width<=640)
   assert(metrics.height<=240)
   assert.equal(await photo.getByText('Ảnh mẫu',{exact:true}).count(),1)
