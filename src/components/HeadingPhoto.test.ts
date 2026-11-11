@@ -19,6 +19,15 @@ describe('optional heading photography', () => {
     expect(markup).toBe('<h2 id="section-title">Địa điểm lễ cưới</h2>')
     expect(markup).not.toContain('data-heading-photo')
   })
+  it('retains exactly one heading character without a configured photo', () => {
+    const heading = createElement('h2', { id: 'section-title' }, 'Thông tin hôn lễ')
+    const actor = createElement('span', { 'data-story': 'calendar' })
+    const markup = renderToStaticMarkup(createElement(HeadingPhoto, { heading }, actor))
+    expect(markup).toContain('data-heading-fallback')
+    expect(markup.match(/data-heading-character/g)).toHaveLength(1)
+    expect(markup.match(/data-story="calendar"/g)).toHaveLength(1)
+    expect(markup.match(/id="section-title"/g)).toHaveLength(1)
+  })
   it('renders one accessible heading inside the photo banner', () => {
     const heading = createElement('h2', { id: 'section-title' }, 'Địa điểm lễ cưới')
     const markup = renderToStaticMarkup(createElement(HeadingPhoto, { photo, heading }))

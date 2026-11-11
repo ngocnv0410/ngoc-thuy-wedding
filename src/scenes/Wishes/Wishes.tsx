@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { HeadingCharacter } from '../../components/HeadingCharacter'
 import { Stationery } from '../../components/decor/Stationery'
 import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { SceneShell } from '../../components/SceneShell'
@@ -153,10 +154,10 @@ export function Wishes({ content }: { content: WeddingContent }) {
       <Stationery seed={37} />
       <header className={styles.heading}>
         <h2 id="wishes-title">Lời chúc phúc</h2>
+        <HeadingCharacter><ChibiStory key={receipt ? 'thanks' : 'letter'} kind={receipt ? 'thanks' : 'letter'} who="bride" /></HeadingCharacter>
       </header>
       <div className={styles.layout}>
         <div className={styles.composer}>
-          <ChibiStory key={receipt ? 'thanks' : 'letter'} kind={receipt ? 'thanks' : 'letter'} who="bride" className={styles.host} />
           {receipt ? (
             <div className={styles.receipt} role="status">
               <h3>{receipt === 'sent' ? 'Đã gửi lời chúc' : 'Bạn đã gửi lời chúc rồi'}</h3>

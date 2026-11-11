@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react'
 import { HeadingPhoto } from '../../components/HeadingPhoto'
+import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { ChibiProp } from '../../components/chibi/ChibiProp'
 import { Divider } from '../../components/Ornament'
 import { Stationery } from '../../components/decor/Stationery'
@@ -36,7 +37,7 @@ export function Gift({ content }: { content: WeddingContent }) {
         drapes={['top-left', 'bottom-right']}
       />
       <article className={styles.letter}>
-        <HeadingPhoto photo={content.headingPhotos?.['mung-cuoi']} heading={<h2 id="gift-title" className={styles.title} data-anim="letter-title">Lời cảm tạ</h2>} />
+        <HeadingPhoto photo={content.headingPhotos?.['mung-cuoi']} heading={<h2 id="gift-title" className={styles.title} data-anim="letter-title">Lời cảm tạ</h2>}><ChibiStory kind="thanks" /></HeadingPhoto>
         <div className={styles.letterBody}>
           {thankYou.map((paragraph, index) => (
             <p key={index} data-anim="letter-line">

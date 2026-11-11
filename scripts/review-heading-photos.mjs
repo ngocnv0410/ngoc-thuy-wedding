@@ -14,7 +14,7 @@ for(const width of [320,390,768,1440]) {
  assert.equal(await p.locator('[data-heading-photo]').count(),3)
  for(const [id,title] of [['thong-tin','details-title'],['dia-diem','locations-title'],['mung-cuoi','gift-title']]) {
   const section=p.locator(`#${id}`),photo=section.locator('[data-heading-photo]')
-  await photo.scrollIntoViewIfNeeded();await p.waitForTimeout(950)
+  await photo.scrollIntoViewIfNeeded();await photo.locator('img[data-anim="heading-image"]').evaluate(i=>i.decode());await p.waitForTimeout(950)
   const metrics=await photo.evaluate((e,title)=>({width:e.clientWidth,height:e.clientHeight,top:e.getBoundingClientRect().top,bottom:e.getBoundingClientRect().bottom,titleTop:document.getElementById(title).getBoundingClientRect().top,titleBottom:document.getElementById(title).getBoundingClientRect().bottom,img:(()=>{const i=e.querySelector('img[data-anim="heading-image"]');return i.complete&&i.naturalWidth>0})()}),title)
   assert(metrics.img,`${id}: photo loaded`)
   assert(metrics.titleTop>=metrics.top && metrics.titleBottom<=metrics.bottom,`${id}: title inside photo banner`)
@@ -49,6 +49,8 @@ for(const mode of ['omitted','broken','replacement']) {
  if(mode==='omitted'||mode==='broken') assert.equal(await p.locator('[data-heading-photo]').count(),0)
  else {assert.equal(await p.locator('[data-heading-photo]').count(),1);assert.equal(await p.locator('[data-heading-photo]').getByText('Ảnh mẫu',{exact:true}).count(),0)}
  assert(await p.locator('#details-title').isVisible())
+ assert.equal(await p.locator('#thong-tin [data-heading-character]').count(),1,'calendar character survives missing/failed photos')
+ assert.equal(await p.locator('#thong-tin [data-story="calendar"]').count(),1,'no duplicate calendar stage')
  assert.deepEqual(errors,[])
  console.log(`${mode}: configuration fallback OK`)
  await p.close()
