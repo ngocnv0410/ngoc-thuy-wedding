@@ -36,7 +36,7 @@ export function Gift({ content }: { content: WeddingContent }) {
         drapes={['top-left', 'bottom-right']}
       />
       <article className={styles.letter}>
-        <HeadingPhoto photo={content.headingPhotos?.['mung-cuoi']} heading={<h2 id="gift-title" className={styles.title} data-anim="letter-title">Thương gửi bạn</h2>} />
+        <HeadingPhoto photo={content.headingPhotos?.['mung-cuoi']} heading={<h2 id="gift-title" className={styles.title} data-anim="letter-title">Lời cảm tạ</h2>} />
         <div className={styles.letterBody}>
           {thankYou.map((paragraph, index) => (
             <p key={index} data-anim="letter-line">
@@ -53,7 +53,7 @@ export function Gift({ content }: { content: WeddingContent }) {
 
       <section className={styles.gifts} aria-labelledby="gift-heading" data-anim="gifts">
         <h3 id="gift-heading" className={styles.subtitle}>
-          Gửi quà mừng
+          Mừng cưới
         </h3>
         {accounts.length === 0 ? (
           <PendingNote>tài khoản mừng cưới (ngân hàng, tên chủ TK, STK, ảnh QR gốc).</PendingNote>
