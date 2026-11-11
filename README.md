@@ -73,3 +73,26 @@ BANG BANG và BAD có vũ đạo theo nhạc trên bìa. Các chương còn lạ
 Kiểm tra chuyển động theo chương và chân đứng yên trên bản build/preview bằng
 `node scripts/review-chapter-motion.mjs` (mặc định preview ở cổng 4174; có thể đặt
 `WEDDING_BASE`). Script cũng kiểm tra liên kết trực tiếp và đổi vũ đạo khi đang phát nhạc.
+
+## Hoa góc và ảnh dưới tiêu đề
+
+Trang dùng cành lá watercolor be–olive, nhánh vàng và nền ivory. Bìa/cuối thiệp dùng
+cành lớn; các mục dùng cành nhỏ; album giữ trang trí nhẹ để không tăng chiều dài.
+Ảnh xem trước khi chia sẻ link dùng cùng bộ cành lá.
+
+`src/content/heading-photos.ts` cấu hình ảnh dưới ba tiêu đề: `thong-tin`, `dia-diem`,
+`mung-cuoi`. Mỗi mục có `image` (ResponsiveImage), `alt`, `focus` (object-position),
+`sample` và kiểu viền `style` (`double`, `soft`, `letter`). Thay import ảnh ở file này
+bằng ảnh cưới thật, đặt `sample: false` và chỉnh `focus` để không cắt khuôn mặt.
+Không import ảnh vào `wedding.ts` vì các script Node vẫn đọc file đó khi build.
+
+Bỏ một mục khỏi map để tiêu đề đó chỉ hiện chữ. `wedding.headingPhotos` nếu được cung
+cấp sẽ thay toàn bộ map mẫu; `{}` tắt hết ảnh tiêu đề. Ảnh lỗi tự ẩn khung, không để
+panel trống. Ảnh mẫu luôn có nhãn, không có caption. Khung rộng tối đa 320px ở mobile,
+440px ở desktop, tỷ lệ 2:1. Chibi lịch thu nhỏ nằm trong góc khung, không thêm một hàng.
+
+Lá chỉ đung đưa 0,4°, ảnh hiện dần/thu nhẹ một lần khi vào màn hình. Chuyển động dừng
+khi khuất màn hình hoặc tab ẩn; giảm chuyển động hiển thị tĩnh.
+Kiểm tra browser với `scripts/review-heading-photos.mjs` (Playwright tùy chọn như các
+script review trên): chạy production preview ở cổng 4178 và dev ở 5173. Có thể đặt
+`WEDDING_BASE`, `WEDDING_DEV_BASE`, `CHROMIUM_PATH`, `REVIEW_DIR` để đổi môi trường.

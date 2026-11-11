@@ -5,16 +5,16 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  /* Mép lụa ở đáy cũng tan vào phần kế tiếp, không kết thúc thành đường ngang. */
+  /* Mép trang trí ở đáy cũng tan vào phần kế tiếp, không kết thúc thành đường ngang. */
   mask-image: linear-gradient(to bottom, #000 calc(100% - var(--join-fade)), transparent);
 }
 
-/* Các phần sau bìa nối cả mép trên; mép trên của bìa vẫn giữ nguyên góc lụa. */
+/* Các phần sau bìa nối cả mép trên; mép trên của bìa vẫn giữ nguyên góc lá. */
 :global(main > section + section) > .stationery {
   mask-image: linear-gradient(to bottom, transparent, #000 var(--join-fade), #000 calc(100% - var(--join-fade)), transparent);
 }
 
-.stationery[data-tone='light'] > canvas { opacity: 0.38; }
+.stationery[data-tone='light'] > canvas { opacity: 0.2; }
 
 /* Scene ánh nến: mép trên tan dần vào nền trang để chuyển từ ngày sang tối không bị gắt. */
 .stationery[data-tone='dark'] {

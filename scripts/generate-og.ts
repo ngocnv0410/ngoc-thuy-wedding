@@ -1,7 +1,7 @@
 import { sealMarkup, sealSvg } from '../src/components/sealArt.ts'
 /**
  * Sinh ảnh xem trước khi chia sẻ link (public/og.jpg, 1200×630) theo đúng phong cách tờ thiệp:
- * nền loang cẩm thạch + gân nhũ vàng, lụa satin ở hai góc (dùng chung dữ liệu với trang),
+ * nền loang cẩm thạch + gân nhũ vàng, cành lá watercolor ở hai góc (dùng chung dữ liệu với trang),
  * dấu sáp, tên nhũ vàng, ngày. Chữ được chuyển thành đường vẽ (opentype.js) từ chính font của
  * trang, nên dấu tiếng Việt đúng mà không cần cài font trên máy build.
  */
@@ -12,7 +12,6 @@ import { fileURLToPath } from 'node:url'
 import opentype, { type Font } from 'opentype.js'
 import sharp from 'sharp'
 import { W as MARBLE_W, frame, frameSoftSvg, frameCrispSvg } from '../src/components/decor/marble.ts'
-import { SATIN_ASSETS, type DrapeCorner } from '../src/components/decor/satin.ts'
 import { share, shareImageVersion, versionedShareImage } from './share.ts'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -91,40 +90,25 @@ function centered(r: Run, baseline: number, fill: string) {
   return `<path transform="translate(${((W - r.width) / 2).toFixed(1)} ${baseline})" d="${r.d}" fill="${fill}"/>`
 }
 
-// Share the marble renderer and satin assets with the live invitation.
+// Share the paper renderer and botanical artwork with the live invitation.
 const marbleHeight = H * MARBLE_W / W
 const marble = frame(5, marbleHeight)
 const soft = await sharp(Buffer.from(frameSoftSvg(marble, 5, marbleHeight, 'light'))).resize(W, H).png().toBuffer()
 const crisp = await sharp(Buffer.from(frameCrispSvg(marble, marbleHeight, 'light'))).resize(W, H).png().toBuffer()
 const background = `<rect width="${W}" height="${H}" fill="#f8f4ec"/>
-  <g opacity="0.38">
+  <g opacity="0.2">
     <image width="${W}" height="${H}" href="data:image/png;base64,${soft.toString('base64')}"/>
     <image width="${W}" height="${H}" href="data:image/png;base64,${crisp.toString('base64')}"/>
   </g>`
 
-async function satinCorner(corner: DrapeCorner) {
-  const asset = SATIN_ASSETS[corner]
-  // Use the same desktop scale and high-resolution source as SatinCorner.
-  const image = await sharp(join(root, `public/images/decor/${asset.name}-6x.webp`))
-    .resize({ width: Math.round(asset.width * 1.35) }).png().toBuffer({ resolveWithObject: true })
-  const top = corner === 'top-left'
-  const width = image.info.width
-  const height = image.info.height
-  const id = top ? 'satinTop' : 'satinBottom'
-  const stops = (fade: number) => top
-    ? `<stop offset="0" stop-color="white"/><stop offset="${1 - fade}" stop-color="white"/><stop offset="1" stop-color="black"/>`
-    : `<stop offset="0" stop-color="black"/><stop offset="${fade}" stop-color="white"/><stop offset="1" stop-color="white"/>`
-  return `<svg x="${top ? 0 : W - width}" y="${top ? 0 : H - height}" width="${width}" height="${height}">
-    <defs>
-      <linearGradient id="${id}X" x1="0" y1="0" x2="1" y2="0">${stops((top ? 28 : 32) / width)}</linearGradient>
-      <linearGradient id="${id}Y" x1="0" y1="0" x2="0" y2="1">${stops(32 / height)}</linearGradient>
-      <mask id="${id}MaskX"><rect width="100%" height="100%" fill="url(#${id}X)"/></mask>
-      <mask id="${id}MaskY"><rect width="100%" height="100%" fill="url(#${id}Y)"/></mask>
-    </defs>
-    <g mask="url(#${id}MaskX)"><image width="100%" height="100%" mask="url(#${id}MaskY)" href="data:image/png;base64,${image.data.toString('base64')}"/></g>
-  </svg>`
+async function botanicalCorner(bottom: boolean) {
+  const image = await sharp(join(root, 'public/images/decor/botanical-corner-960.webp'))
+    .resize({ width: 240 }).png().toBuffer({ resolveWithObject: true })
+  const { width, height } = image.info
+  const placement = bottom ? `translate(${W} ${H}) rotate(180)` : ''
+  return `<g transform="${placement}" opacity="0.8"><image width="${width}" height="${height}" href="data:image/png;base64,${image.data.toString('base64')}"/></g>`
 }
-const drapes = (await Promise.all([satinCorner('top-left'), satinCorner('bottom-right')])).join('')
+const drapes = (await Promise.all([botanicalCorner(false), botanicalCorner(true)])).join('')
 
 // ── Tên và "&" nhũ vàng (Alex Brush như bìa) ──
 const nameSize = 116

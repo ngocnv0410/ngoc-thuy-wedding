@@ -19,7 +19,7 @@ export function Locations({ content }: { content: WeddingContent }) {
   return (
     <SceneShell ref={ref} id="dia-diem" light="afternoon" labelledBy="locations-title">
       <Stationery seed={13} />
-      <SceneHeading id="locations-title" eyebrow="Địa điểm tổ chức">
+      <SceneHeading id="locations-title" eyebrow="Địa điểm tổ chức" photo={content.headingPhotos?.['dia-diem']}>
         Địa điểm lễ cưới
       </SceneHeading>
 

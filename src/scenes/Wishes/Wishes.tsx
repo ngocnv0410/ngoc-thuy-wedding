@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Stationery } from '../../components/decor/Stationery'
 import { ChibiStory } from '../../components/chibi/ChibiStory'
 import { SceneShell } from '../../components/SceneShell'
 import type { WeddingContent } from '../../content/types'
@@ -149,6 +150,7 @@ export function Wishes({ content }: { content: WeddingContent }) {
 
   return (
     <SceneShell ref={ref} id="loi-chuc" light="afternoon" labelledBy="wishes-title" className={styles.scene}>
+      <Stationery seed={37} />
       <header className={styles.heading}>
         <p className={styles.eyebrow}>Lời chúc mừng</p>
         <h2 id="wishes-title">Gửi lời chúc</h2>

@@ -1,0 +1,12 @@
+.corner { position: absolute; display: block; width: clamp(72px, 17vw, 120px); opacity: 0.48; pointer-events: none; user-select: none; z-index: 1; }
+.corner[data-corner='top-left'] { top: 0; left: 0; }
+.corner[data-corner='bottom-right'] { bottom: 0; right: 0; transform: rotate(180deg); }
+.corner[data-variant='cover'] { width: clamp(130px, 34vw, 240px); opacity: 0.8; }
+.corner[data-variant='compact'] { width: 64px; opacity: 0.28; }
+.corner[data-variant='photo'] { width: 72px; opacity: 0.9; }
+.sway { display: block; transform-origin: 8% 8%; animation: botanicalSway 9s ease-in-out var(--botanical-delay, 0s) infinite alternate; animation-play-state: paused; }
+.corner[data-ambient-active='true'] .sway { animation-play-state: running; }
+:root[data-opening='on'] .sway { animation-play-state: paused; }
+.sway img { display: block; width: 100%; height: auto; }
+@keyframes botanicalSway { from { transform: rotate(-0.4deg); } to { transform: rotate(0.4deg); } }
+@media (prefers-reduced-motion: reduce) { .sway { animation: none; transform: none; } }

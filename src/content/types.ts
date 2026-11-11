@@ -174,7 +174,19 @@ export interface Music {
   licenseUrl?: string
 }
 
+export interface HeadingPhotoContent {
+  image: ResponsiveImage
+  alt: string
+  /** Crop around the couple rather than the center of a portrait photograph. */
+  focus?: string
+  sample?: boolean
+  style?: 'double' | 'soft' | 'letter'
+}
+
+export type HeadingPhotoSection = 'thong-tin' | 'dia-diem' | 'mung-cuoi'
+
 export interface WeddingContent {
+  headingPhotos?: Partial<Record<HeadingPhotoSection, HeadingPhotoContent>>
   couple: Couple
   cover?: Cover
   days: WeddingDay[]
