@@ -34,19 +34,15 @@ export function SceneShell({ id, light, labelledBy, className, ref, children }: 
 
 interface SceneHeadingProps {
   id: string
-  eyebrow: string
   children: ReactNode
   photo?: HeadingPhotoContent
   photoAccent?: ReactNode
   align?: 'center' | 'start'
 }
 
-/** Tiêu đề scene: dòng nhãn nhỏ + tiêu đề serif lớn. */
-export function SceneHeading({ id, eyebrow, children, photo, photoAccent, align = 'center' }: SceneHeadingProps) {
-  const heading = <>
-    <p className={styles.eyebrow} data-anim="eyebrow">{eyebrow}</p>
-    <h2 id={id} className={styles.title} data-anim="title">{children}</h2>
-  </>
+/** Tiêu đề scene: một tiêu đề serif duy nhất. */
+export function SceneHeading({ id, children, photo, photoAccent, align = 'center' }: SceneHeadingProps) {
+  const heading = <h2 id={id} className={styles.title} data-anim="title">{children}</h2>
   return (
     <header className={styles.heading} data-align={align} data-has-photo={Boolean(photo)}>
       <HeadingPhoto photo={photo} heading={heading}>{photoAccent}</HeadingPhoto>

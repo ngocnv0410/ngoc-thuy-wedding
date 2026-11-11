@@ -36,10 +36,7 @@ export function Gift({ content }: { content: WeddingContent }) {
         drapes={['top-left', 'bottom-right']}
       />
       <article className={styles.letter}>
-        <HeadingPhoto photo={content.headingPhotos?.['mung-cuoi']} heading={<>
-          <p className={styles.eyebrow} data-anim="letter-eyebrow">Lời cảm ơn</p>
-          <h2 id="gift-title" className={styles.title} data-anim="letter-title">Thương gửi bạn</h2>
-        </>} />
+        <HeadingPhoto photo={content.headingPhotos?.['mung-cuoi']} heading={<h2 id="gift-title" className={styles.title} data-anim="letter-title">Thương gửi bạn</h2>} />
         <div className={styles.letterBody}>
           {thankYou.map((paragraph, index) => (
             <p key={index} data-anim="letter-line">
