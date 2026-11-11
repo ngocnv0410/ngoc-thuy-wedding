@@ -40,11 +40,12 @@ export function Details({ content }: { content: WeddingContent }) {
         seed={8}
       />
 
-      <SceneHeading id="details-title" eyebrow="Thông tin lễ cưới">
+      <SceneHeading id="details-title" eyebrow="Thông tin lễ cưới" photo={content.headingPhotos?.['thong-tin']}
+        photoAccent={<ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />}>
         Ngày vui của {first.givenName} &amp; {second.givenName}
       </SceneHeading>
 
-      <ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />
+      {!content.headingPhotos?.['thong-tin'] && <ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />}
 
       <div className={styles.families} data-anim="families">
         <Family label={first === couple.groom ? 'Nhà trai' : 'Nhà gái'} person={first} />

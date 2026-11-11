@@ -1,4 +1,6 @@
 import type { ReactNode, Ref } from 'react'
+import type { HeadingPhotoContent } from '../content/types'
+import { HeadingPhoto } from './HeadingPhoto'
 import { Petals } from './Petals'
 import styles from './SceneShell.module.css'
 
@@ -34,19 +36,22 @@ interface SceneHeadingProps {
   id: string
   eyebrow: string
   children: ReactNode
+  photo?: HeadingPhotoContent
+  photoAccent?: ReactNode
   align?: 'center' | 'start'
 }
 
 /** Tiêu đề scene: dòng nhãn nhỏ + tiêu đề serif lớn. */
-export function SceneHeading({ id, eyebrow, children, align = 'center' }: SceneHeadingProps) {
+export function SceneHeading({ id, eyebrow, children, photo, photoAccent, align = 'center' }: SceneHeadingProps) {
   return (
-    <header className={styles.heading} data-align={align}>
+    <header className={styles.heading} data-align={align} data-has-photo={Boolean(photo)}>
       <p className={styles.eyebrow} data-anim="eyebrow">
         {eyebrow}
       </p>
       <h2 id={id} className={styles.title} data-anim="title">
         {children}
       </h2>
+      <HeadingPhoto photo={photo}>{photoAccent}</HeadingPhoto>
     </header>
   )
 }
