@@ -19,7 +19,7 @@ export function Locations({ content }: { content: WeddingContent }) {
   return (
     <SceneShell ref={ref} id="dia-diem" light="afternoon" labelledBy="locations-title">
       <Stationery seed={13} />
-      <SceneHeading id="locations-title" photo={content.headingPhotos?.['dia-diem']}>
+      <SceneHeading id="locations-title" photo={content.headingPhotos?.['dia-diem']} photoAccent={<ChibiStory kind="map" />}>
         Địa điểm tổ chức
       </SceneHeading>
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { HeadingPhotoContent } from '../content/types'
+import { HeadingCharacter } from './HeadingCharacter'
 import { BotanicalCorner } from './decor/BotanicalCorner'
 import { ResponsivePicture } from './ResponsivePicture'
 import { useVisibleMotion } from '../motion/useVisibleMotion'
@@ -9,7 +10,7 @@ import styles from './HeadingPhoto.module.css'
 /** Optional photo-backed heading; text remains available when the photo is missing or fails. */
 export function HeadingPhoto({ photo, heading, children }: { photo?: HeadingPhotoContent; heading?: ReactNode; children?: ReactNode }) {
   // Reset error state if a later content update selects a different picture.
-  return photo ? <PhotoFrame key={photo.image.img.src} photo={photo} heading={heading}>{children}</PhotoFrame> : heading ?? null
+  return photo ? <PhotoFrame key={photo.image.img.src} photo={photo} heading={heading}>{children}</PhotoFrame> : <HeadingFallback heading={heading}>{children}</HeadingFallback>
 }
 
 function PhotoFrame({ photo, heading, children }: { photo: HeadingPhotoContent; heading?: ReactNode; children?: ReactNode }) {
@@ -32,7 +33,7 @@ function PhotoFrame({ photo, heading, children }: { photo: HeadingPhotoContent; 
     const frame = requestAnimationFrame(() => loadMotion().then(runtime => { if (!cancelled) runtime.refreshLayout() }).catch(() => {}))
     return () => { cancelled = true; cancelAnimationFrame(frame) }
   }, [failed])
-  if (failed) return heading ?? null
+  if (failed) return <HeadingFallback heading={heading}>{children}</HeadingFallback>
   return <div ref={ref} className={styles.wrap} data-heading-photo
     data-heading-overlay={Boolean(heading)} data-heading-style={photo.style ?? 'double'} data-ambient-active={active}>
     <div className={styles.frame}>
@@ -44,6 +45,11 @@ function PhotoFrame({ photo, heading, children }: { photo: HeadingPhotoContent; 
       {photo.sample && <span className={styles.badge}>Ảnh mẫu</span>}
     </div>
     <BotanicalCorner corner="bottom-right" variant="photo" />
-    {children && <span className={styles.accent}>{children}</span>}
+    {children && <HeadingCharacter>{children}</HeadingCharacter>}
   </div>
+}
+
+function HeadingFallback({ heading, children }: { heading?: ReactNode; children?: ReactNode }) {
+  if (!children) return heading ?? null
+  return <div className={styles.fallback} data-heading-fallback>{heading}<HeadingCharacter>{children}</HeadingCharacter></div>
 }

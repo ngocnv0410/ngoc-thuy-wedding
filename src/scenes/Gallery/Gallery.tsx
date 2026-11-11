@@ -1,4 +1,6 @@
 import { useMemo, useRef } from 'react'
+import { ChibiStory } from '../../components/chibi/ChibiStory'
+import { HeadingCharacter } from '../../components/HeadingCharacter'
 import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
 import { ResponsivePicture } from '../../components/ResponsivePicture'
@@ -34,6 +36,7 @@ export function Gallery({ content }: { content: WeddingContent }) {
       <header className={styles.heading}>
         <h2 id="gallery-title">Ảnh cưới</h2>
         {photos.length > 0 && <span className={styles.count}>{photos.length} ảnh</span>}
+        <HeadingCharacter><ChibiStory kind="album" /></HeadingCharacter>
       </header>
       {photos.length === 0 && !video && <PendingNote>ảnh cưới và video.</PendingNote>}
       {photos.length > 0 && (

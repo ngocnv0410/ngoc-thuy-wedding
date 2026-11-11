@@ -1,0 +1,3 @@
+.character { position: absolute; right: 4px; bottom: -36px; z-index: 3; pointer-events: none; }
+.character [data-story] { --story-character-height: 58px; padding: 0; margin: 0; }
+.character [data-chibi] { --chibi-h: 58px; }

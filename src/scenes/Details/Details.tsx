@@ -45,8 +45,6 @@ export function Details({ content }: { content: WeddingContent }) {
         Thông tin hôn lễ
       </SceneHeading>
 
-      {!content.headingPhotos?.['thong-tin'] && <ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />}
-
       <div className={styles.families} data-anim="families">
         <Family label={first === couple.groom ? 'Nhà trai' : 'Nhà gái'} person={first} />
         <span className={styles.familyRule} aria-hidden="true" data-anim="family-rule" />

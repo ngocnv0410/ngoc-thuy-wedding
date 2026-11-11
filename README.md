@@ -90,10 +90,15 @@ Bỏ một mục khỏi map để tiêu đề đó chỉ hiện chữ. `wedding.
 cấp sẽ thay toàn bộ map mẫu; `{}` tắt hết ảnh tiêu đề. Ảnh lỗi tự ẩn khung, không để
 panel trống. Ảnh mẫu luôn có nhãn, không có caption. Chữ tiêu đề nằm ở dải dưới ảnh, với lớp chuyển ivory để dễ đọc và chừa khuôn mặt ở phía trên. Banner dùng hết chiều ngang nội dung trên mobile, tối đa 640px trên
 desktop, cao tối thiểu 196px/236px. Khi ảnh thiếu hoặc lỗi, chữ tiêu đề vẫn hiển thị.
-Chibi lịch thu nhỏ nằm trong góc khung, không thêm một hàng.
+Các tiêu đề có chibi cùng cỡ 58px ở góc: lịch, bản đồ, máy ảnh, phong thư và cảm tạ.
+Tiêu đề không có ảnh vẫn giữ nhân vật; phần lời chúc chỉ có một nhân vật, đổi cử chỉ sau khi gửi.
 
 Lá chỉ đung đưa 0,4°, ảnh hiện dần/thu nhẹ một lần khi vào màn hình. Chuyển động dừng
 khi khuất màn hình hoặc tab ẩn; giảm chuyển động hiển thị tĩnh.
 Kiểm tra browser với `scripts/review-heading-photos.mjs` (Playwright tùy chọn như các
 script review trên): chạy production preview ở cổng 4178 và dev ở 5173. Có thể đặt
 `WEDDING_BASE`, `WEDDING_DEV_BASE`, `CHROMIUM_PATH`, `REVIEW_DIR` để đổi môi trường.
+
+Kiểm tra đồng bộ nhân vật ở năm tiêu đề bằng `scripts/review-heading-characters.mjs`
+(Playwright, `WEDDING_BASE` trỏ tới dev có guestbook hoặc website đã triển khai).
+Script kiểm tra cỡ nhân vật, không che chữ, không lặp nhân vật và chuyển động không bật nhảy.
