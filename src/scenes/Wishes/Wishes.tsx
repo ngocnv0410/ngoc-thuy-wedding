@@ -152,9 +152,7 @@ export function Wishes({ content }: { content: WeddingContent }) {
     <SceneShell ref={ref} id="loi-chuc" light="afternoon" labelledBy="wishes-title" className={styles.scene}>
       <Stationery seed={37} />
       <header className={styles.heading}>
-        <p className={styles.eyebrow}>Lời chúc mừng</p>
         <h2 id="wishes-title">Gửi lời chúc</h2>
-        <p>Dành tặng {content.couple.groom.givenName} &amp; {content.couple.bride.givenName}</p>
       </header>
       <div className={styles.layout}>
         <div className={styles.composer}>

@@ -50,13 +50,7 @@
   justify-items: start;
 }
 
-.eyebrow {
-  font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--scene-ink-muted);
-}
+
 
 .title {
   font-size: var(--text-display-lg);

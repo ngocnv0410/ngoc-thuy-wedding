@@ -40,7 +40,7 @@ export function Details({ content }: { content: WeddingContent }) {
         seed={8}
       />
 
-      <SceneHeading id="details-title" eyebrow="Thông tin lễ cưới" photo={content.headingPhotos?.['thong-tin']}
+      <SceneHeading id="details-title" photo={content.headingPhotos?.['thong-tin']}
         photoAccent={<ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />}>
         Ngày vui của {first.givenName} &amp; {second.givenName}
       </SceneHeading>

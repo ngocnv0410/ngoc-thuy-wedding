@@ -18,13 +18,7 @@
   border-block: 1px solid rgb(198 166 107 / 0.3);
 }
 
-.eyebrow {
-  font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-mocha);
-}
+
 
 .title {
   font-size: var(--text-display-lg);
