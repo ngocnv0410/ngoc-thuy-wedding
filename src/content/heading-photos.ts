@@ -5,7 +5,7 @@ import moon from '../assets/gallery-samples/moon.webp?w=480;960&format=avif;webp
 import type { HeadingPhotoContent, HeadingPhotoSection } from './types'
 
 export const sampleHeadingPhotos: Partial<Record<HeadingPhotoSection, HeadingPhotoContent>> = {
-  'thong-tin': { image: garden, alt: 'Ảnh mẫu: cặp đôi trong khu vườn', focus: '50% 58%', sample: true, style: 'double' },
-  'dia-diem': { image: arch, alt: 'Ảnh mẫu: cặp đôi dưới vòm hoa', focus: '50% 58%', sample: true, style: 'soft' },
-  'mung-cuoi': { image: moon, alt: 'Ảnh mẫu: cặp đôi dưới ánh trăng', focus: '50% 58%', sample: true, style: 'letter' },
+  'thong-tin': { image: garden, alt: 'Ảnh mẫu: cặp đôi trong khu vườn', focus: '50% 52%', sample: true, style: 'double' },
+  'dia-diem': { image: arch, alt: 'Ảnh mẫu: cặp đôi dưới vòm hoa', focus: '50% 52%', sample: true, style: 'soft' },
+  'mung-cuoi': { image: moon, alt: 'Ảnh mẫu: cặp đôi dưới ánh trăng', focus: '50% 52%', sample: true, style: 'letter' },
 }
