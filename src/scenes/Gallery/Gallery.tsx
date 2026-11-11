@@ -32,7 +32,7 @@ export function Gallery({ content }: { content: WeddingContent }) {
     <SceneShell ref={ref} id="album" light="golden" labelledBy="gallery-title" className={styles.scene}>
       <Stationery seed={21} decoration="compact" />
       <header className={styles.heading}>
-        <h2 id="gallery-title">Album ảnh</h2>
+        <h2 id="gallery-title">Ảnh cưới</h2>
         {photos.length > 0 && <span className={styles.count}>{photos.length} ảnh</span>}
       </header>
       {photos.length === 0 && !video && <PendingNote>ảnh cưới và video.</PendingNote>}

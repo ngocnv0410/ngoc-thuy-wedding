@@ -42,7 +42,7 @@ export function Details({ content }: { content: WeddingContent }) {
 
       <SceneHeading id="details-title" photo={content.headingPhotos?.['thong-tin']}
         photoAccent={<ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />}>
-        Ngày vui của {first.givenName} &amp; {second.givenName}
+        Thông tin hôn lễ
       </SceneHeading>
 
       {!content.headingPhotos?.['thong-tin'] && <ChibiStory kind="calendar" label={String(Number(main.solar.slice(8)))} />}

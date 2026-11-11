@@ -95,11 +95,11 @@ function App() {
 
   const chapters: Chapter[] = [
     { id: 'bia', label: 'Bìa thiệp' },
-    { id: 'thong-tin', label: 'Thông tin lễ cưới' },
-    ...(showLocations ? [{ id: 'dia-diem', label: 'Địa điểm' }] : []),
-    ...(showGallery ? [{ id: 'album', label: 'Album ảnh' }] : []),
-    ...(guestbookEnabled ? [{ id: 'loi-chuc', label: 'Gửi lời chúc' }] : []),
-    { id: 'mung-cuoi', label: 'Mừng cưới & lời cảm ơn' },
+    { id: 'thong-tin', label: 'Thông tin hôn lễ' },
+    ...(showLocations ? [{ id: 'dia-diem', label: 'Địa điểm tổ chức' }] : []),
+    ...(showGallery ? [{ id: 'album', label: 'Ảnh cưới' }] : []),
+    ...(guestbookEnabled ? [{ id: 'loi-chuc', label: 'Lời chúc phúc' }] : []),
+    { id: 'mung-cuoi', label: 'Lời cảm tạ' },
   ]
 
   return (

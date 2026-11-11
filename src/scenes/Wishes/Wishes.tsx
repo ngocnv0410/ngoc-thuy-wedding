@@ -152,7 +152,7 @@ export function Wishes({ content }: { content: WeddingContent }) {
     <SceneShell ref={ref} id="loi-chuc" light="afternoon" labelledBy="wishes-title" className={styles.scene}>
       <Stationery seed={37} />
       <header className={styles.heading}>
-        <h2 id="wishes-title">Gửi lời chúc</h2>
+        <h2 id="wishes-title">Lời chúc phúc</h2>
       </header>
       <div className={styles.layout}>
         <div className={styles.composer}>
@@ -188,7 +188,7 @@ export function Wishes({ content }: { content: WeddingContent }) {
           )}
         </div>
         <section className={styles.feed} aria-labelledby="wish-feed-title">
-          <h3 id="wish-feed-title">Lời chúc từ mọi người</h3>
+          <h3 id="wish-feed-title">Lời chúc của quý khách</h3>
           {displayedWishes.length > 0 && (
             <ul ref={list} className={styles.messages} data-lenis-prevent="true" tabIndex={0} aria-label="Những lời chúc mới nhất">
               {displayedWishes.map((wish) => (
