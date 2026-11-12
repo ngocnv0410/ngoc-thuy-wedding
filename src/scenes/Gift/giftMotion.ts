@@ -1,3 +1,4 @@
+import { accentSectionTitle } from '../../lib/sceneHeading'
 import { DUR, drawDivider, growDrapes, gsap, revealLines, riseIn, washIn } from '../../lib/gsap'
 import { floatUp } from '../../motion/chibi'
 import { closingMotion } from './closingMotion'
@@ -39,7 +40,7 @@ export function giftMotion(root: HTMLElement) {
   const eyebrow = one(root, 'letter-eyebrow')
   if (eyebrow) riseIn(eyebrow, eyebrow, { y: 12 })
   const title = one(root, 'letter-title')
-  if (title) revealLines(title)
+  if (title) accentSectionTitle(title)
 
   for (const paragraph of root.querySelectorAll('[data-anim="letter-line"]')) {
     revealLines(paragraph, { stagger: 0.12, start: 'top 88%' })

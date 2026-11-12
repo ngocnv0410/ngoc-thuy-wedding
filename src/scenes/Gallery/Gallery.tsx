@@ -1,5 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { ChibiStory } from '../../components/chibi/ChibiStory'
+import titleStyles from '../../components/SectionTitle.module.css'
+import { SectionTitle } from '../../components/SectionTitle'
 import { HeadingCharacter } from '../../components/HeadingCharacter'
 import { Stationery } from '../../components/decor/Stationery'
 import { PendingNote } from '../../components/PendingNote'
@@ -33,8 +35,8 @@ export function Gallery({ content }: { content: WeddingContent }) {
   return (
     <SceneShell ref={ref} id="album" light="golden" labelledBy="gallery-title" className={styles.scene}>
       <Stationery seed={21} decoration="compact" />
-      <header className={styles.heading}>
-        <h2 id="gallery-title">Ảnh cưới</h2>
+      <header className={titleStyles.panel}>
+        <SectionTitle id="gallery-title">Ảnh cưới</SectionTitle>
         {photos.length > 0 && <span className={styles.count}>{photos.length} ảnh</span>}
         <HeadingCharacter><ChibiStory kind="album" /></HeadingCharacter>
       </header>

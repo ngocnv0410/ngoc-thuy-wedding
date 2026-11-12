@@ -1,9 +1,16 @@
-import { revealLines, riseIn } from './gsap'
+import { gsap } from './gsap'
 
-/** Motif chung cho tiêu đề scene 2–4: nhãn hiện lên, tiêu đề hiện theo dòng trong mask. */
+/** Animate only the gold rule: headings remain readable even during a quick scroll. */
+export function accentSectionTitle(title: Element) {
+  gsap.fromTo(title, { '--title-rule-scale': 0.35 }, {
+    '--title-rule-scale': 1,
+    duration: 0.7,
+    ease: 'sine.out',
+    scrollTrigger: { trigger: title, start: 'top 95%', once: true },
+  })
+}
+
 export function animateSceneHeading(root: HTMLElement) {
-  const eyebrow = root.querySelector('[data-anim="eyebrow"]')
   const title = root.querySelector('[data-anim="title"]')
-  if (eyebrow) riseIn(eyebrow, eyebrow, { y: 12 })
-  if (title) revealLines(title, { delay: 0.1 })
+  if (title) accentSectionTitle(title)
 }

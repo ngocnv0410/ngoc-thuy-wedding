@@ -18,13 +18,6 @@
   border-block: 1px solid rgb(198 166 107 / 0.3);
 }
 
-
-
-.title {
-  font-size: var(--text-display-lg);
-  line-height: 1.1;
-}
-
 .letterBody {
   display: grid;
   gap: var(--space-4);
