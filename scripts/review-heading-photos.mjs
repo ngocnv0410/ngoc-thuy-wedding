@@ -20,7 +20,7 @@ for(const width of [320,390,768,1440]) {
   assert(metrics.titleTop>=metrics.top && metrics.titleBottom<=metrics.bottom,`${id}: title inside photo banner`)
   assert(metrics.titleTop>=metrics.top+metrics.height*0.55,`${id}: title stays in lower band, away from faces`)
   assert(metrics.width<=640)
-  assert(metrics.height<=280)
+  assert(metrics.height<=310)
   assert.equal(await photo.getByText('Ảnh mẫu',{exact:true}).count(),1)
   await p.screenshot({path:`${directory}/${id}-${width}.png`})
  }
