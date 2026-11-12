@@ -82,7 +82,7 @@ cành lớn; các mục dùng cành nhỏ; album giữ trang trí nhẹ để kh
 
 `src/content/heading-photos.ts` cấu hình ảnh nền sau ba tiêu đề: `thong-tin`, `dia-diem`,
 `mung-cuoi`. Mỗi mục có `image` (ResponsiveImage), `alt`, `focus` (object-position),
-`sample` và `style` giữ tương thích cấu hình cũ; các ảnh dùng chung vòm mềm. Thay import ảnh ở file này
+`sample` và `style` giữ tương thích cấu hình cũ; các ảnh dùng chung ảnh ngang cạnh thẳng. Thay import ảnh ở file này
 bằng ảnh cưới thật, đặt `sample: false` và chỉnh `focus` để không cắt khuôn mặt.
 Không import ảnh vào `wedding.ts` vì các script Node vẫn đọc file đó khi build.
 
@@ -103,5 +103,5 @@ Kiểm tra đồng bộ nhân vật ở năm tiêu đề bằng `scripts/review-
 (Playwright, `WEDDING_BASE` trỏ tới dev có guestbook hoặc website đã triển khai).
 Script kiểm tra cỡ nhân vật, không che chữ, không lặp nhân vật và chuyển động không bật nhảy.
 
-Năm tiêu đề dùng `SectionTitle`: thư pháp Great Vibes, tối thiểu 36px, họa tiết lá và đôi nhẫn mảnh.
-Tiêu đề không có khung hộp; ảnh nền dạng vòm mềm, tan dần vào giấy. Chữ luôn hiển thị ngay cả khi khách cuộn nhanh; chỉ họa tiết chuyển động nhẹ.
+Năm tiêu đề dùng `SectionTitle`: serif đứng Cormorant Garamond 500, tối thiểu 30px, họa tiết lá và đôi nhẫn mảnh.
+Tiêu đề không có khung hộp; ảnh nền ngang cạnh thẳng, tan dần vào giấy. Chữ luôn hiển thị ngay cả khi khách cuộn nhanh; chỉ họa tiết chuyển động nhẹ.

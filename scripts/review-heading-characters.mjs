@@ -23,7 +23,7 @@ try {
       const actor = container.locator('[data-heading-character]')
       await actor.scrollIntoViewIfNeeded(); await page.waitForTimeout(300)
       const typography = await title.evaluate(e => { const s = getComputedStyle(e); return { size: parseFloat(s.fontSize), weight: Number(s.fontWeight), opacity: s.opacity, visibility: s.visibility, height: e.getBoundingClientRect().height, line: parseFloat(s.lineHeight), width: e.clientWidth, content: e.scrollWidth } })
-      assert(typography.size >= 36 && typography.weight === 400, `${id}: prominent typography`)
+      assert(typography.size >= 30 && typography.weight === 500, `${id}: prominent typography`)
       assert.equal(typography.opacity, '1'); assert.equal(typography.visibility, 'visible')
       assert(typography.height <= typography.line * 1.2 && typography.content <= typography.width + 1, `${id}: one unclipped line`)
       assert.equal(await actor.count(), 1)
