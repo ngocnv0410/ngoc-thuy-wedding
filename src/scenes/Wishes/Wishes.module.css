@@ -1,6 +1,4 @@
 .scene { background: var(--color-ivory); }
-.heading { position: relative; width: min(100%, 640px); margin-inline: auto; padding-bottom: 58px; display: grid; justify-items: center; gap: 12px; margin-bottom: 20px; text-align: center; }
-.heading h2 { font-family: var(--font-serif); font-size: clamp(40px, 4.5vw, 64px); font-weight: 500; line-height: 1.1; }
 .layout { display: grid; gap: 40px; max-width: 960px; margin-inline: auto; }
 .form { display: grid; align-content: start; gap: 10px; min-width: 0; }
 .form label { font-size: 13px; font-weight: 500; color: #6d5233; }
@@ -42,5 +40,3 @@
 @media (hover: hover) and (pointer: fine) {
   .submit:not(:disabled):hover { background: linear-gradient(125deg, #fff8e9, #e5cda4); }
 }
-
-.heading > [data-heading-character] { bottom: 0; }

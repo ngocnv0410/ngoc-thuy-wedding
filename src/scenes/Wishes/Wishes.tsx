@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import titleStyles from '../../components/SectionTitle.module.css'
+import { SectionTitle } from '../../components/SectionTitle'
 import { HeadingCharacter } from '../../components/HeadingCharacter'
 import { Stationery } from '../../components/decor/Stationery'
 import { ChibiStory } from '../../components/chibi/ChibiStory'
@@ -152,8 +154,8 @@ export function Wishes({ content }: { content: WeddingContent }) {
   return (
     <SceneShell ref={ref} id="loi-chuc" light="afternoon" labelledBy="wishes-title" className={styles.scene}>
       <Stationery seed={37} />
-      <header className={styles.heading}>
-        <h2 id="wishes-title">Lời chúc phúc</h2>
+      <header className={titleStyles.panel}>
+        <SectionTitle id="wishes-title">Lời chúc phúc</SectionTitle>
         <HeadingCharacter><ChibiStory key={receipt ? 'thanks' : 'letter'} kind={receipt ? 'thanks' : 'letter'} who="bride" /></HeadingCharacter>
       </header>
       <div className={styles.layout}>

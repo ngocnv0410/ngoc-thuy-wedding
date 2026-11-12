@@ -1,5 +1,6 @@
 import type { ReactNode, Ref } from 'react'
 import type { HeadingPhotoContent } from '../content/types'
+import { SectionTitle } from './SectionTitle'
 import { HeadingPhoto } from './HeadingPhoto'
 import { Petals } from './Petals'
 import styles from './SceneShell.module.css'
@@ -42,7 +43,7 @@ interface SceneHeadingProps {
 
 /** Tiêu đề scene: một tiêu đề serif duy nhất. */
 export function SceneHeading({ id, children, photo, photoAccent, align = 'center' }: SceneHeadingProps) {
-  const heading = <h2 id={id} className={styles.title} data-anim="title">{children}</h2>
+  const heading = <SectionTitle id={id}>{children}</SectionTitle>
   return (
     <header className={styles.heading} data-align={align} data-has-photo={Boolean(photo)}>
       <HeadingPhoto photo={photo} heading={heading}>{photoAccent}</HeadingPhoto>

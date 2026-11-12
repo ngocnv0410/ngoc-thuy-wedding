@@ -6,6 +6,7 @@ import { ResponsivePicture } from './ResponsivePicture'
 import { useVisibleMotion } from '../motion/useVisibleMotion'
 import { loadMotion, prefersMotion } from '../motion/useMotion'
 import styles from './HeadingPhoto.module.css'
+import titleStyles from './SectionTitle.module.css'
 
 /** Optional photo-backed heading; text remains available when the photo is missing or fails. */
 export function HeadingPhoto({ photo, heading, children }: { photo?: HeadingPhotoContent; heading?: ReactNode; children?: ReactNode }) {
@@ -51,5 +52,5 @@ function PhotoFrame({ photo, heading, children }: { photo: HeadingPhotoContent; 
 
 function HeadingFallback({ heading, children }: { heading?: ReactNode; children?: ReactNode }) {
   if (!children) return heading ?? null
-  return <div className={styles.fallback} data-heading-fallback>{heading}<HeadingCharacter>{children}</HeadingCharacter></div>
+  return <div className={titleStyles.panel} data-heading-fallback>{heading}<HeadingCharacter>{children}</HeadingCharacter></div>
 }
