@@ -1,12 +1,12 @@
 .title {
   position: relative;
   max-width: 100%;
-  font-family: var(--font-script);
-  font-size: clamp(36px, 9.5vw, 58px);
-  font-weight: 400;
-  line-height: 1.4;
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 7.6vw, 46px);
+  font-weight: 500;
+  line-height: 1.25;
   letter-spacing: 0;
-  color: #62462e;
+  color: #493729;
   white-space: nowrap;
   text-align: center;
 }
