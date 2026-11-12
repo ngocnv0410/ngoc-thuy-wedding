@@ -1,9 +1,9 @@
 import { gsap } from './gsap'
 
-/** Animate only the gold rule: headings remain readable even during a quick scroll. */
+/** Animate only the botanical ornament: headings remain readable even during a quick scroll. */
 export function accentSectionTitle(title: Element) {
-  gsap.fromTo(title, { '--title-rule-scale': 0.35 }, {
-    '--title-rule-scale': 1,
+  gsap.fromTo(title, { '--title-ornament-scale': 0.85 }, {
+    '--title-ornament-scale': 1,
     duration: 0.7,
     ease: 'sine.out',
     scrollTrigger: { trigger: title, start: 'top 95%', once: true },
