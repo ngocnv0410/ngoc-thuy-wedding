@@ -40,7 +40,8 @@ export function OpeningAtmosphere({ opening }: { opening: boolean }) {
       ctx.drawImage(sprite, x - radius * 2.5, y - radius * 2.5, radius * 5, radius * 5)
       ctx.beginPath(); ctx.moveTo(x - radius * 3, y); ctx.lineTo(x + radius * 3, y)
       ctx.moveTo(x, y - radius * 4); ctx.lineTo(x, y + radius * 4)
-      ctx.strokeStyle = '#fff8dc'; ctx.lineWidth = 0.65; ctx.stroke()
+      ctx.strokeStyle = 'rgba(166,126,55,.4)'; ctx.lineWidth = 1.3; ctx.stroke()
+      ctx.strokeStyle = '#fffdf0'; ctx.lineWidth = 0.5; ctx.stroke()
     }
     const draw = (now: number) => {
       frame = 0
@@ -51,16 +52,16 @@ export function OpeningAtmosphere({ opening }: { opening: boolean }) {
       const fade = 1 - release
       ctx.clearRect(0, 0, width, height)
       ctx.globalCompositeOperation = 'source-over'
-      // A soft bronze vignette gives the minute particles depth against ivory paper.
+      // A pale champagne sheen keeps both edges light; fine gold cores define the glitter.
       const veil = ctx.createLinearGradient(0, 0, 0, height)
-      veil.addColorStop(0, `rgba(65,49,34,${0.76 * fade})`)
-      veil.addColorStop(0.12, `rgba(101,76,47,${0.22 * fade})`)
+      veil.addColorStop(0, `rgba(215,187,130,${0.16 * fade})`)
+      veil.addColorStop(0.12, `rgba(228,208,165,${0.04 * fade})`)
       veil.addColorStop(0.3, 'rgba(101,76,47,0)')
       veil.addColorStop(0.68, 'rgba(101,76,47,0)')
-      veil.addColorStop(0.89, `rgba(101,76,47,${0.25 * fade})`)
-      veil.addColorStop(1, `rgba(65,49,34,${0.8 * fade})`)
+      veil.addColorStop(0.89, `rgba(228,208,165,${0.04 * fade})`)
+      veil.addColorStop(1, `rgba(215,187,130,${0.16 * fade})`)
       ctx.fillStyle = veil; ctx.globalAlpha = 1; ctx.fillRect(0, 0, width, height)
-      ctx.globalCompositeOperation = 'lighter'
+      ctx.globalCompositeOperation = 'source-over'
       for (const p of particles) {
         let x = ((p.x + Math.sin(time * p.speed * 0.13 + p.phase) * 0.012 + 1) % 1) * width
         const wave = Math.sin(p.x * 7 + time * 0.24) * 0.018 + Math.cos(p.x * 11 - time * 0.15) * 0.009
@@ -73,7 +74,8 @@ export function OpeningAtmosphere({ opening }: { opening: boolean }) {
         const size = p.size * (0.65 + p.depth * 0.8)
         ctx.globalAlpha = alpha
         ctx.drawImage(sprite, x - size * 2.5, y - size * 2.5, size * 5, size * 5)
-        ctx.fillStyle = '#fff9e7'; ctx.fillRect(x, y, Math.max(0.45, size * 0.62), Math.max(0.45, size * 0.62))
+        ctx.globalAlpha = Math.min(1, alpha * 1.2)
+        ctx.fillStyle = '#ae873e'; ctx.fillRect(x, y, Math.max(0.65, size * 0.7), Math.max(0.65, size * 0.7))
         if (p.glint) star(x, y, 2 + twinkle * 1.6, alpha * 0.85)
       }
       if (elapsed >= 0 && elapsed < 2.6) {
