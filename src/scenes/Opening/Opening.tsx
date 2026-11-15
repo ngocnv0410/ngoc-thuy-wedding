@@ -9,6 +9,7 @@ import { music } from '../../lib/music'
 import { loadMotion, loadMotionWithin, lockScroll, prefersMotion } from '../../motion/useMotion'
 import styles from './Opening.module.css'
 import { Door } from './Door'
+import { OpeningAtmosphere } from './OpeningAtmosphere'
 import { useDoors3D } from './useDoors3D'
 
 interface OpeningProps extends MusicModeControl {
@@ -35,6 +36,7 @@ const FADE_MS = 420
 export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [closing, setClosing] = useState(false)
+  const [openingEffect, setOpeningEffect] = useState(false)
   const [withMusic, setWithMusic] = useState(() => Boolean(content.music))
   const started = useRef(false)
   const finished = useRef(false)
@@ -132,6 +134,7 @@ export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningP
       return
     }
     started.current = true
+    setOpeningEffect(true)
     // Phải gọi đồng bộ trong cú chạm để trình duyệt cho phép phát âm thanh.
     if (withMusic) music.play()
     if (!prefersMotion()) {
@@ -232,6 +235,8 @@ export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningP
           />
         </div>
       )}
+
+      <OpeningAtmosphere opening={openingEffect} />
 
       <div className={styles.greeting} data-anim="greeting">
         <CoupleNames first={first.givenName} second={second.givenName} layout="inline" size="section" className={styles.openingNames} />
