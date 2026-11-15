@@ -365,3 +365,13 @@
   .openingDate { font-size: 9px; }
   .skip { top: calc(4px + env(safe-area-inset-top)); padding-inline: 8px; font-size: 11px; }
 }
+
+/* Champagne evening preview: bright stars, warm metal, then the original ivory invitation. */
+.overlay { --color-blush: #4a443a; --gold-foil: linear-gradient(110deg, #d5bb85, #fff3cf 45%, #e0c392 75%, #f9e8bf); }
+.door[data-door='left'] { background-image: linear-gradient(to right, transparent 82%, rgb(20 15 10 / 0.3)), radial-gradient(ellipse 120% 70% at 10% 0%, rgb(196 162 102 / 0.12), transparent 70%), var(--paper-noise); }
+.door[data-door='right'] { background-image: linear-gradient(to left, transparent 82%, rgb(20 15 10 / 0.2)), radial-gradient(ellipse 120% 70% at 0% 0%, rgb(196 162 102 / 0.08), transparent 70%), var(--paper-noise); }
+.reliefShadow { color: #241e15; opacity: 0.8; }
+.reliefLight { color: #c2ad85; opacity: 0.68; }
+.reliefFace { color: #595247; }
+.openingDate, .musicChoice { color: #e6d5b2; }
+.skip { background: rgb(255 247 225 / 0.08); color: #eadcbe; }
