@@ -16,11 +16,11 @@ export function OpeningAtmosphere({ opening }: { opening: boolean }) {
     const motion = matchMedia('(prefers-reduced-motion: reduce)')
     let frame = 0, width = 0, height = 0, seed = 42712
     const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296 }
-    const particles = Array.from({ length: 2400 }, (_, i) => ({
-      x: random(), depth: random(), edge: random(), top: i % 2 === 0,
+    const particles = Array.from({ length: 1600 }, (_, i) => ({
+      x: random(), depth: random(), edge: random(), top: i % 2 === 0, middle: i % 11 === 0,
       phase: random() * TAU, speed: 0.2 + random() * 0.6,
-      size: 0.2 + Math.pow(random(), 4) * 1.3,
-      glint: i % 327 === 0,
+      size: 0.55 + Math.pow(random(), 3) * 1.85,
+      glint: i % 47 === 0,
     }))
     const sprite = document.createElement('canvas'); sprite.width = sprite.height = 32
     const pen = sprite.getContext('2d')!
@@ -38,10 +38,13 @@ export function OpeningAtmosphere({ opening }: { opening: boolean }) {
     const star = (x: number, y: number, radius: number, alpha: number) => {
       ctx.globalAlpha = alpha
       ctx.drawImage(sprite, x - radius * 2.5, y - radius * 2.5, radius * 5, radius * 5)
-      ctx.beginPath(); ctx.moveTo(x - radius * 3, y); ctx.lineTo(x + radius * 3, y)
-      ctx.moveTo(x, y - radius * 4); ctx.lineTo(x, y + radius * 4)
-      ctx.strokeStyle = 'rgba(166,126,55,.4)'; ctx.lineWidth = 1.3; ctx.stroke()
-      ctx.strokeStyle = '#fffdf0'; ctx.lineWidth = 0.5; ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(x, y - radius * 3)
+      ctx.quadraticCurveTo(x + radius * 0.18, y - radius * 0.25, x + radius * 2.2, y)
+      ctx.quadraticCurveTo(x + radius * 0.18, y + radius * 0.25, x, y + radius * 3)
+      ctx.quadraticCurveTo(x - radius * 0.18, y + radius * 0.25, x - radius * 2.2, y)
+      ctx.quadraticCurveTo(x - radius * 0.18, y - radius * 0.25, x, y - radius * 3)
+      ctx.fillStyle = '#fff8df'; ctx.fill()
+      ctx.strokeStyle = 'rgba(157,111,33,.7)'; ctx.lineWidth = 0.65; ctx.stroke()
     }
     const draw = (now: number) => {
       frame = 0
@@ -65,18 +68,19 @@ export function OpeningAtmosphere({ opening }: { opening: boolean }) {
       for (const p of particles) {
         let x = ((p.x + Math.sin(time * p.speed * 0.13 + p.phase) * 0.012 + 1) % 1) * width
         const wave = Math.sin(p.x * 7 + time * 0.24) * 0.018 + Math.cos(p.x * 11 - time * 0.15) * 0.009
-        const band = Math.pow(p.edge, 1.8) * 0.17
-        let y = (p.top ? band + wave : 1 - band + wave) * height
+        const band = 0.025 + Math.pow(p.edge, 1.4) * 0.19
+        let y = (p.middle ? 0.29 + p.edge * 0.4 : p.top ? band + wave : 1 - band + wave) * height
         x += (x - width / 2) * release * 0.7
         y += (p.top ? -1 : 1) * release * height * 0.12
-        const twinkle = 0.28 + 0.72 * Math.pow((Math.sin(time * p.speed * 2 + p.phase) + 1) / 2, 2)
-        const alpha = twinkle * (0.5 + p.depth * 0.5) * fade
+        const twinkle = 0.08 + 0.92 * Math.pow((Math.sin(time * (p.speed + 0.4) * 2 + p.phase) + 1) / 2, 2)
+        const textClearance = !p.middle && p.top && p.x > 0.16 && p.x < 0.84 && band > 0.12 ? 0.25 : 1
+        const alpha = twinkle * (0.6 + p.depth * 0.4) * fade * textClearance
         const size = p.size * (0.65 + p.depth * 0.8)
         ctx.globalAlpha = alpha
         ctx.drawImage(sprite, x - size * 2.5, y - size * 2.5, size * 5, size * 5)
-        ctx.globalAlpha = Math.min(1, alpha * 1.2)
-        ctx.fillStyle = '#ae873e'; ctx.fillRect(x, y, Math.max(0.65, size * 0.7), Math.max(0.65, size * 0.7))
-        if (p.glint) star(x, y, 2 + twinkle * 1.6, alpha * 0.85)
+        ctx.globalAlpha = Math.min(1, alpha * 1.7)
+        ctx.fillStyle = '#996c26'; ctx.fillRect(x, y, Math.max(1.1, size * 0.9), Math.max(1.1, size * 0.9))
+        if (p.glint) star(x, y, 1.8 + twinkle * 1.2, Math.min(1, alpha * 1.4))
       }
       if (elapsed >= 0 && elapsed < 2.6) {
         const travel = clamp(elapsed / 0.65)
@@ -97,7 +101,9 @@ export function OpeningAtmosphere({ opening }: { opening: boolean }) {
             const x = width / 2 + Math.cos(angle) * distance
             const y = height / 2 + Math.sin(angle) * distance * 1.25
             ctx.globalAlpha = Math.pow(1 - burst, 2) * (0.4 + (i % 5) * 0.12)
-            ctx.drawImage(sprite, x - 3, y - 3, 6, 6)
+            ctx.drawImage(sprite, x - 5, y - 5, 10, 10)
+            ctx.fillStyle = '#ae7e2b'; ctx.fillRect(x, y, 1.5, 1.5)
+            if (i % 17 === 0) star(x, y, 2.5, Math.pow(1 - burst, 2))
           }
         }
       }
