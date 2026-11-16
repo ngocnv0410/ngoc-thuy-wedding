@@ -1,370 +1,69 @@
-/*
- * Hai cánh cửa 2.5D phủ kín màn hình, mỗi cánh xoay quanh bản lề ở mép ngoài trong phối cảnh của
- * khung cửa. Phía sau cửa là thiệp thật: khi mở, overlay trong suốt dần để lộ bìa.
- */
+/* Ivory Garden: pearl paper, botanical relief and a single clear invitation to enter. */
 .overlay {
-  --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.19 0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --seal-size: clamp(64px, 18vw, 96px);
-  --opening-action-width: clamp(164px, 48vw, 216px);
-  position: fixed;
-  inset: 0;
-  z-index: 300;
-  overflow: hidden;
-  /* Màu giấy cửa: che bìa phía sau cả khi cửa chưa vẽ xong. Bỏ đi lúc bắt đầu mở. */
-  background: var(--color-blush);
-  color: var(--color-espresso);
-  transition: opacity var(--dur-sm) var(--ease-paper);
+  --seal-size: clamp(66px, 17vw, 86px);
+  --opening-action-width: 176px;
+  position: fixed; inset: 0; z-index: 300; overflow: hidden;
+  background: #f4ecdd; color: var(--color-espresso);
+  transition: opacity 420ms var(--ease-paper);
 }
-
-.overlay:focus {
-  outline: none;
+.overlay:focus { outline: none; }
+.overlay[data-closing='true'] { opacity: 0; pointer-events: none; }
+.flat { position: absolute; inset: 0; transition: opacity var(--dur-md) var(--ease-paper); }
+.doors { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; perspective: 2100px; perspective-origin: 50% 50%; }
+.door { position: relative; overflow: hidden; background: #f4ecdd; backface-visibility: hidden; will-change: transform; }
+.door[data-door='left'] { transform-origin: 0% 50%; }
+.door[data-door='right'] { transform-origin: 100% 50%; }
+.gateArtwork { position: absolute; top: 0; left: 0; width: 200%; height: 100%; background: url('../../assets/opening/ivory-garden-gate.webp') center / cover no-repeat; }
+.door[data-door='right'] .gateArtwork { left: -100%; }
+.doorShade { position: absolute; inset: 0; opacity: 0; background: #6b553b; pointer-events: none; will-change: opacity; }
+.seamLight { position: absolute; inset-block: 0; left: 41%; width: 18%; opacity: 0; transform: scaleX(0.05); background: radial-gradient(ellipse 50% 65% at 50% 48%, #fff9e6, rgb(255 240 209 / 0) 70%); pointer-events: none; will-change: transform, opacity; }
+.canvas3d { position: absolute; inset: 0; z-index: 1; opacity: 0; pointer-events: none; }
+.overlay[data-mode='3d'] .canvas3d { opacity: 1; pointer-events: auto; }
+.overlay[data-mode='3d'] .flat { opacity: 0; pointer-events: none; }
+.seal { position: absolute; z-index: 2; left: calc(50% - var(--seal-size) / 2); top: calc(50% - var(--seal-size) / 2); width: var(--seal-size); height: var(--seal-size); cursor: pointer; filter: drop-shadow(0 3px 8px rgb(109 83 45 / 0.17)); -webkit-tap-highlight-color: transparent; will-change: transform; }
+.sealHalf { position: absolute; inset: 0; will-change: transform, opacity; }
+.sealHalf svg { width: 100%; height: 100%; }
+.sealHalf[data-half='left'] { clip-path: inset(-10% 50% -10% -10%); }
+.sealHalf[data-half='right'] { clip-path: inset(-10% -10% -10% 50%); }
+.greeting { position: absolute; z-index: 3; top: 25%; left: 16px; right: 16px; display: grid; justify-items: center; gap: 8px; text-align: center; pointer-events: none; }
+.inviteLabel { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.23em; text-transform: uppercase; color: #806c4f; }
+.openingNames[data-size='section'] { font-size: clamp(48px, 12vw, 90px); flex-wrap: nowrap; gap: 0; white-space: nowrap; }
+.openingDate { font-size: 10px; letter-spacing: 0.19em; color: var(--color-mocha); }
+.openingDate span { margin-inline: 6px; color: var(--color-gold-deep); }
+.hosts { position: absolute; z-index: 3; left: 0; right: 0; bottom: 10%; display: flex; justify-content: center; align-items: flex-end; gap: 180px; pointer-events: none; }
+.hosts > [data-chibi] { --chibi-h: min(clamp(80px, 22vw, 116px), 16svh); will-change: transform; }
+.actions { position: absolute; z-index: 4; left: 0; right: 0; bottom: 22%; display: grid; justify-items: center; gap: 3px; pointer-events: none; }
+.actions > * { pointer-events: auto; }
+.openButton { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 12px; width: var(--opening-action-width); min-height: 48px; padding: 0 16px; overflow: hidden; border: 1px solid #bca16c; border-radius: 999px; background: linear-gradient(130deg, #fffdf5, #f5ecd9); color: #624a2b; box-shadow: 0 8px 24px -17px #806039, inset 0 1px 0 #fffef9; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: box-shadow 0.25s ease, transform 0.2s ease; }
+.openButton::before { content: ''; position: absolute; inset: 3px; border: 1px solid rgb(196 172 124 / 0.22); border-radius: inherit; pointer-events: none; }
+.openButton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.55) 50%, transparent 80%); transform: translateX(-110%); transition: transform 0.8s ease; pointer-events: none; }
+.openLabel { position: relative; z-index: 1; font-family: var(--font-serif); font-size: 23px; font-weight: 500; line-height: 1.1; letter-spacing: 0.015em; }
+.openArrow { position: relative; z-index: 1; display: grid; place-items: center; flex: none; width: 20px; height: 20px; }
+.openArrow svg { width: 20px; height: 20px; }
+.openButton:active { transform: translateY(1px); }
+.openButton:focus-visible, .musicChoice:focus-visible, .modeMenu summary:focus-visible, .skip:focus-visible { outline: 2px solid #ac8c50; outline-offset: 4px; }
+.musicChoice { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: var(--opening-action-width); min-height: 40px; padding: 0 4px; border: 0; border-radius: 8px; background: transparent; color: #6b5643; font: 11px var(--font-sans); cursor: pointer; }
+.musicNote { flex: none; width: 12px; height: 12px; color: #8a6937; }
+.musicSwitch { position: relative; flex: none; width: 24px; height: 14px; border: 1px solid #bea677; border-radius: 999px; background: #f8f1e4; transition: background-color 0.25s ease; }
+.musicSwitch::after { content: ''; position: absolute; left: 2px; top: 2px; width: 8px; height: 8px; border-radius: 50%; background: #a48a63; transition: transform 0.25s var(--ease-paper), background-color 0.25s ease; }
+.musicChoice[aria-pressed='true'] .musicSwitch { background: #b7985e; border-color: #a88b51; }
+.musicChoice[aria-pressed='true'] .musicSwitch::after { transform: translateX(10px); background: #fffaf0; }
+.modeMenu { position: relative; }
+.modeMenu summary { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 0 12px; font: 11px var(--font-sans); color: #897554; cursor: pointer; list-style: none; }
+.modeMenu summary::-webkit-details-marker { display: none; }
+.modePopover { position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); padding: 9px; background: #fffbf2; border: 1px solid #d7c7a8; border-radius: 18px; box-shadow: 0 8px 35px -12px #8f7654; }
+.skip { position: absolute; z-index: 5; right: 12px; top: max(10px, env(safe-area-inset-top)); min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--color-taupe-ink); font: 10px var(--font-sans); text-decoration: underline; text-decoration-color: rgb(149 124 78 / 0.4); text-underline-offset: 5px; cursor: pointer; }
+@media (hover: hover) and (pointer: fine) { .openButton:hover { box-shadow: 0 10px 28px -16px #806039, inset 0 1px 0 #fffef9; } .openButton:hover::after { transform: translateX(110%); } }
+@media (min-aspect-ratio: 1/1) { .gateArtwork { background-image: url('../../assets/opening/ivory-garden-gate-wide.webp'); } }
+@media (min-width: 768px) { .greeting { top: 23%; } .actions { bottom: 20%; } .hosts { bottom: 7%; gap: 260px; } }
+@media (max-height: 600px) and (max-width: 479px) { .greeting { top: 17%; gap: 3px; } .openingNames[data-size='section'] { font-size: 42px; } .openingDate { font-size: 9px; } .actions { bottom: 10%; } .hosts { bottom: 5%; gap: 208px; } }
+@media (max-height: 480px) and (min-width: 480px) {
+  .greeting { top: 7%; gap: 0; } .inviteLabel { display: none; }
+  .openingNames[data-size='section'] { font-size: 36px; } .openingDate { font-size: 9px; }
+  .overlay { --seal-size: 56px; }
+  .actions { bottom: 8px; left: 50%; right: auto; width: 304px; transform: translateX(-50%); grid-template-columns: 1fr 1fr; gap: 0; }
+  .openButton { grid-column: 1 / -1; justify-self: center; min-height: 44px; }
+  .musicChoice { width: 100%; min-height: 36px; }
+  .hosts { bottom: 8px; padding-inline: 24px; gap: 0; justify-content: space-between; }
 }
-
-.overlay[data-closing='true'] {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ── Hai cánh cửa ───────────────────────────────────────── */
-.flat {
-  position: absolute;
-  inset: 0;
-  transition: opacity var(--dur-md) var(--ease-paper);
-}
-
-.doors {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  perspective: 1600px;
-  perspective-origin: 50% 46%;
-}
-
-.door {
-  position: relative;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  background-color: var(--color-blush);
-  background-image: var(--paper-noise);
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
-/* Nắng xiên từ góc trên trái; mép khe cửa tối hơn như có chiều dày. */
-.door[data-door='left'] {
-  transform-origin: 0% 50%;
-  background-image:
-    linear-gradient(to right, transparent 82%, rgb(120 92 72 / 0.14)),
-    radial-gradient(ellipse 120% 70% at 10% 0%, rgb(255 250 244 / 0.7), transparent 70%),
-    var(--paper-noise);
-  box-shadow: inset -1px 0 0 rgb(120 92 72 / 0.35);
-}
-
-.door[data-door='right'] {
-  transform-origin: 100% 50%;
-  background-image:
-    linear-gradient(to left, transparent 82%, rgb(120 92 72 / 0.1)),
-    radial-gradient(ellipse 120% 70% at 0% 0%, rgb(255 250 244 / 0.45), transparent 70%),
-    var(--paper-noise);
-  box-shadow: inset 1px 0 0 rgb(255 250 244 / 0.6);
-}
-
-/* Khung hoạ tiết 84% × 90% giữa cánh (khớp ART_FIT trong doorArt.ts), co kiểu "contain". */
-.art {
-  position: absolute;
-  inset: 5% 8%;
-  width: 84%;
-  height: 90%;
-  overflow: visible;
-}
-
-/* Ba lớp hoa văn nổi: bóng, viền sáng, mặt. */
-.reliefShadow {
-  color: #a88b78;
-  opacity: 0.55;
-}
-
-.reliefLight {
-  color: #fffaf4;
-  opacity: 0.95;
-}
-
-.reliefFace {
-  color: #efe3d8;
-}
-
-.ringShadow {
-  fill: none;
-  stroke: rgb(96 72 56 / 0.4);
-  stroke-width: 4;
-}
-
-.ringGlint {
-  stroke: rgb(255 248 230 / 0.7);
-  stroke-width: 1;
-  stroke-dasharray: 18 90;
-}
-
-/* Cánh cửa tối dần khi quay đi (GSAP tăng opacity khi mở). */
-.doorShade {
-  position: absolute;
-  inset: 0;
-  background: rgb(60 44 34);
-  opacity: 0;
-  pointer-events: none;
-  /* Lớp riêng: đổi opacity không bắt vẽ lại cả cánh cửa (SVG hoa văn + filter). */
-  will-change: opacity;
-}
-
-/* Khe sáng giữa hai cánh, loé lên khi cửa vừa hé. */
-.seamLight {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 18vw;
-  margin-left: -9vw;
-  background: radial-gradient(ellipse 50% 60% at 50% 46%, rgb(255 248 232 / 0.95), rgb(255 240 214 / 0) 70%);
-  opacity: 0;
-  transform: scaleX(0.05);
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-/* ── Lớp 3D: hiện đúng khung hình của cửa 2.5D rồi thay chỗ ─── */
-.canvas3d {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--dur-md) var(--ease-paper);
-}
-
-.overlay[data-mode='3d'] .canvas3d {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.overlay[data-mode='3d'] .flat {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ── Dấu sáp niêm trên khe cửa (giữa màn hình): hai nửa tách ra khi mở ─── */
-.seal {
-  position: absolute;
-  z-index: 2;
-  left: calc(50% - var(--seal-size) / 2);
-  top: calc(50% - var(--seal-size) / 2);
-  width: var(--seal-size);
-  height: var(--seal-size);
-  cursor: pointer;
-  filter: drop-shadow(0 3px 4px rgb(60 44 34 / 0.3));
-  will-change: transform;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.sealHalf {
-  position: absolute;
-  inset: 0;
-  will-change: transform, opacity;
-}
-
-.sealHalf svg {
-  width: 100%;
-  height: 100%;
-}
-
-.sealHalf[data-half='left'] {
-  clip-path: inset(-10% 50% -10% -10%);
-}
-
-.sealHalf[data-half='right'] {
-  clip-path: inset(-10% -10% -10% 50%);
-}
-
-/* ── Hai bạn chibi đứng trước cửa, hai bên nút "Mở thiệp" ─────── */
-.hosts {
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  /* Khoảng giữa đủ rộng cho nút "Mở thiệp": chibi không bao giờ chồng lên nút. */
-  gap: calc(var(--opening-action-width) + 20px);
-  pointer-events: none;
-}
-
-.hosts > [data-chibi] {
-  --chibi-h: min(clamp(100px, 30vw, 190px), 28svh);
-  will-change: transform;
-}
-
-/* ── Hành động ─────────────────────────────────────────────── */
-.actions {
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  right: 0;
-  bottom: calc(28px + env(safe-area-inset-bottom));
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  pointer-events: none;
-}
-
-.actions > * {
-  pointer-events: auto;
-}
-
-.musicChoice {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: var(--opening-action-width);
-  min-height: 44px;
-  padding: 0 4px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: #6b5643;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.musicNote { flex: none; width: 15px; height: 15px; color: #8a6937; }
-.musicSwitch {
-  position: relative;
-  flex: none;
-  width: 28px;
-  height: 16px;
-  margin-left: 1px;
-  border: 1px solid rgb(143 111 65 / 0.45);
-  border-radius: 999px;
-  background: rgb(255 250 240 / 0.6);
-  box-shadow: inset 0 1px 2px rgb(110 90 75 / 0.08);
-  transition: background-color 0.25s ease, border-color 0.25s ease;
-}
-.musicSwitch::after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #a48a63;
-  box-shadow: 0 1px 2px rgb(93 67 37 / 0.15);
-  transition: transform 0.25s var(--ease-paper), background-color 0.25s ease;
-}
-.musicChoice[aria-pressed='true'] .musicSwitch { background: #b7985e; border-color: #9c7b41; }
-.musicChoice[aria-pressed='true'] .musicSwitch::after { transform: translateX(12px); background: #fffaf0; }
-
-/* Góc trên phải: không bao giờ chồng lên nút "Mở thiệp", kể cả màn hình thấp. */
-.skip {
-  position: absolute;
-  right: var(--space-3);
-  top: calc(var(--space-3) + env(safe-area-inset-top));
-  z-index: 3;
-  min-height: 44px;
-  padding: 0 var(--space-3);
-  border: 0;
-  border-radius: 999px;
-  background: rgb(248 240 232 / 0.6);
-  color: var(--color-taupe-ink);
-  font-size: 13px;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--color-gold) 70%, transparent);
-  text-underline-offset: 5px;
-  cursor: pointer;
-}
-
-.openButton {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: var(--opening-action-width);
-  min-height: 58px;
-  padding: 0 16px;
-  overflow: hidden;
-  border: 1px solid #b19560;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #fffaf0 0%, #f0e4cc 55%, #e9d8b7 100%);
-  color: #624a2b;
-  box-shadow: 0 8px 20px -12px rgb(103 75 37 / 0.4), inset 0 1px 0 #fffdf6;
-  white-space: nowrap;
-  flex-wrap: nowrap;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: box-shadow 0.25s ease, transform 0.2s ease;
-}
-.openButton::before { content: ''; position: absolute; inset: 4px; border: 1px solid rgb(255 255 255 / 0.7); border-radius: 12px; pointer-events: none; }
-.openButton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.5) 50%, transparent 80%); transform: translateX(-110%); transition: transform 0.7s ease; pointer-events: none; }
-.openLabel { position: relative; z-index: 1; font-family: var(--font-serif); font-size: 25px; font-weight: 500; line-height: 1.1; letter-spacing: 0.01em; }
-.openArrow { position: relative; z-index: 1; display: grid; place-items: center; flex: none; width: 30px; height: 30px; border: 1px solid rgb(143 111 65 / 0.3); border-radius: 50%; background: rgb(255 252 245 / 0.35); }
-.openArrow svg { width: 21px; height: 21px; }
-.openButton:active { transform: translateY(1px); box-shadow: 0 3px 10px -8px rgb(103 75 37 / 0.4), inset 0 1px 0 #fffdf6; }
-.openButton:focus-visible, .musicChoice:focus-visible { outline: 2px solid #8a6937; outline-offset: 4px; }
-@media (hover: hover) and (pointer: fine) {
-  .openButton:hover { box-shadow: 0 10px 24px -12px rgb(103 75 37 / 0.5), inset 0 1px 0 #fffdf6; }
-  .openButton:hover::after { transform: translateX(110%); }
-  .musicChoice:hover { background: rgb(255 250 240 / 0.25); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .openButton, .openButton::after, .musicSwitch, .musicSwitch::after { transition: none; }
-}
-.greeting {
-  position: absolute;
-  z-index: 2;
-  top: max(76px, 12svh);
-  left: 16px;
-  right: 16px;
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  text-align: center;
-  pointer-events: none;
-}
-.openingNames[data-size='section'] {
-  font-size: clamp(52px, 11vw, 100px);
-  flex-wrap: nowrap;
-  gap: 0;
-  white-space: nowrap;
-}
-.openingDate {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  color: var(--color-mocha);
-}
-.openingDate span { margin-inline: 8px; color: var(--color-gold-deep); }
-@media (max-height: 600px) {
-  .greeting { top: 56px; gap: 0; }
-  .openingNames[data-size='section'] { font-size: 48px; }
-  .openingDate { font-size: 10px; }
-}
-
-@media (max-height: 380px) and (min-width: 480px) {
-  .actions { bottom: calc(8px + env(safe-area-inset-bottom)); gap: 2px; }
-  .openButton { min-height: 50px; }
-  .openLabel { font-size: 23px; }
-  .greeting { top: 38px; }
-  .openingNames[data-size='section'] { font-size: 36px; }
-  .openingDate { font-size: 9px; }
-  .skip { top: calc(4px + env(safe-area-inset-top)); padding-inline: 8px; font-size: 11px; }
-}
-
-/* Light champagne paper for the opening preview. */
-.overlay { --color-blush: #efe5d4; }
+@media (prefers-reduced-motion: reduce) { .openButton, .openButton::after, .musicSwitch, .musicSwitch::after { transition: none; } }

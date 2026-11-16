@@ -34,13 +34,13 @@ export function introDoors(root: HTMLElement): () => void {
   holdPaint(2200)
 
   const intro = state.intro = gsap.timeline({ defaults: { ease: 'paper' } })
-  intro.from(all(root, '[data-door]'), { scale: 1.04, duration: 1.6, ease: 'silk' }, 0)
+  intro.from(all(root, '[data-door]'), { scale: 1.015, duration: 1.8, ease: 'silk' }, 0)
   intro.from(all(root, anim('greeting')), { autoAlpha: 0, y: 12, duration: 0.9 }, 0.2)
   if (seal) {
     intro.fromTo(
       seal,
-      { autoAlpha: 0, scale: 1.3, y: -16 },
-      { autoAlpha: 1, scale: 1, y: 0, duration: 0.7, ease: 'back.out(1.6)' },
+      { autoAlpha: 0, scale: 1.08, y: -6 },
+      { autoAlpha: 1, scale: 1, y: 0, duration: 0.7, ease: 'sine.out' },
       1.0,
     )
   }
@@ -108,7 +108,7 @@ export function openDoors(root: HTMLElement, { onReveal, onDone }: OpenCallbacks
   const state = openings.get(root)
   state?.intro?.progress(1)
   state?.breathing?.kill()
-  holdPaint(2800)
+  holdPaint(5200)
 
   const seal = one(root, anim('seal'))
   const doors = one(root, '[data-door]')?.parentElement
@@ -128,25 +128,26 @@ export function openDoors(root: HTMLElement, { onReveal, onDone }: OpenCallbacks
   )
 
   if (seam) {
-    tl.to(seam, { autoAlpha: 1, scaleX: 1, duration: 0.6, ease: 'power2.out' }, 0.45).to(
+    tl.to(seam, { autoAlpha: 1, scaleX: 1, duration: 1, ease: 'power2.out' }, 0.35).to(
       seam,
-      { autoAlpha: 0, scaleX: 2.4, duration: 0.9, ease: 'power1.in' },
-      1.1,
+      { autoAlpha: 0, scaleX: 2.2, duration: 1.6, ease: 'power1.in' },
+      1.8,
     )
   }
 
-  const swing = { duration: 1.7, ease: 'silk' }
-  if (left) tl.to(left, { rotateY: 96, ...swing }, 0.6)
-  if (right) tl.to(right, { rotateY: -96, ...swing }, 0.6)
-  tl.to(all(root, '[data-shade]'), { opacity: 0.55, ...swing }, 0.6)
-  if (doors) tl.to(doors, { scale: 1.14, duration: 2, ease: 'power2.inOut' }, 0.5)
+  const swing = { duration: 2.7, ease: 'power2.inOut' }
+  if (left) tl.to(left, { rotateY: 96, ...swing }, 0.9)
+  if (right) tl.to(right, { rotateY: -96, ...swing }, 0.9)
+  tl.to(all(root, '[data-shade]'), { opacity: 0.22, ...swing }, 0.9)
+  if (doors) tl.to(doors, { scale: 1.07, duration: 3.8, ease: 'power2.inOut' }, 0.6)
 
-  tl.add(hostsOpen(root), 0)
-    .to(all(root, anim('greeting')), { autoAlpha: 0, y: -12, duration: 0.4 }, 0.1)
-    .to(all(root, anim('cta')), { autoAlpha: 0, y: 12, duration: 0.4 }, 0.2)
-    .call(onReveal, [], 1.05)
+  tl.add(hostsOpen(root).timeScale(0.72), 0)
+    .to(hostsOf(root), { x: (i: number) => (i === 0 ? -1 : 1) * root.clientWidth * 0.28, autoAlpha: 0, duration: 0.85, ease: 'power1.in' }, 2.25)
+    .to(all(root, anim('greeting')), { autoAlpha: 0, y: -8, duration: 0.7 }, 0.35)
+    .to(all(root, anim('cta')), { autoAlpha: 0, y: 8, duration: 0.5 }, 0.05)
+    .call(onReveal, [], 1.55)
     // Chờ hai bạn mời khách vào xong rồi mới tan overlay.
-    .to(root, { autoAlpha: 0, duration: 0.5, ease: 'power1.out' }, HOSTS_DONE)
+    .to(root, { autoAlpha: 0, duration: 0.9, ease: 'power1.out' }, HOSTS_DONE)
 
   const cancelGuard = guard(tl)
 
@@ -161,7 +162,7 @@ export function openDoors(root: HTMLElement, { onReveal, onDone }: OpenCallbacks
 }
 
 /** Lúc hai bạn mời khách xong — overlay bắt đầu tan. */
-const HOSTS_DONE = 2.4
+const HOSTS_DONE = 3.6
 
 /**
  * Bấm "Mở thiệp": hai bạn quay sang nhìn nhau → đi vào giữa tới khe cửa → đưa tay đẩy hai cánh ra

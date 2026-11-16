@@ -1,0 +1,25 @@
+/** Optional Playwright review of the Ivory Garden preview; no guestbook writes. */
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+import { mkdir } from 'node:fs/promises';
+const base=process.env.WEDDING_BASE||'http://localhost:4179/';
+const directory=process.env.REVIEW_DIR||'output/ivory-opening';await mkdir(directory,{recursive:true});
+const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,args:process.env.CHROMIUM_NO_SANDBOX==='1'?['--no-sandbox']:[]});
+function overlap(a,b){return a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y}
+for(const [width,height] of [[320,568],[390,844],[430,932],[768,1024],[1440,900],[568,320]]){
+ const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(base,{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1700);
+ const opening=page.locator('#opening');assert.equal(await opening.getAttribute('data-mode'),'2d');
+ await page.locator('[data-door] > div').first().evaluate(async e=>{const src=getComputedStyle(e).backgroundImage.slice(5,-2);const img=new Image();img.src=src;await img.decode()});
+ const names=await page.locator('#opening [data-anim=greeting]').boundingBox(),seal=await page.locator('#opening [data-anim=seal]').boundingBox(),cta=await page.getByRole('button',{name:'Mở thiệp',exact:true}).boundingBox();assert(names.y+names.height<seal.y,`${width}: names clear seal`);assert(seal.y+seal.height<cta.y,`${width}: seal clear CTA`);
+ for(const host of await page.locator('#opening [data-chibi]').all())assert(!overlap(await host.boundingBox(),cta),`${width}: character clears CTA`);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await opening.getByRole('radio').count(),0);
+ const summary=page.locator('#opening summary');await summary.click();await opening.getByRole('radio',{name:'BAD',exact:true}).check();assert.equal(await page.locator('#opening details').getAttribute('open'),null);assert.equal(await summary.evaluate(e=>e===document.activeElement),true);
+ await summary.click();await opening.getByRole('radio',{name:'Nguyên bản',exact:true}).check();
+ await page.screenshot({path:`${directory}/review-${width}.png`});
+ await page.getByRole('button',{name:'Mở thiệp',exact:true}).click();await page.waitForTimeout(1800);assert.equal(await page.evaluate(()=>document.documentElement.dataset.opening),'revealing');await opening.waitFor({state:'detached',timeout:10000});assert.notEqual(await page.evaluate(()=>document.documentElement.style.overflow),'hidden');
+ await page.getByRole('button',{name:'Xem lại thiệp mở'}).click();await opening.waitFor();assert.equal(await page.locator('[data-opening-atmosphere]').getAttribute('data-phase'),'idle');await page.keyboard.press('Escape');await opening.waitFor({state:'detached'});assert.deepEqual(errors,[]);console.log(`${width}×${height}: composition, modes/focus, open, replay, Escape, no overflow/errors`);await page.close();
+}
+// Native keyboard navigation must include the mode picker, then remain inside the dialog.
+const key=await browser.newPage({viewport:{width:390,height:844}});await key.goto(base,{waitUntil:'networkidle'});await key.waitForTimeout(1400);await key.locator('#opening summary').focus();await key.keyboard.press('Enter');await key.keyboard.press('Tab');assert.equal(await key.locator('#opening input:checked').evaluate(e=>e===document.activeElement),true);await key.keyboard.press('Tab');assert.equal(await key.getByRole('button',{name:'Bỏ qua phần mở đầu'}).evaluate(e=>e===document.activeElement),true);await key.keyboard.press('Escape');await key.locator('#opening').waitFor({state:'detached'});await key.close();console.log('Keyboard mode picker and focus trap passed');
+const reduced=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});await reduced.goto(base,{waitUntil:'networkidle'});assert.equal(await reduced.locator('[data-opening-atmosphere]').evaluate(e=>getComputedStyle(e).display),'none');await reduced.getByRole('button',{name:'Mở thiệp',exact:true}).click();await reduced.locator('#opening').waitFor({state:'detached',timeout:1800});await reduced.close();console.log('Reduced motion uses short fade');
+const skip=await browser.newPage({viewport:{width:390,height:844}});await skip.goto(base,{waitUntil:'networkidle'});await skip.getByRole('button',{name:'Mở thiệp',exact:true}).click();await skip.waitForTimeout(750);await skip.getByRole('button',{name:'Bỏ qua phần mở đầu'}).click();await skip.locator('#opening').waitFor({state:'detached',timeout:1800});await skip.close();console.log('Skip during animation passed');await browser.close();

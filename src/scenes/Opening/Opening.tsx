@@ -28,13 +28,13 @@ interface OpenControl {
 const FADE_MS = 420
 
 /**
- * Scene 0 — Hai cánh cửa hoa văn nổi, dấu sáp niêm trên khe cửa. Bản 2.5D (SVG/CSS + GSAP) luôn
- * hiện trước; máy đủ mạnh được nâng lên bản 3D (useDoors3D). Toàn bộ nội dung thiệp đã có trong
- * DOM phía sau; cửa mở ra là thấy bìa thật. Overlay luôn có lối ra ("Bỏ qua", hoặc tự mờ đi nếu
- * animation không tải được).
+ * Pearl-paper gate: both printed leaves share bespoke botanical artwork and CSS perspective.
+ * The invitation beneath is already mounted, so light and characters can reveal in one motion.
+ * Skip, Escape, reduced motion and the loading fallback always provide an exit.
  */
 export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const modeMenu = useRef<HTMLDetailsElement>(null)
   const [closing, setClosing] = useState(false)
   const [openingEffect, setOpeningEffect] = useState(false)
   const [withMusic, setWithMusic] = useState(() => Boolean(content.music))
@@ -45,7 +45,8 @@ export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningP
   const control = useRef<OpenControl | null>(null)
   // Callback ref (state) để lớp 3D render lại khi cửa 2.5D đã có trong DOM.
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
-  const doors3D = useDoors3D(started)
+  // Printed botanical leaves use the same accelerated CSS perspective on every device.
+  const doors3D = useDoors3D(started, false)
 
   const { couple, music: track } = content
   const leftWho = couple.order === 'bride-first' ? 'bride' : 'groom'
@@ -84,7 +85,7 @@ export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningP
         return
       }
       if (event.key !== 'Tab') return
-      const buttons = [...dialog.querySelectorAll<HTMLElement>('button, select')].filter((button) => !button.hasAttribute('disabled') && getComputedStyle(button).visibility !== 'hidden')
+      const buttons = [...dialog.querySelectorAll<HTMLElement>('button, select, summary, input:not([type=radio]), input[type=radio]:checked')].filter((button) => !button.hasAttribute('disabled') && button.getClientRects().length > 0 && getComputedStyle(button).visibility !== 'hidden')
       const firstButton = buttons[0]
       const lastButton = buttons.at(-1)
       if (event.shiftKey && (document.activeElement === firstButton || document.activeElement === dialog)) {
@@ -239,6 +240,7 @@ export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningP
       <OpeningAtmosphere opening={openingEffect} />
 
       <div className={styles.greeting} data-anim="greeting">
+        <p className={styles.inviteLabel}>Trân trọng kính mời</p>
         <CoupleNames first={first.givenName} second={second.givenName} layout="inline" size="section" className={styles.openingNames} />
         <p className={styles.openingDate}>{date.day} <span>·</span> {date.month} <span>·</span> {date.year}</p>
       </div>
@@ -281,7 +283,16 @@ export function Opening({ content, onDone, modes, mode, onModeChange }: OpeningP
             <span className={styles.musicSwitch} aria-hidden="true" />
           </button>
         )}
-        {track && <MusicModePicker compact modes={modes} mode={mode} onModeChange={onModeChange} />}
+        {track && <details ref={modeMenu} className={styles.modeMenu}>
+          <summary>Chế độ thiệp <span aria-hidden="true">⌄</span></summary>
+          <div className={styles.modePopover}><MusicModePicker compact modes={modes} mode={mode} onModeChange={(next) => {
+            onModeChange(next)
+            if (modeMenu.current) {
+              modeMenu.current.open = false
+              modeMenu.current.querySelector('summary')?.focus({ preventScroll: true })
+            }
+          }} /></div>
+        </details>}
       </div>
     </div>
   )
