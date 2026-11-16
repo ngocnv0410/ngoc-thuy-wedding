@@ -66,7 +66,9 @@ describe('opening replay playback', () => {
     const hero = mocks.heroMotion.mock.results[0].value
     expect(hero.pause).toHaveBeenCalledWith(0)
     expect(mocks.guard).not.toHaveBeenCalled()
+    document.documentElement.dataset.opening = 'on'
     runtime.releaseHero(opening!)
+    expect(document.documentElement.dataset.opening).toBe('revealing')
     expect(hero.play).toHaveBeenCalledOnce()
     expect(mocks.guard).toHaveBeenCalledWith(hero)
     dispose()
@@ -83,7 +85,9 @@ describe('opening replay playback', () => {
     const disposeReplay = runtime.mountScene('hero', scene)
     const replay = mocks.heroMotion.mock.results[1].value
     expect(replay.pause).toHaveBeenCalledWith(0)
+    document.documentElement.dataset.opening = 'on'
     runtime.releaseHero(previousOpening)
+    expect(document.documentElement.dataset.opening).toBe('on')
     expect(replay.play).not.toHaveBeenCalled()
     runtime.releaseHero(opening)
     expect(replay.play).toHaveBeenCalledOnce()

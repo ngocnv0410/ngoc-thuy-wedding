@@ -38,6 +38,8 @@ const revealedOpenings = new WeakSet<HTMLElement>()
 /** Phát phần mở màn của bìa (gọi khi cửa đã hé / được bỏ qua). */
 export function releaseHero(opening: HTMLElement) {
   revealedOpenings.add(opening)
+  // Let the cover illustration become visible behind the widening paper gates.
+  if (document.getElementById('opening') === opening) root.dataset.opening = 'revealing'
   const current = heroPlayback
   // An old opening's async callback must never release a later viewing.
   if (current?.opening === opening && current.timeline.paused()) {

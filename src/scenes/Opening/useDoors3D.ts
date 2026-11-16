@@ -12,7 +12,7 @@ const SETTLED_MS = 1900
  * và là fallback: không đạt ngưỡng thiết bị, tải chậm, khách đã bấm mở, hay mất WebGL context
  * đều giữ / quay về 2.5D.
  */
-export function useDoors3D(started: RefObject<boolean>) {
+export function useDoors3D(started: RefObject<boolean>, enabled = true) {
   const [Component, setComponent] = useState<ComponentType<Doors3DProps> | null>(null)
   const [active, setActive] = useState(false)
   const api = useRef<Doors3DApi | null>(null)
@@ -20,7 +20,7 @@ export function useDoors3D(started: RefObject<boolean>) {
   const mountedAt = useRef(0)
 
   useEffect(() => {
-    if (!canUse3D()) return
+    if (!enabled || !canUse3D()) return
     mountedAt.current = performance.now()
     const timer = forced3D()
       ? undefined
@@ -35,7 +35,7 @@ export function useDoors3D(started: RefObject<boolean>) {
       })
       .catch(() => {})
     return () => window.clearTimeout(timer)
-  }, [])
+  }, [enabled])
 
   const discard = useCallback(() => {
     api.current = null
