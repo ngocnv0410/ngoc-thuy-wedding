@@ -11,6 +11,13 @@ npm run build
 
 Nội dung thiệp nằm trong `src/content/wedding.ts`; thông tin mừng cưới ở `src/content/accounts.json`.
 
+## Màn mở thiệp Ivory Garden
+
+Cửa giấy ngọc trai sáng, hoa mẫu đơn nổi và hai dải sáng nhũ vàng. Mở bằng phối cảnh CSS
+để cùng một thiết kế hiển thị trên điện thoại và desktop; nút chọn chế độ nhạc được thu gọn.
+Giữ thao tác bỏ qua, mở lại, bàn phím và chế độ giảm chuyển động.
+Xem [thiết kế và kiểm tra màn mở thiệp](docs/opening-ivory-garden.md).
+
 ## Nhạc theo liên kết
 
 Link thường dùng bản nhạc trong `wedding.ts`. Thêm `?music=youtube` (hoặc `&music=youtube` nếu đã có `?v=…`) để dùng `public/audio/youtube-hGu7BVQy5G0.mp3`, bắt đầu và lặp lại từ giây 15. Nút “Chia sẻ thiệp” giữ lựa chọn này khi gửi tiếp. Cả hai bản chỉ tải/phát sau thao tác bật nhạc của khách.

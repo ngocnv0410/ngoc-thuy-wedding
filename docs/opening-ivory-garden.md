@@ -1,6 +1,6 @@
-# Ivory Garden opening preview
+# Ivory Garden opening
 
-This design stays on the preview branch. The live invitation has not been changed.
+Approved opening design: bright pearl-paper gates, botanical relief and a champagne-light reveal.
 
 ## Visual direction
 
