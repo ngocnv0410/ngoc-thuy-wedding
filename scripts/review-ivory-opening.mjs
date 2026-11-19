@@ -6,10 +6,10 @@ const base=process.env.WEDDING_BASE||'http://localhost:4179/';
 const directory=process.env.REVIEW_DIR||'output/ivory-opening';await mkdir(directory,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH,args:process.env.CHROMIUM_NO_SANDBOX==='1'?['--no-sandbox']:[]});
 function overlap(a,b){return a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y}
-for(const [width,height] of [[320,568],[390,844],[430,932],[768,1024],[1440,900],[568,320]]){
+for(const [width,height] of [[320,568],[390,844],[430,932],[768,1024],[1024,768],[1440,900],[1920,1080],[568,320]]){
  const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(base,{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1700);
  const opening=page.locator('#opening');assert.equal(await opening.getAttribute('data-mode'),'2d');
- await page.locator('[data-door] > div').first().evaluate(async e=>{const src=getComputedStyle(e).backgroundImage.slice(5,-2);const img=new Image();img.src=src;await img.decode()});
+ await page.locator('[data-door] > div').first().evaluate(async e=>{const src=getComputedStyle(e).backgroundImage.slice(5,-2);const img=new Image();img.src=src;await img.decode();const s=getComputedStyle(e),w=e.clientWidth,h=e.clientHeight;const scale=s.backgroundSize==='contain'?Math.min(w/img.naturalWidth,h/img.naturalHeight):Math.max(w/img.naturalWidth,h/img.naturalHeight);if(img.naturalWidth*scale>w+0.5||img.naturalHeight*scale>h+0.5)throw new Error('Floral artwork is cropped by the viewport');if(Number(s.getPropertyValue('--opening-art-width'))!==img.naturalWidth||Number(s.getPropertyValue('--opening-art-height'))!==img.naturalHeight)throw new Error('Sparkle frame does not match artwork dimensions')});
  const names=await page.locator('#opening [data-anim=greeting]').boundingBox(),seal=await page.locator('#opening [data-anim=seal]').boundingBox(),cta=await page.getByRole('button',{name:'Mở thiệp',exact:true}).boundingBox();assert(names.y+names.height<seal.y,`${width}: names clear seal`);assert(seal.y+seal.height<cta.y,`${width}: seal clear CTA`);
  for(const host of await page.locator('#opening [data-chibi]').all())assert(!overlap(await host.boundingBox(),cta),`${width}: character clears CTA`);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await opening.getByRole('radio').count(),0);
